@@ -63,6 +63,27 @@ This is Anh Tuan Readme
         }
      ```
 
+   - how to use square_btn cpt:
+
+   ```js
+   <Titlebar
+     svgLeft="Like"
+     left={{
+       btnStyle: {
+         backgroundColor: "white",
+         borderWidth: 0,
+       },
+       onPress: () => console.log("Left button pressed"),
+     }}
+     right={{
+       btnStyle: {
+         backgroundColor: "blue",
+       },
+       onPress: () => console.log("Right button pressed"),
+     }}
+   />
+   ```
+
 3. Feature Process:
 
 ```sh

@@ -87,8 +87,8 @@ This is Anh Tuan Readme
 3. Feature Process:
 
 ```sh
+   Tạo nhà hàng -                      Đang làm
    Tìm kiếm -                          Chưa làm
-   Tạo nhà hàng -                      Chưa làm
    Cập nhật thông tin nhà hàng -       Chưa làm
    Xóa nhà hàng -                      Chưa làm
    Thêm món ăn -                       Chưa làm

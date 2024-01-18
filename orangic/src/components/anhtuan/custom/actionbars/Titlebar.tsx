@@ -1,4 +1,4 @@
-import {View, Text, TextStyle, ViewStyle} from 'react-native';
+import {View, Text, TextStyle, ViewStyle, ColorValue} from 'react-native';
 import React from 'react';
 import Square_btn from '../buttons/Square_btn';
 import {Colors, actionbars, btn, fonts, svg, txt} from '../style/cpt';
@@ -6,9 +6,11 @@ import {Colors, actionbars, btn, fonts, svg, txt} from '../style/cpt';
 type Prop = {
   title?: txt;
   left?: btn;
+  right?: btn;
   svgLeft?: keyof typeof svg;
   svgRight?: keyof typeof svg;
-  right?: btn;
+  colorLeft?: ColorValue;
+  colorRight?: ColorValue;
   barStyle?: ViewStyle | ViewStyle[];
 };
 
@@ -22,6 +24,7 @@ const Titlebar = (props: Prop) => {
           btnStyle: left?.btnStyle,
           onPress: left?.onPress,
         }}
+        color={props?.colorLeft}
       />
       <Text style={[fonts.titleBold, title?.textStyle]}>
         {title?.text || 'Topbar'}
@@ -32,6 +35,7 @@ const Titlebar = (props: Prop) => {
           btnStyle: right?.btnStyle,
           onPress: right?.onPress,
         }}
+        color={props?.colorRight}
       />
     </View>
   );

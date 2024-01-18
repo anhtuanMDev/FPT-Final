@@ -88,12 +88,12 @@ This is Anh Tuan Readme
 
 ```sh
    Tạo nhà hàng -                      Đang làm
-   Tìm kiếm -                          Chưa làm
-   Cập nhật thông tin nhà hàng -       Chưa làm
-   Xóa nhà hàng -                      Chưa làm
-   Thêm món ăn -                       Chưa làm
-   Cập nhật món ăn -                   Chưa làm
-   Xóa món ăn -                        Chưa làm
+   Tìm kiếm -                          Đang làm
+   Cập nhật thông tin nhà hàng -       Đang làm
+   Xóa nhà hàng -                      Đang làm
+   Thêm món ăn -                       Đang làm
+   Cập nhật món ăn -                   Đang làm
+   Xóa món ăn -                        Đang làm
    Cấm người dùng -                    Chưa làm
    Cấm nhà hàng -                      Chưa làm
    Cấm món ăn -                        Chưa làm

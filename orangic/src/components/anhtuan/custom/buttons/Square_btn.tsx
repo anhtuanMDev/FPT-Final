@@ -1,6 +1,6 @@
 import {TouchableOpacity, Text, ColorValue} from 'react-native';
 import React from 'react';
-import {btn, buttons, svg} from '../style/cpt';
+import {Colors, btn, buttons, svg} from '../style/cpt';
 import Menu from './../../../../assets/ics/menu.svg';
 import Back from './../../../../assets/ics/back.svg';
 import Warn from './../../../../assets/ics/warning.svg';
@@ -24,23 +24,23 @@ const Square_btn = (props: Prop) => {
   const renderSvg = () => {
     switch (svg) {
       case 'Back':
-        return <Back width={24} height={24} fill={color} />;
+        return <Back width={24} height={24} fill={color || Colors.black} />;
       case 'Warn':
-        return <Warn width={24} height={24} fill={color} />;
+        return <Warn width={24} height={24} fill={color || Colors.black} />;
       case 'State':
-        return <State width={24} height={24} fill={color} />;
+        return <State width={24} height={24} fill={color || Colors.black} />;
       case 'Close':
-        return <Close width={24} height={24} fill={color} />;
+        return <Close width={24} height={24} fill={color || Colors.black} />;
       case 'Bread':
-        return <Bread width={24} height={24} fill={color} />;
+        return <Bread width={24} height={24} fill={color || Colors.black} />;
       case 'Upload':
-        return <Upload width={24} height={24} fill={color} />;
+        return <Upload width={24} height={24} fill={color || Colors.black} />;
       case 'Confirm':
-        return <Confirm width={24} height={24} fill={color} />;
+        return <Confirm width={24} height={24} fill={color || Colors.black} />;
       case 'Edit':
-        return <Edit width={24} height={24} fill={color} />;
+        return <Edit width={24} height={24} fill={color || Colors.black} />;
       case 'Like':
-        return <Like width={24} height={24} fill={color} />;
+        return <Like width={24} height={24} fill={color || Colors.black} />;
       case 'Menu':
         return <Menu width={24} height={24} />;
       default:

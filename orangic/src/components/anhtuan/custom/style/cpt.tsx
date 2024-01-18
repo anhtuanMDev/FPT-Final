@@ -1,5 +1,8 @@
-import {StyleSheet, TextStyle, ViewStyle} from 'react-native';
+import {StyleSheet, TextStyle, ViewStyle, Dimensions} from 'react-native';
 import React from 'react';
+
+const {width} = Dimensions.get('screen');
+
 
 export enum Colors {
   white = '#ffffff',
@@ -14,16 +17,6 @@ export enum Colors {
   nox = '#263238',
 }
 
-export type btn = {
-  onPress?: (() => void);
-  btnStyle?: ViewStyle | ViewStyle[];
-};
-
-export type txt = {
-  text?: string;
-  textStyle?: TextStyle | TextStyle[];
-};
-
 export enum svg {
   Menu = 'Menu',
   Back = 'Back',
@@ -37,6 +30,16 @@ export enum svg {
   Like = 'Like',
 
 }
+
+export type btn = {
+  onPress?: (() => void);
+  btnStyle?: ViewStyle | ViewStyle[];
+};
+
+export type txt = {
+  text?: string;
+  textStyle?: TextStyle | TextStyle[];
+};
 
 export const fonts = StyleSheet.create({
   title: {
@@ -198,4 +201,62 @@ export const actionbars = StyleSheet.create({
   tabbar_Cont: {
     
   }
+})
+
+export const sliders = StyleSheet.create({
+  carousel_Cont: {
+    width,
+    height: 200,
+    backgroundColor: Colors.orange ,
+  },
+  carousel_Item: {
+    width,
+    height: 200,
+  },
+  pagination_Cont: {
+    width: 50,
+    height: 10,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  pagination_Item: {
+    width: 5,
+    height: 5,
+    borderRadius: 2,
+    marginHorizontal: 5.5,
+    backgroundColor: Colors.slate,
+  },
+});
+
+export const lists = StyleSheet.create({
+  storeRate_Cont: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingVertical: 5
+  },
+  storeRate_NameCont: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  }
+});
+
+export const forms = StyleSheet.create({
+  input_Cont: {
+    width: '100%',
+    backgroundColor: Colors.white,
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    marginVertical: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    borderWidth: 1,
+    borderColor: Colors.slate,
+  },
 })

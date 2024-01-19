@@ -4,6 +4,9 @@ This is Anh Tuan Readme
 
    - svg - npm i react-native-svg-transformer
      -> Using to transform svg
+   - redux - npm i redux
+   - reduxjs/toolkit -  npm i @reduxjs/toolkit
+   - redux thunk - npm i redux-thunk
 
 2. Special Notes:
 

@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosInstance as AxiosInstanceType } from 'axios';
 
-const AxiosInstance = (contentType = 'application/json') => {
-    const axiosInstance = axios.create({
+const AxiosInstance = (contentType: string = 'application/json'): AxiosInstanceType => {
+    const axiosInstance: AxiosInstanceType = axios.create({
         // baseURL: 'http://127.0.0.1:8686/'
-        baseURL: 'http://172.16.121.133:8686/'
+        baseURL: 'http://192.168.1.7:8686/'
     });
 
     axiosInstance.interceptors.request.use(
@@ -13,7 +13,7 @@ const AxiosInstance = (contentType = 'application/json') => {
                 'Authorization': `Bearer ${''}`,
                 'Accept': 'application/json',
                 'Content-Type': contentType
-            }
+            }as any;
             return config;
         },
         err => Promise.reject(err)

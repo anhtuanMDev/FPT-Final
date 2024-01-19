@@ -8,6 +8,11 @@ import Fluid_btn from '../custom/buttons/Fluid_btn';
 import SliderCarousel from '../custom/sliders/SliderCarousel';
 import StoreRate from '../custom/lists/StoreRate';
 import Input from '../custom/forms/Input';
+import AxiosInstance from '../../../helper/AxiosInstance';
+
+import { set } from 'mongoose';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../helper/state/store';
 
 type State = {
   name: string;
@@ -16,6 +21,12 @@ type State = {
   email: string;
   description: string;
 };
+
+interface MyApiResponse {
+  response: any;
+  status: boolean;
+  message: string;
+}
 
 type Action = {field: keyof State; value: string};
 
@@ -27,6 +38,26 @@ function reducer(state: State, action: Action) {
 }
 
 const Store = () => {
+  const [res, setRes] = useState();
+  const [visible, setVisible] = useState(false);
+
+  const rest = useSelector((state: RootState)=> state.checkRes);
+  const dispatchState  = useDispatch<AppDispatch>();
+
+  // Fetch data user's restaurant from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response: MyApiResponse = await AxiosInstance().get('/get-res.php', { params: { ownerID: "USRn4mvj6776oj233r5p" } });
+        setRes(response.response);
+        console.log(response.response);
+      } catch (error) {
+        console.log('Failed to fetch data: ', error);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Show user that they have no restaurant
   const noRes = () => {
     return (
@@ -45,7 +76,7 @@ const Store = () => {
             text={{
               text: 'Let create one',
             }}
-            button={{onPress: () => console.log('Create')}}
+            button={{onPress: () => setVisible(true)}}
           />
         </View>
       </View>
@@ -91,11 +122,57 @@ const Store = () => {
   };
 
   const createRes = () => {
+
     return (
-      <Modal>
+      <Modal visible={visible} animationType='slide'>
         <View style={[screens.main_Cont]}>
           <Titlebar
             title={{text: 'Create Restaurant'}}
+            left={{
+              btnStyle: {borderWidth: 0},
+              onPress: () => console.log('Rules'),
+            }}
+            right={{
+              onPress: () => setVisible(false),
+            }}
+            svgRight="Close"
+            svgLeft="Like"
+          />
+
+          <ScrollView style={[{marginTop: 20}]}>
+            <Input
+              placeholder="Restaurant Name"
+              onChange={handleChange('name')}
+            />
+            <Input
+              placeholder="Restaurant Address"
+              onChange={handleChange('address')}
+            />
+            <Input
+              placeholder="Restaurant Phone"
+              onChange={handleChange('phone')}
+            />
+            <Input
+              placeholder="Restaurant Email"
+              onChange={handleChange('email')}
+            />
+            <Input
+              placeholder="Restaurant Description"
+              onChange={handleChange('description')}
+            />
+            <Fluid_btn />
+          </ScrollView>
+        </View>
+      </Modal>
+    );
+  };
+
+  const createFood = () => {
+    return (
+      <Modal visible={visible}>
+        <View style={[screens.main_Cont]}>
+          <Titlebar
+            title={{text: 'Create Foods'}}
             left={{
               btnStyle: {borderWidth: 0},
               onPress: () => console.log('Rules'),
@@ -137,8 +214,8 @@ const Store = () => {
 
   return (
     <View style={[screens.parent_Cont]}>
-      {createRes()}
-      {hasRes()}
+      {res ? createFood() : createRes()}
+      {res ? hasRes() : noRes()}
     </View>
   );
 };

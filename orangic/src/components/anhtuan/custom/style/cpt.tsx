@@ -3,7 +3,6 @@ import React from 'react';
 
 const {width} = Dimensions.get('screen');
 
-
 export enum Colors {
   white = '#ffffff',
   black = '#000000',
@@ -15,6 +14,7 @@ export enum Colors {
   blue = '#4285F4',
   navy = '#395998',
   nox = '#263238',
+  yellow = '#FFC529',
 }
 
 export enum svg {
@@ -28,11 +28,11 @@ export enum svg {
   Confirm = 'Confirm',
   Edit = 'Edit',
   Like = 'Like',
-
+  Next = 'Next',
 }
 
 export type btn = {
-  onPress?: (() => void);
+  onPress?: () => void;
   btnStyle?: ViewStyle | ViewStyle[];
 };
 
@@ -180,7 +180,7 @@ export const buttons = StyleSheet.create({
     borderRadius: 19,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
 
 export const actionbars = StyleSheet.create({
@@ -198,16 +198,14 @@ export const actionbars = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  tabbar_Cont: {
-    
-  }
-})
+  tabbar_Cont: {},
+});
 
 export const sliders = StyleSheet.create({
   carousel_Cont: {
     width,
     height: 200,
-    backgroundColor: Colors.orange ,
+    backgroundColor: Colors.orange,
   },
   carousel_Item: {
     width,
@@ -238,12 +236,25 @@ export const lists = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   storeRate_NameCont: {
     flexDirection: 'row',
     alignItems: 'center',
-  }
+  },
+  cardRate_Cont: {
+    minWidth: 45,
+    height: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    position: 'absolute',
+    backgroundColor: Colors.white,
+    elevation: 5,
+    shadowColor: Colors.orange,
+  },
 });
 
 export const forms = StyleSheet.create({
@@ -258,5 +269,97 @@ export const forms = StyleSheet.create({
     justifyContent: 'flex-start',
     borderWidth: 1,
     borderColor: Colors.slate,
+  },
+  textArea_Cont: {
+    width: '100%',
+    height: 100,
+    backgroundColor: Colors.white,
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    marginVertical: 5,
+    textAlignVertical:'top',
+    justifyContent: 'flex-start',
+    borderWidth: 1,
+    borderColor: Colors.slate,
+  },
+  imagePicker_Cont: {
+    width: '100%',
+    height: 58,
+    backgroundColor: Colors.slate,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dropdown_Cont: {
+    width: '100%',
+    height: 'auto',
+    backgroundColor: Colors.white,
+  },
+  dropdown_ItemCont: {
+    width: '100%',
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: Colors.slate,
+    backgroundColor: Colors.white,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dropdown_Form: {
+    width: '100%',
+  },
+  tag_Cont: {
+    paddingHorizontal: 4,
+    paddingVertical: 3,
+    textAlign: 'center',
+    alignSelf: 'flex-start',
+    borderRadius: 5,
+    backgroundColor: Colors.silver,
+  }
+});
+
+export const cards = StyleSheet.create({
+  small_Cont: {
+    width: 153,
+    height: 216,
+    backgroundColor: Colors.white,
+    borderRadius: 15,
+    elevation: 4
+  },
+  small_NameCont: {
+    marginTop: 15,
+    height: 55,
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+    borderBottomRightRadius: 15,
+    borderBottomLeftRadius: 15,
+  },
+  big_Cont: {
+    width: 266,
+    height: 230,
+    backgroundColor: Colors.white,
+    borderRadius: 15,
+    overflow: 'hidden',
+    elevation: 4
+  },
+  big_NameCont: {
+    marginVertical: 15,
+    marginHorizontal: 12,
+  },
+  big_ItemCont: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  }
+});
+
+export const modals = StyleSheet.create({
+  showImage_Cont: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

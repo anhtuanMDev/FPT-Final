@@ -71,3 +71,6 @@ const updateResAsync = createAsyncThunk(
         return response.data;
     }
 )
+
+export const {updateResPending} = updateResSlice.actions;
+export default updateResSlice.reducer;

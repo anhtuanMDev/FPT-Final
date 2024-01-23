@@ -1,4 +1,4 @@
-import {View, Text, Image, FlatList, Dimensions, Animated, ViewToken} from 'react-native';
+import {View, Text, Image, FlatList, Dimensions, Animated, ViewToken, ViewStyle, ImageStyle} from 'react-native';
 import React, {useRef, useState} from 'react';
 import {sliders} from '../style/cpt';
 import Pagination from './Pagination';
@@ -11,10 +11,16 @@ const img: any[] = [
   require('../../../../assets/imgs/foodPoster5.jpg'),
 ];
 
-const SliderCarousel = ({imageArray} : {imageArray?: any[]}) => {
+type Prop = {
+  imageArray?: any[];
+  style?: ViewStyle | ViewStyle[];
+  imageStyle?: ImageStyle | ImageStyle[];
+}
+
+const SliderCarousel = (props: Prop) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   // const [index, setIndex] = useState(0);
-  const data:any[] = imageArray || img;
+  const data:any[] = props?.imageArray || img;
 
   const handleScroll = (event: any) => {
     Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {
@@ -30,16 +36,16 @@ const SliderCarousel = ({imageArray} : {imageArray?: any[]}) => {
   const viewConfig = useRef({viewAreaCoveragePercentThreshold: 60}).current;
   
   return (
-    <View style={[sliders.carousel_Cont]}>
+    <View style={[sliders.carousel_Cont, props?.style]}>
       <FlatList
         data={data}
-        style={[sliders.carousel_Cont, {backgroundColor: 'red'}]}
+        contentContainerStyle={{borderRadius: 15, overflow: 'hidden'}}
         renderItem={({item, index}) => {
           return (
             <Image
               key={index}
               source={item}
-              style={[sliders.carousel_Item]}
+              style={[sliders.carousel_Item, props?.imageStyle]}
               resizeMode="stretch"
             />
           );

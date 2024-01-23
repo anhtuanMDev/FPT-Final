@@ -11,6 +11,7 @@ import Upload from './../../../../assets/ics/upload.svg';
 import Confirm from './../../../../assets/ics/confirm.svg';
 import Edit from './../../../../assets/ics/edit.svg';
 import Like from './../../../../assets/ics/like-shapes.svg';
+import Next from './../../../../assets/ics/next.svg';
 
 type Prop = {
   button?: btn;
@@ -25,6 +26,8 @@ const Square_btn = (props: Prop) => {
     switch (svg) {
       case 'Back':
         return <Back width={24} height={24} fill={color || Colors.black} />;
+      case 'Next':
+        return <Next width={24} height={24} fill={color || Colors.black} />;
       case 'Warn':
         return <Warn width={24} height={24} fill={color || Colors.black} />;
       case 'State':

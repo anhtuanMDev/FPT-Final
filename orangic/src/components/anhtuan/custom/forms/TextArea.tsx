@@ -1,6 +1,6 @@
 import {View, Text, TextInput, ViewStyle} from 'react-native';
 import React, {useState} from 'react';
-import {fonts, forms} from '../style/cpt';
+import {Colors, fonts, forms} from '../style/cpt';
 
 type Prop = {
   placeholder?: string;
@@ -17,6 +17,7 @@ const TextArea = (props: Prop) => {
         multiline={true}
         maxLength={300}
         numberOfLines={6}
+        placeholderTextColor={Colors.slate}
         style={[fonts.text, {textAlignVertical: 'top'}]}
         value={text}
         onChangeText={text => {

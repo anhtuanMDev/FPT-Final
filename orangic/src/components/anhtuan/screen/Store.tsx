@@ -25,77 +25,173 @@ import {launchCamera} from 'react-native-image-picker';
 import ImagePicker from '../custom/forms/ImagePicker';
 import TextArea from '../custom/forms/TextArea';
 import Square_btn from '../custom/buttons/Square_btn';
+import Location from '../data/location.json';
+import Dropdown from '../custom/forms/Dropdown';
 
-type State = {
-  name: string;
-  address: string;
-  phone: string;
-  email: string;
-  description: string;
-  districts: string;
-  states: string;
-  city: string;
+import {
+  Response,
+  checkResAsync,
+  isCheckRes,
+} from '../../../helper/state/restaurants/checkResSlice';
+import {
+  CreateRes,
+  createResAsync,
+} from '../../../helper/state/restaurants/createResSlice';
+
+type LocationState = {
+  cityIndex: number;
+  wardIndex: number;
+  districtIndex: number;
 };
 
-interface MyApiResponse {
+interface apiGetResResponse {
   response: any;
   status: boolean;
   message: string;
 }
 
-type Action = {field: keyof State; value: string};
+type ResAction = {field: keyof CreateRes; value: string};
 
-function reducer(state: State, action: Action) {
+function resReducer(createRes: CreateRes, action: ResAction) {
   return {
-    ...state,
+    ...createRes,
+    [action.field]: action.value,
+  };
+}
+
+type LocationAction = {field: keyof LocationState; value: number};
+
+function locationReducer(location: LocationState, action: LocationAction) {
+  return {
+    ...location,
     [action.field]: action.value,
   };
 }
 
 const Store = () => {
-  const [res, setRes] = useState();
+  const [res, setRes] = useState<Response | null>(null);
   const [visible, setVisible] = useState(false);
   const [show, setShow] = useState(false);
   const [img, setImg] = useState<any[]>([]);
   const [image, setImage] = useState<any>();
 
-  const rest = useSelector((state: RootState) => state.checkRes);
-  const dispatReschState = useDispatch<AppDispatch>();
+  const resCheck = useSelector((state: RootState) => state.checkRes);
+  const dispatResState = useDispatch<AppDispatch>();
+
+  const [location, dispatchLocation] = useReducer(locationReducer, {
+    cityIndex: 0,
+    wardIndex: 0,
+    districtIndex: 0,
+  });
+
+  const map = Location.data;
+
+  const [createRes, dispatchCreateRes] = useReducer(resReducer, {
+    name: 'Mericano Expresco',
+    introduction: 'This is a restaurant name Mericano Expresco',
+    email: 'meri@gmail.com',
+    phone: '0586842685',
+    address: 'mericano expresco address ',
+    district: map[location.cityIndex].name,
+    ward: map[location.cityIndex].level2s[location.wardIndex].name,
+    city: map[location.cityIndex].level2s[location.wardIndex].level3s[
+      location.districtIndex
+    ].name,
+    status: 'OPEN',
+    ownerID: 'USRIM4TLCSI0EHZHMU2U',
+  });
+
+  const handleChangeRes = (name: keyof CreateRes) => (value: string) => {
+    dispatchCreateRes({field: name, value});
+  };
+
+  const handleChangeLocation =
+    (name: keyof LocationState) => (value: number) => {
+      dispatchLocation({field: name, value});
+    };
 
   // Fetch data user's restaurant from API
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response: MyApiResponse = await AxiosInstance().get(
-          '/get-res.php',
-          {params: {ownerID: 'USRn4mvj6776oj233r5p'}},
-        );
-        setRes(response.response);
-        console.log(response.response);
-      } catch (error) {
-        console.log('Failed to fetch data: ', error);
-      }
+      await dispatResState(checkResAsync('USRIM4TLCSI0EHZHMU2U'));
     };
+  
     fetchData();
-  }, []);
+  
+    return () => {
+      // Cleanup function
+      console.log("1",resCheck)
+      if (resCheck.response) {
+        setRes(resCheck.response);
+        console.log('have set response', resCheck.response);
+      } else {
+        setRes(null);
+        console.log('have set null');
+      }
+      console.log("2",resCheck)
+      console.log('current res:', res);
+    };
+  }, [resCheck.response]);
+  
 
-  // useEffect(() => {
-  //   console.log(image)
-  // }, [show]);
+  const city: string[] = map.map(item => item.name);
+  let ward: string[] = map[location.cityIndex].level2s.map(item => item.name);
+  let district: string[] = map[location.cityIndex].level2s[
+    location.districtIndex
+  ].level3s.map(item => item.name);
 
-  const [state, dispatch] = useReducer(reducer, {
-    name: '',
-    address: '',
-    phone: '',
-    email: '',
-    description: '',
-    districts: '',
-    states: '',
-    city: '',
-  });
+  useEffect(() => {
+    ward = map[location.cityIndex].level2s.map(item => item.name);
+    district = map[location.cityIndex].level2s[
+      location.districtIndex
+    ].level3s.map(item => item.name);
 
-  const handleChange = (name: keyof State) => (value: string) => {
-    dispatch({field: name, value});
+    dispatchCreateRes({
+      field: 'city',
+      value: map[location.cityIndex].name,
+    });
+    dispatchCreateRes({
+      field: 'ward',
+      value: map[location.cityIndex].level2s[location.wardIndex].name,
+    });
+    dispatchCreateRes({
+      field: 'district',
+      value:
+        map[location.cityIndex].level2s[location.wardIndex].level3s[
+          location.districtIndex
+        ].name,
+    });
+  }, [location]);
+
+  const checkCreateInfor = async (createRes: CreateRes) => {
+    const arr = Object.values(createRes);
+    console.log(arr);
+    arr.forEach(data => {
+      if (data.length <= 10 && data != 'Open') {
+        console.log(data, data.length);
+        return {message: 'Please fill all information'};
+      }
+    });
+
+    const data: CreateRes = {
+      name: createRes.name,
+      introduction: createRes.introduction,
+      email: createRes.email,
+      phone: createRes.phone,
+      address: createRes.address,
+      district: createRes.district,
+      ward: createRes.ward,
+      city: createRes.city,
+      status: createRes.status,
+      ownerID: createRes.ownerID,
+    };
+
+    dispatResState(createResAsync(data));
+    if (resCheck.isCheckFulfilled) {
+      setVisible(false);
+    } else {
+      console.log(resCheck.isCheckError);
+    }
   };
 
   const requestCameraPermission = async (number: number) => {
@@ -178,7 +274,7 @@ const Store = () => {
     );
   };
 
-  const createRes = () => {
+  const createResModal = () => {
     return (
       <Modal visible={visible} animationType="slide">
         <View style={[screens.main_Cont]}>
@@ -195,24 +291,26 @@ const Store = () => {
             svgLeft="Like"
           />
 
-          <ScrollView style={[{marginTop: 20}]}>
+          <View style={[{marginTop: 20}]}>
             <Input
               placeholder="Restaurant Name"
-              onChange={handleChange('name')}
+              onChange={handleChangeRes('name')}
             />
 
             <Input
               placeholder="Restaurant Phone"
-              onChange={handleChange('phone')}
+              onChange={handleChangeRes('phone')}
+              style={{marginVertical: 10}}
             />
 
             <Input
               placeholder="Restaurant Email"
-              onChange={handleChange('email')}
+              onChange={handleChangeRes('email')}
             />
 
             <ImagePicker
               data={img}
+              style={{marginVertical: 10}}
               uploadPress={() => requestCameraPermission(1)}
               imagePress={() => {
                 setImage;
@@ -222,36 +320,57 @@ const Store = () => {
 
             <Input
               placeholder="Restaurant Address"
-              onChange={handleChange('address')}
+              onChange={handleChangeRes('address')}
             />
 
-            <Input
-              placeholder="Restaurant District"
-              onChange={handleChange('districts')}
-            />
-
-            <Input
-              placeholder="Restaurant State"
-              onChange={handleChange('states')}
-            />
-
-            <Input
+            <Dropdown
+              dataList={city}
+              style={{marginVertical: 10}}
+              value={createRes.city}
               placeholder="Restaurant City"
-              onChange={handleChange('city')}
+              onPick={index => {
+                handleChangeLocation('cityIndex')(index);
+              }}
+            />
+
+            <Dropdown
+              dataList={ward}
+              placeholder="Restaurant Ward"
+              value={createRes.ward}
+              onPick={index => {
+                handleChangeLocation('wardIndex')(index);
+              }}
+            />
+
+            <Dropdown
+              dataList={district}
+              style={{marginVertical: 10}}
+              value={createRes.district}
+              placeholder="Restaurant District"
+              onPick={index => {
+                handleChangeLocation('districtIndex')(index);
+              }}
             />
             <TextArea
               placeholder="Restaurant Description"
-              onChange={handleChange('description')}
+              onChange={handleChangeRes('introduction')}
             />
-          </ScrollView>
+          </View>
           <View style={{flex: 1}} />
-          <Fluid_btn />
+          <Fluid_btn
+            button={{
+              btnStyle: {
+                zIndex: 5,
+              },
+              onPress: () => checkCreateInfor(createRes),
+            }}
+          />
         </View>
       </Modal>
     );
   };
 
-  const createFood = () => {
+  const createFoodModal = () => {
     return (
       <Modal visible={visible}>
         <View style={[screens.main_Cont]}>
@@ -271,23 +390,23 @@ const Store = () => {
           <ScrollView style={[{marginTop: 20}]}>
             <Input
               placeholder="Restaurant Name"
-              onChange={handleChange('name')}
+              onChange={handleChangeRes('name')}
             />
             <Input
               placeholder="Restaurant Address"
-              onChange={handleChange('address')}
+              onChange={handleChangeRes('address')}
             />
             <Input
               placeholder="Restaurant Phone"
-              onChange={handleChange('phone')}
+              onChange={handleChangeRes('phone')}
             />
             <Input
               placeholder="Restaurant Email"
-              onChange={handleChange('email')}
+              onChange={handleChangeRes('email')}
             />
             <Input
-              placeholder="Restaurant Description"
-              onChange={handleChange('description')}
+              placeholder="Restaurant Introduction"
+              onChange={handleChangeRes('introduction')}
             />
             <Fluid_btn />
           </ScrollView>
@@ -301,10 +420,15 @@ const Store = () => {
       <Modal visible={show} animationType="fade" transparent>
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <View>
-          <Square_btn
+            <Square_btn
               svg="Close"
               button={{
-                btnStyle: {position: 'absolute', top: -50, right: -15, zIndex: 2},
+                btnStyle: {
+                  position: 'absolute',
+                  top: -50,
+                  right: -15,
+                  zIndex: 2,
+                },
                 onPress: () => setShow(false),
               }}
             />
@@ -349,8 +473,8 @@ const Store = () => {
 
   return (
     <View style={[screens.parent_Cont]}>
-      {res ? createFood() : createRes()}
-      {res ? hasRes() : noRes()}
+      {res != null ? createFoodModal() : createResModal()}
+      {res != null ? hasRes() : noRes()}
       {showImage()}
     </View>
   );

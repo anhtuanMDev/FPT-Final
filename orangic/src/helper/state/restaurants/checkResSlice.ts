@@ -1,7 +1,8 @@
 import {PayloadAction, createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import AxiosInstances from '../../AxiosInstance';
+import { AxiosResponse } from 'axios';
 
-interface Response {
+export interface CheckResponse {
   Id: string;
   Name: string;
   Introduction: string;
@@ -14,20 +15,27 @@ interface Response {
   Status: string;
 }
 
+export interface Response {
+  status: boolean;
+  message: string;
+  response: CheckResponse;
+  error?: string;
+}
+
 interface State {
   isChecked: boolean;
-  isChecking: boolean;
-  isCheckSuccess: boolean;
-  isCheckFail: boolean;
+  isCheckPending: boolean;
+  isCheckFulfilled: boolean;
+  isCheckReject: boolean;
   isCheckError: string | undefined;
   response: Response | null;
 }
 
 const initialState: State = {
   isChecked: false,
-  isChecking: false,
-  isCheckSuccess: false,
-  isCheckFail: false,
+  isCheckPending: false,
+  isCheckFulfilled: false,
+  isCheckReject: false,
   isCheckError: '',
   response: null,
 };
@@ -42,22 +50,25 @@ const checkResSlice = createSlice({
   },
   extraReducers: builder =>{
     builder.addCase(checkResAsync.pending, state => {
-        state.isChecking = true;
+        state.isCheckPending = true;
         state.isCheckError = '';
-    }).addCase(checkResAsync.fulfilled, (state, action: PayloadAction<Response>) => {
-        state.isChecking = false;
+        console.log("Checking")
+    }).addCase(checkResAsync.fulfilled, (state, action: PayloadAction<AxiosResponse<Response>>) => {
+        state.isCheckPending = false;
         state.isChecked = true;
-        state.isCheckSuccess = true;
-        state.isCheckFail = false;
+        state.isCheckFulfilled = true;
+        state.isCheckReject = false;
         state.isCheckError = '';
-        state.response = action.payload;
+        state.response = action.payload.data;
+        console.log("fulfilled",action.payload)
     }).addCase(checkResAsync.rejected, (state, action)=> {
-        state.isChecking = false;
+        state.isCheckPending = false;
         state.isChecked = true;
-        state.isCheckSuccess = false;
-        state.isCheckFail = true;
+        state.isCheckFulfilled = false;
+        state.isCheckReject = true;
         state.isCheckError = action.error.message;
         state.response = null;
+        console.log("not have")
     })
   }
 });
@@ -68,7 +79,7 @@ export const checkResAsync = createAsyncThunk(
     const response = await AxiosInstances().get('/get-res.php', {
       params: {ownerID: id},
     });
-    return response.data;
+    return response;
   },
 );
 

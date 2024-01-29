@@ -4,6 +4,7 @@ import {
   PermissionsAndroid,
   Image,
   TouchableOpacity,
+  ViewStyle,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Colors, fonts, forms} from '../style/cpt';
@@ -13,6 +14,7 @@ type Props = {
   uploadPress: () => void;
   imagePress: (path:string) => void;
   data?: any[];
+  style?: ViewStyle | ViewStyle[];
 }
 
 const ImagePicker = (props: Props) => {
@@ -37,7 +39,7 @@ const ImagePicker = (props: Props) => {
     },[props?.data])
 
   return (
-    <View style={[forms.imagePicker_Cont]}>
+    <View style={[forms.imagePicker_Cont, props?.style]}>
       <View style={{flexDirection: 'row', width: 'auto'}}>
         {img.length > 0 ? (
           images()

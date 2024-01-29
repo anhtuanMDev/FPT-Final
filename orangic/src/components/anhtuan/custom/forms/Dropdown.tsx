@@ -1,7 +1,7 @@
 import {
   View,
   Text,
-  ScrollView,
+  FlatList,
   ViewStyle,
   TextInput,
   Animated,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Drop_down from '../../../../assets/ics/drop_down.svg';
-import {fonts, forms} from '../style/cpt';
+import {Colors, fonts, forms} from '../style/cpt';
 import Animateds, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,24 +18,23 @@ import Animateds, {
 
 type Prop = {
   placeholder?: string;
+  value?: string;
   dataList?: string[];
-  onPick?: (item: string) => void;
+  onPick?: (item: number) => void;
   style?: ViewStyle | ViewStyle[];
 };
 
 const Dropdown = (props: Prop) => {
-  const [pick, setPick] = useState('');
-  const [drop, setDrop] = useState(false);
-  const dropDown = useRef(new Animated.Value(0)).current;
-  const fixHeight = useSharedValue({height: 0});
-
   // set data or use example data
   let myArray: string[] = props?.dataList || [
     'apple',
     'banana',
     'orange',
     'grape',
-  ];
+  ]; 
+  const [drop, setDrop] = useState(false);
+  const dropDown = useRef(new Animated.Value(0)).current;
+  const fixHeight = useSharedValue({height: 0});
 
   // spin animation up
   const spinClockWise = () => {
@@ -50,7 +49,7 @@ const Dropdown = (props: Prop) => {
   const spinCounterClockWise = () => {
     Animated.timing(dropDown, {
       toValue: 0,
-      duration: 300,
+      duration: 50,
       useNativeDriver: true,
     }).start();
   };
@@ -64,7 +63,7 @@ const Dropdown = (props: Prop) => {
   // define height of dropdown
   const collapse = useAnimatedStyle(() => {
     return {
-      height: withTiming(fixHeight.value.height, {duration: 400}),
+      height: withTiming(fixHeight.value.height, {duration: 200}),
     };
   });
 
@@ -79,18 +78,14 @@ const Dropdown = (props: Prop) => {
     }
   }, [drop]);
 
-  // set onPick value of dropdown when pick change
-  useEffect(() => {
-    props.onPick && props.onPick(pick);
-  }, [pick]);
-
   return (
     <View style={[forms.dropdown_Cont, props?.style]}>
       <TouchableOpacity onPress={() => setDrop(!drop)}>
         <View style={[forms.dropdown_ItemCont]}>
           <TextInput
             style={[{width: '70%'}, fonts.text]}
-            value={pick}
+            placeholderTextColor={Colors.slate}
+            value={props.value}
             placeholder={props?.placeholder || 'Placeholder'}
             editable={false}
           />
@@ -101,11 +96,11 @@ const Dropdown = (props: Prop) => {
       </TouchableOpacity>
 
       <Animateds.View style={[collapse]}>
-        <ScrollView
-          style={{marginTop: 20}}
-          showsVerticalScrollIndicator={false}>
-          {myArray.map((item, index) => (
-            <View key={index}>
+
+        <FlatList
+        data={myArray}
+        renderItem={({item,index})=> (
+          <View key={index}>
               <Text
                 style={[
                   {
@@ -116,8 +111,8 @@ const Dropdown = (props: Prop) => {
                   fonts.textBold,
                 ]}
                 onPress={() => {
-                  setPick(item);
                   setDrop(false);
+                  props?.onPick && props?.onPick(index);
                 }}>
                 {item}
               </Text>
@@ -132,8 +127,8 @@ const Dropdown = (props: Prop) => {
                 />
               )}
             </View>
-          ))}
-        </ScrollView>
+        )}
+        />
       </Animateds.View>
     </View>
   );

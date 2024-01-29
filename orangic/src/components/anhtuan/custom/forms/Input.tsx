@@ -1,6 +1,6 @@
 import {View, Text, TextInput, ViewStyle} from 'react-native';
 import React, { useState } from 'react';
-import {fonts, forms} from '../style/cpt';
+import {Colors, fonts, forms} from '../style/cpt';
 
 type Prop = {
   placeholder?: string;
@@ -15,6 +15,7 @@ const Input = (props: Prop) => {
       <TextInput
         style={[fonts.text, {width: '100%'}]}
         value={text}
+        placeholderTextColor={Colors.slate}
         onChangeText={(text) => {
             setText(text)
             props?.onChange && props?.onChange(text)

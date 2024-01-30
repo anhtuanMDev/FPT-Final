@@ -61,6 +61,7 @@ const checkResSlice = createSlice({
         state.isCheckError = '';
         state.response = action.payload.data;
         console.log("fulfilled",action.payload)
+        console.log("fulfilled data",action.payload.data)
     }).addCase(checkResAsync.rejected, (state, action)=> {
         state.isCheckPending = false;
         state.isChecked = true;

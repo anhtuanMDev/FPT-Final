@@ -48,6 +48,7 @@ interface apiGetResResponse {
   response: any;
   status: boolean;
   message: string;
+  error?: string;
 }
 
 type ResAction = {field: keyof CreateRes; value: string};
@@ -121,17 +122,14 @@ const Store = () => {
     return () => {
       // Cleanup function
       console.log("1",resCheck)
-      if (resCheck.response) {
+      if (resCheck.response && res!= resCheck.response) {
         setRes(resCheck.response);
         console.log('have set response', resCheck.response);
-      } else {
-        setRes(null);
-        console.log('have set null');
       }
       console.log("2",resCheck)
       console.log('current res:', res);
     };
-  }, [resCheck.response]);
+  }, [res]);
   
 
   const city: string[] = map.map(item => item.name);

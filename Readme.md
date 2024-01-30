@@ -9,6 +9,11 @@ This is Anh Tuan Readme
    - react redux - npm i react-redux
    - image picker - npm i react-native-image-picker
    - reanimated - npm i react-native-reanimated
+   - boostrap (website) - npm install bootstrap
+   - reactSVG (website) - npm install bootstrap
+   - website external library - npm install quill tinymce simple-datatables echarts
+   - apexChart (website) - npm install apexcharts
+
 
 2. Special Notes:
 
@@ -159,6 +164,6 @@ This is Anh Tuan Readme
    Cấm nhà hàng -                      Chưa làm
    Cấm món ăn -                        Chưa làm
    Xóa lượt bình luận đánh giá -       Chưa làm
-   Quản lý danh sách nhà hàng -        Chưa làm
+   Quản lý danh sách nhà hàng -        Đang làm
    Quản lý danh sách món ăn -          Chưa làm
 ```

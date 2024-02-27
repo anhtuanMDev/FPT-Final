@@ -20,6 +20,7 @@ type Prop = {
   placeholder?: string;
   value?: string;
   dataList?: string[];
+  dropStyle?: ViewStyle | ViewStyle[];
   onPick?: (item: number) => void;
   style?: ViewStyle | ViewStyle[];
 };
@@ -31,7 +32,7 @@ const Dropdown = (props: Prop) => {
     'banana',
     'orange',
     'grape',
-  ]; 
+  ];
   const [drop, setDrop] = useState(false);
   const dropDown = useRef(new Animated.Value(0)).current;
   const fixHeight = useSharedValue({height: 0});
@@ -79,28 +80,40 @@ const Dropdown = (props: Prop) => {
   }, [drop]);
 
   return (
-    <View style={[forms.dropdown_Cont, props?.style]}>
+    <View
+      style={[
+        {position: 'relative', zIndex: 1},
+        forms.dropdown_Cont,
+        props?.style,
+      ]}>
       <TouchableOpacity onPress={() => setDrop(!drop)}>
         <View style={[forms.dropdown_ItemCont]}>
           <TextInput
-            style={[{width: '70%'}, fonts.text]}
+            style={[{width: '60%'}, fonts.text]}
             placeholderTextColor={Colors.slate}
             value={props.value}
             placeholder={props?.placeholder || 'Placeholder'}
             editable={false}
           />
-          <Animated.View style={{transform: [{rotate: spin}]}}>
+          <Animated.View
+            style={{
+              transform: [{rotate: spin}],
+            }}>
             <Drop_down width={24} height={24} fill={'black'} />
           </Animated.View>
         </View>
       </TouchableOpacity>
 
-      <Animateds.View style={[collapse]}>
-
+      <Animateds.View
+        style={[
+          collapse,
+          {position: 'absolute', top: 0, backgroundColor: 'red'},
+          props?.dropStyle
+        ]}>
         <FlatList
-        data={myArray}
-        renderItem={({item,index})=> (
-          <View key={index}>
+          data={myArray}
+          renderItem={({item, index}) => (
+            <View key={index}>
               <Text
                 style={[
                   {
@@ -127,7 +140,7 @@ const Dropdown = (props: Prop) => {
                 />
               )}
             </View>
-        )}
+          )}
         />
       </Animateds.View>
     </View>

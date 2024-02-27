@@ -11,9 +11,8 @@ type Prop = {
 const Input = (props: Prop) => {
     const [text,setText] = useState('');
   return (
-    <View style={[forms.input_Cont, props?.style]}>
       <TextInput
-        style={[fonts.text, {width: '100%'}]}
+        style={[fonts.text, {width: '100%'},forms.input_Cont, props?.style]}
         value={text}
         placeholderTextColor={Colors.slate}
         onChangeText={(text) => {
@@ -22,7 +21,6 @@ const Input = (props: Prop) => {
         }}
         placeholder={props?.placeholder || 'Placeholder'}
       />
-    </View>
   );
 };
 

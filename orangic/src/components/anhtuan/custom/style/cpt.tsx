@@ -262,7 +262,9 @@ export const forms = StyleSheet.create({
     width: '100%',
     backgroundColor: Colors.white,
     borderRadius: 15,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingLeft: 15,
+    paddingRight: 20,
     marginVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
@@ -294,6 +296,12 @@ export const forms = StyleSheet.create({
   dropdown_Cont: {
     width: '100%',
     height: 'auto',
+    marginVertical: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 7,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: Colors.slate,
     backgroundColor: Colors.white,
   },
   dropdown_ItemCont: {

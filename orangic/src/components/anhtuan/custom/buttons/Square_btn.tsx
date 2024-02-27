@@ -25,29 +25,29 @@ const Square_btn = (props: Prop) => {
   const renderSvg = () => {
     switch (svg) {
       case 'Back':
-        return <Back width={24} height={24} fill={color || Colors.black} />;
+        return <Back width={18} height={18} fill={color || Colors.black} />;
       case 'Next':
-        return <Next width={24} height={24} fill={color || Colors.black} />;
+        return <Next width={18} height={18} fill={color || Colors.black} />;
       case 'Warn':
-        return <Warn width={24} height={24} fill={color || Colors.black} />;
+        return <Warn width={18} height={18} fill={color || Colors.black} />;
       case 'State':
-        return <State width={24} height={24} fill={color || Colors.black} />;
+        return <State width={18} height={18} fill={color || Colors.black} />;
       case 'Close':
-        return <Close width={24} height={24} fill={color || Colors.black} />;
+        return <Close width={18} height={18} fill={color || Colors.black} />;
       case 'Bread':
-        return <Bread width={24} height={24} fill={color || Colors.black} />;
+        return <Bread width={18} height={18} fill={color || Colors.black} />;
       case 'Upload':
-        return <Upload width={24} height={24} fill={color || Colors.black} />;
+        return <Upload width={18} height={18} fill={color || Colors.black} />;
       case 'Confirm':
-        return <Confirm width={24} height={24} fill={color || Colors.black} />;
+        return <Confirm width={18} height={18} fill={color || Colors.black} />;
       case 'Edit':
-        return <Edit width={24} height={24} fill={color || Colors.black} />;
+        return <Edit width={18} height={18} fill={color || Colors.black} />;
       case 'Like':
-        return <Like width={24} height={24} fill={color || Colors.black} />;
+        return <Like width={18} height={18} fill={color || Colors.black} />;
       case 'Menu':
-        return <Menu width={24} height={24} />;
+        return <Menu width={18} height={18} />;
       default:
-        return <Menu width={24} height={24} />;
+        return <Menu width={18} height={18} />;
     }
   };
 

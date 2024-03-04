@@ -6,11 +6,12 @@ type Prop = {
   placeholder?: string;
   style?: ViewStyle | ViewStyle[];
   onChange?: (text: string) => void;
+  value?: string;
 };
 
 const TextArea = (props: Prop) => {
   const [text, setText] = useState('');
-  const [count, setCount] = useState(text.length);
+  const [count, setCount] = useState(props?.value?.length || text.length);
   return (
     <View style={[forms.textArea_Cont, props?.style]}>
       <TextInput
@@ -19,7 +20,7 @@ const TextArea = (props: Prop) => {
         numberOfLines={6}
         placeholderTextColor={Colors.slate}
         style={[fonts.text, {textAlignVertical: 'top'}]}
-        value={text}
+        value={props?.value || text}
         onChangeText={text => {
           setText(text);
           setCount(text.length);

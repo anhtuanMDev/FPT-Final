@@ -12,6 +12,7 @@ import Confirm from './../../../../assets/ics/confirm.svg';
 import Edit from './../../../../assets/ics/edit.svg';
 import Like from './../../../../assets/ics/like-shapes.svg';
 import Next from './../../../../assets/ics/next.svg';
+import Search from '../../../../assets/ics/search.svg';
 
 type Prop = {
   button?: btn;
@@ -44,6 +45,8 @@ const Square_btn = (props: Prop) => {
         return <Edit width={18} height={18} fill={color || Colors.black} />;
       case 'Like':
         return <Like width={18} height={18} fill={color || Colors.black} />;
+      case 'Search':
+        return <Search width={18} height={18} fill={color || Colors.black} />;
       case 'Menu':
         return <Menu width={18} height={18} />;
       default:

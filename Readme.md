@@ -13,6 +13,17 @@ This is Anh Tuan Readme
    - reactSVG (website) - npm install bootstrap
    - website external library - npm install quill tinymce simple-datatables echarts
    - apexChart (website) - npm install apexcharts
+   - element dropdown - npm i react-native-element-dropdown
+   - bottom sheet - npm i @gorhom/bottom-sheet
+   - gesture handle - npm i react-native-gesture-handler
+   - native stack - npm install @react-navigation/native-stack
+   - stack - npm i @react-navigation/stack
+   - react native screen - npm install react-native-screens
+   - safe area context - npm i react-native-safe-area-context
+   - native navigation - npm i @react-navigation/native
+   - progress bar - npm i react-native-progress
+   - sweet alert (website) - npm install sweetalert2
+
 
 
 2. Special Notes:
@@ -160,10 +171,10 @@ This is Anh Tuan Readme
    Thêm món ăn -                       Đang làm
    Cập nhật món ăn -                   Đang làm
    Xóa món ăn -                        Đang làm
-   Cấm người dùng -                    Chưa làm
-   Cấm nhà hàng -                      Chưa làm
-   Cấm món ăn -                        Chưa làm
-   Xóa lượt bình luận đánh giá -       Chưa làm
+   Cấm người dùng -                    Đã xong
+   Cấm nhà hàng -                      Đang làm
+   Cấm món ăn -                        Đang làm
+   Xóa lượt bình luận đánh giá -       Đang làm
    Quản lý danh sách nhà hàng -        Đang làm
-   Quản lý danh sách món ăn -          Chưa làm
+   Quản lý danh sách món ăn -          Đang làm
 ```

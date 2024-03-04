@@ -41,6 +41,10 @@ h6 {
   font-family: "Nunito", sans-serif;
 }
 
+.text-ember {
+  color: #BF3E00;
+}
+
 /*--------------------------------------------------------------
 # Colors
 --------------------------------------------------------------*/
@@ -729,7 +733,8 @@ h6 {
 
 .sidebar-nav .nav-heading {
   font-size: 11px;
-  color: rgba(191, 62, 0, 0.6);;
+  color: rgba(191, 62, 0, 0.6);
+  ;
   font-weight: 600;
   margin: 10px 0 5px 15px;
   text-align: start;
@@ -771,28 +776,29 @@ h6 {
   background: #fff;
 }
 
-.sidebar-nav .nav-link .nav-link-icon svg path, 
-.sidebar-nav .nav-link .nav-link-icon svg circle, 
+.sidebar-nav .nav-link .nav-link-icon svg path,
+.sidebar-nav .nav-link .nav-link-icon svg circle,
 .sidebar-nav .nav-link .nav-link-icon svg rect {
   fill: #BF3E00;
 }
 
-.sidebar-nav .nav-link.collapsed .nav-link-icon svg path, 
-.sidebar-nav .nav-link.collapsed .nav-link-icon svg circle, 
-.sidebar-nav .nav-link.collapsed .nav-link-icon svg rect{
+.sidebar-nav .nav-link.collapsed .nav-link-icon svg path,
+.sidebar-nav .nav-link.collapsed .nav-link-icon svg circle,
+.sidebar-nav .nav-link.collapsed .nav-link-icon svg rect {
   fill: #000;
 }
 
 .sidebar-nav .nav-link:hover {
   color: #BF3E00;
-  background: rgba(255, 116, 0, 0.2);;
+  background: rgba(255, 116, 0, 0.2);
+  ;
 }
 
-.sidebar-nav .nav-link:hover .nav-link-icon svg path, 
-.sidebar-nav .nav-link:hover .nav-link-icon svg circle, 
-.sidebar-nav .nav-link:hover .nav-link-icon svg rect, 
-.sidebar-nav .nav-link.collapsed:hover .nav-link-icon svg path, 
-.sidebar-nav .nav-link.collapsed:hover .nav-link-icon svg circle, 
+.sidebar-nav .nav-link:hover .nav-link-icon svg path,
+.sidebar-nav .nav-link:hover .nav-link-icon svg circle,
+.sidebar-nav .nav-link:hover .nav-link-icon svg rect,
+.sidebar-nav .nav-link.collapsed:hover .nav-link-icon svg path,
+.sidebar-nav .nav-link.collapsed:hover .nav-link-icon svg circle,
 .sidebar-nav .nav-link.collapsed:hover .nav-link-icon svg rect {
   fill: #BF3E00;
 }
@@ -837,8 +843,8 @@ h6 {
   color: #BF3E00;
 }
 
-.sidebar-nav .nav-content a.active svg path, 
-.sidebar-nav .nav-content a.active svg circle, 
+.sidebar-nav .nav-content a.active svg path,
+.sidebar-nav .nav-content a.active svg circle,
 .sidebar-nav .nav-content a.active svg rect {
   fill: #BF3E00;
 }
@@ -874,6 +880,11 @@ h6 {
   padding-bottom: 5px;
   transition: 0.3s;
   font-size: 16px;
+  display: flex;
+}
+
+.dashboard .filter .icon svg path {
+  fill: #868686;
 }
 
 .dashboard .filter .icon:hover,
@@ -921,6 +932,34 @@ h6 {
   flex-shrink: 0;
   flex-grow: 0;
 }
+
+.dashboard .left-card .card-icon {
+  background: #f6f6fe;
+}
+
+.dashboard .left-card .card-icon .left-icon svg path {
+  fill: #4154f1;
+
+}
+
+.dashboard .middle-card .card-icon {
+  background: #e0f8e9;
+}
+
+.dashboard .middle-card .card-icon .middle-icon svg path {
+  fill: #2eca6a;
+}
+
+.dashboard .right-card .card-icon {
+  background: #ffecdf;
+}
+
+.dashboard .right-card .card-icon .right-icon svg path {
+  fill: #ff771d;
+}
+
+
+
 
 .dashboard .sales-card .card-icon {
   color: #4154f1;
@@ -974,6 +1013,8 @@ h6 {
 .dashboard .activity .activity-item .activity-content {
   padding-left: 10px;
   padding-bottom: 20px;
+  text-align: start;
+  margin-left: 15px;
 }
 
 .dashboard .activity .activity-item:first-child .activite-label::before {
@@ -1058,6 +1099,13 @@ h6 {
 .dashboard .top-selling img {
   border-radius: 5px;
   max-width: 60px;
+}
+
+tr .black-user-buttons-group {
+  width: 160px;
+  justify-content: space-between;
+  display: flex;
+
 }
 
 /*--------------------------------------------------------------
@@ -1343,7 +1391,7 @@ h6 {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  align-items: center;  
+  align-items: center;
   float: left;
   margin-bottom: 10px;
 }
@@ -1355,6 +1403,48 @@ h6 {
 
 .buttons-group {
   width: 160px;
-    justify-content: space-between;
-    display: flex;
+  justify-content: space-between;
+  display: flex;
+}
+
+a img.avatar {
+  max-width: 60px;
+}
+
+.tab-pane .filter {
+  top: 65px;
+  right: 10px;
+}
+
+nav .pagination .page-item.active a {
+  color: #4285F4;
+  background-color: #efefef;
+}
+
+nav .pagination .page-item a {
+  color: #000;
+  background-color: #fff;
+}
+
+.tab-pane .tab-title.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tab-pane .tab-title.nav nav {
+  display: 'flex';
+  justify-content: 'center';
+}
+
+.tab-pane .tab-title.nav nav ul {
+  margin-bottom: 0;
+}
+
+.report-table {
+  text-align: start; 
+  max-height: 450px; 
+  overflow: hidden;
+  overflow-y: auto; 
+  overflow-x: hidden;
 }

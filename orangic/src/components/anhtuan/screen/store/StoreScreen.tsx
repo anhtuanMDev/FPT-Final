@@ -26,7 +26,6 @@ import ImagePicker from '../../custom/forms/ImagePicker';
 import TextArea from '../../custom/forms/TextArea';
 import Square_btn from '../../custom/buttons/Square_btn';
 import Location from '../../data/location.json';
-import Dropdown from '../../custom/forms/Dropdown';
 
 import {
   Response,

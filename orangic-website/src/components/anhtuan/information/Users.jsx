@@ -26,24 +26,284 @@ import discount from '../assets/img/icons/discount.svg';
 import error from '../assets/img/icons/error.svg';
 import report from '../assets/img/icons/report.svg';
 import dot from '../assets/img/icons/dot.svg';
+import new_user from '../assets/img/icons/new_user.svg';
+import partnership from '../assets/img/icons/partnership.svg';
+import user_banned from '../assets/img/icons/user_banned.svg';
+import more from '../assets/img/icons/more.svg';
+
+import Swal from 'sweetalert2'
 
 // Image
 import avatar from '../assets/img/images/ex_avatar.png';
 
 // Conponent
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useReducer, useRef, useState } from 'react'
 import ApexCharts from 'apexcharts'
 import { ReactSVG } from 'react-svg';
+import { Navigate, useNavigate, useHref } from 'react-router-dom';
+import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
 const Users = () => {
     document.title = 'Informations - Users';
     const chartRef = useRef(null);
 
+    const navigate = useNavigate();
+
+    const changePage = (link) => {
+        navigate(link);
+    };
+
+    const Swal = require('sweetalert2');
+
+    {/** declare user storage */ }
+
+    const initialState = {
+        users: [],
+        topUsers: [],
+        bannedUsers: [],
+        usersComment: [],
+        blackUser: [],
+        newUser: [],
+
+        userPage: 1,
+        topUsersPage: 1,
+        bannedUsersPage: 1,
+        usersCommentPage: 1,
+
+        userTotalPage: 1,
+        topUsersTotalPage: 1,
+        bannedUsersTotalPage: 1,
+        usersCommentTotalPage: 1,
+    };
+
+    const [data, dispatchData] = useReducer((state, action) => {
+        switch (action.type) {
+            case 'GET_USERS':
+                return { ...state, users: action.payload };
+            case 'GET_TOP_USERS':
+                return { ...state, topUsers: action.payload };
+            case 'GET_BANNED_USERS':
+                return { ...state, bannedUsers: action.payload };
+            case 'GET_USERS_COMMENT':
+                return { ...state, usersComment: action.payload };
+            case 'GET_BLACK_USER':
+                return { ...state, blackUser: action.payload };
+            case 'GET_NEW_USERS':
+                return { ...state, newUser: action.payload };
+
+            case 'SET_USERS_PAGE':
+                return { ...state, userPage: action.payload };
+            case 'SET_TOP_USERS_PAGE':
+                return { ...state, topUsersPage: action.payload };
+            case 'SET_BANNED_USERS_PAGE':
+                return { ...state, bannedUsersPage: action.payload };
+            case 'SET_USERS_COMMENT_PAGE':
+                return { ...state, usersCommentPage: action.payload };
+
+            case 'SET_USERS_TOTAL_PAGE':
+                return { ...state, userTotalPage: action.payload };
+            case 'SET_TOP_USERS_TOTAL_PAGE':
+                return { ...state, topUsersTotalPage: action.payload };
+            case 'SET_BANNED_USERS_TOTAL_PAGE':
+                return { ...state, bannedUsersTotalPage: action.payload };
+            case 'SET_USERS_COMMENT_TOTAL_PAGE':
+                return { ...state, usersCommentTotalPage: action.payload };
+
+            default:
+                return state;
+        }
+    }, initialState)
+
+    {/** End of declare user storage */ }
+
+    {/** Get user's list */ }
+
+    useEffect(() => {
+        const getUsers = async () => {
+            try {
+                const response = await AxiosInstance().get('/get-all-users.php');
+                // only take 5 users
+                const length = response.users.length;
+                // const list = response.users.slice(length - 5, page * 5);
+                let list = response.users.slice(data.userPage * 5 - 5, data.userPage * 5);
+                dispatchData({ type: 'GET_USERS', payload: list });
+                dispatchData({ type: 'SET_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
+            } catch (error) {
+                console.log("Fail to get users because of: " + error);
+            }
+        }
+        getUsers();
+    }, [data.userPage]);
+
+    {/** End of get user's list */ }
+
+    {/** Get top user's list */ }
+
+    useEffect(() => {
+        const getTopUsers = async () => {
+            try {
+                const response = await AxiosInstance().get('/get-top-users.php');
+                const length = response.users.length;
+                let list = response.users.slice(data.topUsersPage * 5 - 5, data.topUsersPage * 5);
+                dispatchData({ type: 'GET_TOP_USERS', payload: list });
+                dispatchData({ type: 'SET_TOP_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
+            } catch (error) {
+                console.log("Fail to get top users because of: " + error);
+            }
+        }
+        getTopUsers();
+    }, [data.topUsersPage]);
+
+    useEffect(() => {
+        console.log("check:", data.topUsers)
+    }, [data.topUsers]);
+
+    {/** End of get top user's list */ }
+
+    {/** Get Banned user's list */ }
+
+    const loadBannedUser = async () => {
+        const response = await AxiosInstance().get('/get-banned-users.php');
+        const length = response.users.length;
+        let list = response.users.slice(data.topUsersPage * 5 - 5, data.topUsersPage * 5);
+        console.log(list.length)
+        dispatchData({ type: 'GET_BANNED_USERS', payload: list });
+        dispatchData({ type: 'SET_BANNED_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
+    }
+
+    useEffect(() => {
+        loadBannedUser();
+    }, [data.bannedUsersPage])
+
+    const unBannedUsers = async (userID) => {
+        const response = await AxiosInstance().post('/unbanned-users.php', { id: userID });
+        loadBannedUser();
+        console.log(response);
+    }
+
+    {/** End of banned user's list */ }
+
+    {/** Get new users */ }
+
+    const loadNewUsers = async () => {
+        const response = await AxiosInstance().get('/get-new-users.php');
+        dispatchData({ type: 'GET_NEW_USERS', payload: response.users })
+    }
+
+    useEffect(() => {
+        loadNewUsers();
+    }, [])
+
+    {/** End get new users */ }
+
+    {/** Get reports */ }
+
+    const loadReports = async () => {
+        const response = await AxiosInstance().get('/get-report-users.php');
+        console.log(response.users)
+        dispatchData({ type: 'GET_BLACK_USER', payload: response.users });
+    }
+
+
+    const ignoreReports = async (adminID, reportID) => {
+        Swal.fire({
+            title: 'Your reason ?!',
+            text: 'This message is gonna show to the customer so response respectfully.',
+            icon: 'question',
+            input: "textarea",
+            inputPlaceholder: "Type your message here...",
+            inputAttributes: {
+                "aria-label": "Type your message here"
+            },
+            showLoaderOnConfirm: true,
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Please our customer need reason.!";
+                }
+            },
+            confirmButtonText: 'Send',
+            preConfirm: async (resp) => {
+                try {
+                    const response = await AxiosInstance().post('/response-user-report.php', {
+                        id: reportID,
+                        reply: resp,
+                        replyBy: adminID,
+                    });
+                    loadReports();
+
+                } catch (error) {
+                    Swal.showValidationMessage(`
+                    Request failed: ${error}
+                  `);
+                }
+            },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Your Reply has been successed send to the customer'
+                })
+            }
+        })
+    }
+
+
+    const bannedUser = async (adminID, reportID, targetID) => {
+        Swal.fire({
+            title: 'Your reason ?!',
+            text: 'This message is gonna show to the customer so response respectfully.',
+            icon: 'warning',
+            input: "textarea",
+            inputPlaceholder: "Type your message here...",
+            inputAttributes: {
+                "aria-label": "Type your message here"
+            },
+            showLoaderOnConfirm: true,
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Please our customer need reason.!";
+                }
+            },
+            confirmButtonText: 'Send',
+            preConfirm: async (resp) => {
+                try {
+                    const response = await AxiosInstance().post('/response-user-report.php', {
+                        id: reportID,
+                        reply: resp,
+                        replyBy: adminID,
+                    });
+                    const banned = await AxiosInstance().post('/banned-user.php', { id: targetID })
+                    loadReports();
+
+                } catch (error) {
+                    Swal.showValidationMessage(`
+                    Request failed: ${error}
+                  `);
+                }
+            },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Your Reply has been successed send to the customer'
+                })
+            }
+        })
+    }
+
+    useEffect(() => {
+        loadReports();
+    }, [])
+
+    {/** End get reports */ }
+
+    {/** Data board */ }
     useEffect(() => {
         let chart;
         if (chartRef.current) {
-            debugger;
             chart = new ApexCharts(document.getElementById("reportsChart"), {
                 series: [{
                     name: 'New Users',
@@ -100,6 +360,7 @@ const Users = () => {
             }
         };
     }, []);
+    {/** End data board */ }
 
     return (
         <div className=''>
@@ -380,7 +641,7 @@ const Users = () => {
                         </a>
                         <ul id="components-nav" className="nav-content collapse show" data-bs-parent="#sidebar-nav">
                             <li>
-                                <a href="components-alerts.html" className='active'>
+                                <a href='/informations/users' onClick={() => changePage('/informations/users')} className='active'>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -393,7 +654,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="components-accordion.html">
+                                <a href="#">
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -406,7 +667,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="components-badges.html">
+                                <a href='/informations/restaurants' onClick={() => changePage('/informations/restaurants')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -419,7 +680,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="components-breadcrumbs.html">
+                                <a href='/informations/foods' onClick={() => changePage('/informations/foods')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -432,7 +693,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="components-breadcrumbs.html">
+                                <a href="#">
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -462,7 +723,7 @@ const Users = () => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a href="forms-elements.html">
+                                <a href="#">
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -475,7 +736,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="forms-layouts.html">
+                                <a href="#">
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -505,7 +766,7 @@ const Users = () => {
                         </a>
                         <ul id="tables-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a href="tables-general.html">
+                                <a href="#">
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -518,7 +779,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="tables-data.html">
+                                <a href='/errors/report-restaurants' onClick={() => changePage('/errors/report-restaurants')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -531,7 +792,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="tables-data.html">
+                                <a href='/errors/report-foods' onClick={() => changePage('/errors/report-foods')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -544,7 +805,7 @@ const Users = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="tables-data.html">
+                                <a href='/errors/report-users' onClick={() => changePage('/errors/report-users')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -585,7 +846,7 @@ const Users = () => {
                     <h1>Users Dashboard</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a href="index.html">Informations</a></li>
+                            <li className="breadcrumb-item"><a href="#">Informations</a></li>
                             <li className="breadcrumb-item active">Users</li>
                         </ol>
                     </nav>
@@ -601,12 +862,16 @@ const Users = () => {
                         <div className="col-lg-8">
                             <div className="row">
 
-                                {/* <!-- Sales Card --> */}
+                                {/* <!-- New User Card --> */}
                                 <div className="col-xxl-4 col-md-6">
-                                    <div className="card info-card sales-card">
+                                    <div className="card info-card left-card">
 
                                         <div className="filter">
-                                            <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+                                            <a className="icon" href="#" data-bs-toggle="dropdown">
+                                                <ReactSVG
+                                                    src={more}
+                                                />
+                                            </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
                                                     <h6>Filter</h6>
@@ -623,7 +888,10 @@ const Users = () => {
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                                    <i className="bi bi-cart"></i>
+                                                    <ReactSVG
+                                                        src={new_user}
+                                                        className='left-icon'
+                                                    />
                                                 </div>
                                                 <div className="ps-3">
                                                     <h6>145</h6>
@@ -635,15 +903,19 @@ const Users = () => {
 
                                     </div>
                                 </div>
-                                {/* <!-- End Sales Card --> */}
+                                {/* <!-- End New User Card --> */}
 
 
-                                {/* <!-- Revenue Card --> */}
+                                {/* <!-- Partnership Card --> */}
                                 <div className="col-xxl-4 col-md-6">
-                                    <div className="card info-card revenue-card">
+                                    <div className="card info-card middle-card">
 
                                         <div className="filter">
-                                            <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+                                            <a className="icon" href="#" data-bs-toggle="dropdown">
+                                                <ReactSVG
+                                                    src={more}
+                                                />
+                                            </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
                                                     <h6>Filter</h6>
@@ -660,7 +932,10 @@ const Users = () => {
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                                    <i className="bi bi-currency-dollar"></i>
+                                                    <ReactSVG
+                                                        src={partnership}
+                                                        className='middle-icon'
+                                                    />
                                                 </div>
                                                 <div className="ps-3">
                                                     <h6>$3,264</h6>
@@ -672,16 +947,20 @@ const Users = () => {
 
                                     </div>
                                 </div>
-                                {/* <!-- End Revenue Card --> */}
+                                {/* <!-- End Partnership Card --> */}
 
 
-                                {/* <!-- Customers Card --> */}
+                                {/* <!-- Users Banned Card --> */}
                                 <div className="col-xxl-4 col-xl-12">
 
-                                    <div className="card info-card customers-card">
+                                    <div className="card info-card right-card">
 
                                         <div className="filter">
-                                            <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+                                            <a className="icon" href="#" data-bs-toggle="dropdown">
+                                                <ReactSVG
+                                                    src={more}
+                                                />
+                                            </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
                                                     <h6>Filter</h6>
@@ -699,7 +978,10 @@ const Users = () => {
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                                    <i className="bi bi-people"></i>
+                                                    <ReactSVG
+                                                        src={user_banned}
+                                                        className='right-icon'
+                                                    />
                                                 </div>
                                                 <div className="ps-3">
                                                     <h6>1244</h6>
@@ -712,7 +994,7 @@ const Users = () => {
                                     </div>
 
                                 </div>
-                                {/* <!-- End Customers Card --> */}
+                                {/* <!-- End Users Banned Card --> */}
 
 
                                 {/* <!-- Reports --> */}
@@ -720,7 +1002,11 @@ const Users = () => {
                                     <div className="card">
 
                                         <div className="filter">
-                                            <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+                                            <a className="icon" href="#" data-bs-toggle="dropdown">
+                                                <ReactSVG
+                                                    src={more}
+                                                />
+                                            </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
                                                     <h6>Filter</h6>
@@ -750,7 +1036,7 @@ const Users = () => {
                                 {/* <!-- Tab Bar --> */}
                                 <div className="col-12">
 
-                                    <div className="card" style={{ minHeight: 450 }}>
+                                    <div className="card">
                                         <div className="card-body pt-3">
 
                                             {/* <!-- Bordered Tabs --> */}
@@ -776,7 +1062,48 @@ const Users = () => {
                                             <div className="tab-content pt-2">
 
                                                 <div className="tab-pane fade show active profile-overview" id="list-users-overview">
-                                                    <h5 className="card-title">Users List</h5>
+
+                                                    <div className="tab-title search nav">
+                                                        <h5 className="card-title">Users List</h5>
+                                                        <div className="datatable-search">
+                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                        </div>
+
+                                                        <nav aria-label="Page navigation example">
+                                                            <ul className="pagination">
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Previous">
+                                                                        <span aria-hidden="true">«</span>
+                                                                    </a>
+                                                                </li>
+                                                                {
+                                                                    Array.from({ length: data.userTotalPage }, (_, index) => {
+                                                                        if (data.userTotalPage > 10) {
+                                                                            if ((index >= data.userPage - 3 && index <= data.userPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.userTotalPage - 2) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Next">
+                                                                        <span aria-hidden="true">»</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                    </div>
 
                                                     <table className="table table-borderless"
                                                         style={{ textAlign: 'start' }}
@@ -790,36 +1117,16 @@ const Users = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR2IL8D7WUK34EABHP1</a></td>
-                                                                <td>Sophie Brown</td>
-                                                                <td className="fw-bold">sophie@example.com</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR6JT4G3XK2LH97PONV</a></td>
-                                                                <td>Mike Thompson</td>
-                                                                <td className="fw-bold">mike@example.com</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR8J2NQW9PGBR4K25LX</a></td>
-                                                                <td>Bob Wilson</td>
-                                                                <td className="fw-bold">bob@example.com</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR9C1OV6KYPSW8V7ZDM</a></td>
-                                                                <td>Eva Davis</td>
-                                                                <td className="fw-bold">eva@example.com</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USRCSN3EEYOCQ64NNAF6</a></td>
-                                                                <td>Jane Smith</td>
-                                                                <td className="fw-bold">jane@example.com</td>
-                                                            </tr>
+                                                            {data.users.map((item, index) => (
+                                                                <tr key={index}>
+                                                                    <th scope="row" style={{ textAlign: 'center' }}>
+                                                                        <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
+                                                                    </th>
+                                                                    <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
+                                                                    <td>{item.Name}</td>
+                                                                    <td className="fw-bold">{item.Email}</td>
+                                                                </tr>
+                                                            ))}
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -828,7 +1135,49 @@ const Users = () => {
                                                 <div className="tab-pane fade profile-edit pt-3" id="users-leaderboard">
 
                                                     {/* <!-- Users LeaderBoard table --> */}
-                                                    <h5 className="card-title">LeaderBoard</h5>
+                                                    <div className="tab-title search nav">
+                                                        <h5 className="card-title">Leader Board</h5>
+                                                        <div className="datatable-search">
+                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                        </div>
+
+                                                        <nav aria-label="Page navigation example">
+                                                            <ul className="pagination">
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Previous">
+                                                                        <span aria-hidden="true">«</span>
+                                                                    </a>
+                                                                </li>
+
+                                                                {
+                                                                    Array.from({ length: data.topUsersTotalPage }, (_, index) => {
+                                                                        if (data.topUsersTotalPage > 10) {
+                                                                            if ((index >= data.topUsersPage - 3 && index <= data.topUsersPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.topUsersTotalPage - 2) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.topUsersPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
+
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Next">
+                                                                        <span aria-hidden="true">»</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                    </div>
 
                                                     <table className="table table-borderless"
                                                         style={{ textAlign: 'start' }}
@@ -842,36 +1191,16 @@ const Users = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR2IL8D7WUK34EABHP1</a></td>
-                                                                <td>Sophie Brown</td>
-                                                                <td>100</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR6JT4G3XK2LH97PONV</a></td>
-                                                                <td>Mike Thompson</td>
-                                                                <td>150</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR8J2NQW9PGBR4K25LX</a></td>
-                                                                <td>Bob Wilson</td>
-                                                                <td>200</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USR9C1OV6KYPSW8V7ZDM</a></td>
-                                                                <td>Eva Davis</td>
-                                                                <td>0</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USRCSN3EEYOCQ64NNAF6</a></td>
-                                                                <td>Jane Smith</td>
-                                                                <td>90</td>
-                                                            </tr>
+                                                            {data.topUsers.map((item, index) => (
+                                                                <tr key={index}>
+                                                                    <th scope="row" style={{ textAlign: 'center' }}>
+                                                                        <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
+                                                                    </th>
+                                                                    <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
+                                                                    <td>{item.Name}</td>
+                                                                    <td className="fw-bold">{item.Rank}</td>
+                                                                </tr>
+                                                            ))}
                                                         </tbody>
                                                     </table>
                                                     {/* <!-- Users LeaderBoard table --> */}
@@ -880,22 +1209,85 @@ const Users = () => {
 
                                                 <div className="tab-pane fade pt-3" id="user-comments">
 
-                                                    <div className='comment-search'>
-                                                        <input class="comment-search-input" placeholder="User's ID..." type="search" title="Search within table" />
+                                                    {/* <!-- Comment Table --> */}
+                                                    <div className="tab-title search nav">
+                                                        <div className="datatable-search">
+                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                        </div>
 
-                                                        <div className='buttons-group'>
-                                                            <button type="button" class="btn btn-outline-info btn-sm">Restaurants</button>
-                                                            <button type="button" class="btn btn-outline-success btn-sm">Foods</button>                                                        </div>
+                                                        <nav aria-label="Page navigation example">
+                                                            <ul className="pagination">
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Previous">
+                                                                        <span aria-hidden="true">«</span>
+                                                                    </a>
+                                                                </li>
+                                                                <li className="page-item active"><a className="page-link" href="#">1</a></li>
+                                                                <li className="page-item"><a className="page-link" href="#">2</a></li>
+                                                                <li className="page-item"><a className="page-link" href="#">3</a></li>
+                                                                <li className="page-item"><a className="page-link" href="#">4</a></li>
+                                                                <li className="page-item"><a className="page-link" href="#">5</a></li>
+                                                                <li className="page-item"><a className="page-link" href="#">6</a></li>
+                                                                <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Next">
+                                                                        <span aria-hidden="true">»</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
                                                     </div>
+                                                    {/* <!-- End Comment Table --> */}
 
-                                                    <h5 className="card-title">Nothing...</h5>
+                                                    <h5 className="card-title">Nothing</h5>
 
                                                 </div>
 
                                                 <div className="tab-pane fade pt-3" id="banned-users">
 
                                                     {/* <!-- Users Banned List table --> */}
-                                                    <h5 className="card-title">Users Banned List</h5>
+                                                    <div className="tab-title search nav">
+                                                        <h5 className="card-title">Banned Users</h5>
+                                                        <div className="datatable-search">
+                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                        </div>
+
+                                                        <nav aria-label="Page navigation example">
+                                                            <ul className="pagination">
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Previous">
+                                                                        <span aria-hidden="true">«</span>
+                                                                    </a>
+                                                                </li>
+
+                                                                {
+                                                                    Array.from({ length: data.bannedUsersTotalPage }, (_, index) => {
+                                                                        if (data.userTotalPage > 10) {
+                                                                            if ((index >= data.bannedUsersPage - 2 && index <= data.bannedUsersPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.bannedUsersTotalPage - 3) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.bannedUsersPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_BANNED_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.bannedUsersPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_BANNED_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
+                                                                <li className="page-item">
+                                                                    <a className="page-link" href="#" aria-label="Next">
+                                                                        <span aria-hidden="true">»</span>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                    </div>
 
                                                     <table className="table table-borderless"
                                                         style={{ textAlign: 'start' }}
@@ -909,30 +1301,19 @@ const Users = () => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USRPJAYLZCNDM5V8G32K</a></td>
-                                                                <td>Grace Wilson</td>
-                                                                <td>
-                                                                    <button type="button" class="btn btn-danger btn-sm">UnBan</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USRWMG9ZVKXIJYR5B43D</a></td>
-                                                                <td>David Miller</td>
-                                                                <td>
-                                                                    <button type="button" class="btn btn-danger btn-sm">UnBan</button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" style={{ width: 24 }} /></a></th>
-                                                                <td><a href="#" className="text-primary fw-bold">USRZP72UZG1N8FACD6X3</a></td>
-                                                                <td>Alice Johnson</td>
-                                                                <td>
-                                                                    <button type="button" class="btn btn-danger btn-sm">UnBan</button>
-                                                                </td>
-                                                            </tr>
+
+                                                            {data.bannedUsers.map((item, index) => (
+                                                                <tr key={index}>
+                                                                    <th scope="row" style={{ textAlign: 'center' }}>
+                                                                        <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
+                                                                    </th>
+                                                                    <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
+                                                                    <td>{item.Name}</td>
+                                                                    <td>
+                                                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => unBannedUsers(item.Id)}>Enable User</button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
                                                         </tbody>
                                                     </table>
                                                     {/* <!-- Users Banned List table --> */}
@@ -949,12 +1330,16 @@ const Users = () => {
                                 {/* <!-- End Tab Bar --> */}
 
 
-                                {/* <!-- Recent Sales --> */}
+                                {/* <!-- Recent New Users --> */}
                                 <div className="col-12">
                                     <div className="card recent-sales overflow-auto">
 
                                         <div className="filter">
-                                            <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+                                            <a className="icon" href="#" data-bs-toggle="dropdown">
+                                                <ReactSVG
+                                                    src={more}
+                                                />
+                                            </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
                                                     <h6>Filter</h6>
@@ -967,54 +1352,31 @@ const Users = () => {
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Recent Sales <span>| Today</span></h5>
+                                            <h5 className="card-title">Recent New Users <span>| Today</span></h5>
 
-                                            <table className="table table-borderless datatable">
+                                            <table className="table table-borderless"
+                                                style={{ textAlign: 'start' }}
+                                            >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">#</th>
-                                                        <th scope="col">Customer</th>
-                                                        <th scope="col">Product</th>
-                                                        <th scope="col">Price</th>
-                                                        <th scope="col">Status</th>
+                                                        <th scope="col">Avatar</th>
+                                                        <th scope="col">ID</th>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Email</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <th scope="row"><a href="#">#2457</a></th>
-                                                        <td>Brandon Jacob</td>
-                                                        <td><a href="#" className="text-primary">At praesentium minu</a></td>
-                                                        <td>$64</td>
-                                                        <td><span className="badge bg-success">Approved</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#">#2147</a></th>
-                                                        <td>Bridie Kessler</td>
-                                                        <td><a href="#" className="text-primary">Blanditiis dolor omnis similique</a></td>
-                                                        <td>$47</td>
-                                                        <td><span className="badge bg-warning">Pending</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#">#2049</a></th>
-                                                        <td>Ashleigh Langosh</td>
-                                                        <td><a href="#" className="text-primary">At recusandae consectetur</a></td>
-                                                        <td>$147</td>
-                                                        <td><span className="badge bg-success">Approved</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#">#2644</a></th>
-                                                        <td>Angus Grady</td>
-                                                        <td><a href="#" className="text-primar">Ut voluptatem id earum et</a></td>
-                                                        <td>$67</td>
-                                                        <td><span className="badge bg-danger">Rejected</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#">#2644</a></th>
-                                                        <td>Raheem Lehner</td>
-                                                        <td><a href="#" className="text-primary">Sunt similique distinctio</a></td>
-                                                        <td>$165</td>
-                                                        <td><span className="badge bg-success">Approved</span></td>
-                                                    </tr>
+                                                    {data.newUser.map((item, index) => (
+                                                        <tr key={index}>
+                                                            <th scope="row" style={{ textAlign: 'center' }}>
+                                                                <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
+                                                            </th>
+                                                            <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
+                                                            <td>{item.Name}</td>
+                                                            <td className="fw-bold">{item.Email}</td>
+
+                                                        </tr>
+                                                    ))}
                                                 </tbody>
                                             </table>
 
@@ -1022,75 +1384,43 @@ const Users = () => {
 
                                     </div>
                                 </div>
-                                {/* <!-- End Recent Sales --> */}
+                                {/* <!-- End Recent New Users --> */}
 
 
-                                {/* <!-- Top Selling --> */}
+                                {/* <!-- Black Users List --> */}
                                 <div className="col-12">
                                     <div className="card top-selling overflow-auto">
 
-                                        <div className="filter">
-                                            <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-                                            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                                <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
-                                                </li>
-
-                                                <li><a className="dropdown-item" href="#">Today</a></li>
-                                                <li><a className="dropdown-item" href="#">This Month</a></li>
-                                                <li><a className="dropdown-item" href="#">This Year</a></li>
-                                            </ul>
-                                        </div>
-
                                         <div className="card-body pb-0">
-                                            <h5 className="card-title">Top Selling <span>| Today</span></h5>
+                                            <h5 className="card-title">Black Users List</h5>
 
-                                            <table className="table table-borderless">
+                                            <table className="table table-borderless"
+                                                style={{ textAlign: 'start' }}
+                                            >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Preview</th>
-                                                        <th scope="col">Product</th>
-                                                        <th scope="col">Price</th>
-                                                        <th scope="col">Sold</th>
-                                                        <th scope="col">Revenue</th>
+                                                        <th scope="col">Reporter's ID</th>
+                                                        <th scope="col">Excuse</th>
+                                                        <th scope="col">Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <th scope="row"><a href="#"><img src="assets/img/product-1./jpg" alt="" /></a></th>
-                                                        <td><a href="#" className="text-primary fw-bold">Ut inventore ipsa voluptas nulla</a></td>
-                                                        <td>$64</td>
-                                                        <td className="fw-bold">124</td>
-                                                        <td>$5,828</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#"><img src="assets/img/product-2.jpg" alt="" /></a></th>
-                                                        <td><a href="#" className="text-primary fw-bold">Exercitationem similique doloremque</a></td>
-                                                        <td>$46</td>
-                                                        <td className="fw-bold">98</td>
-                                                        <td>$4,508</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#"><img src="assets/img/product-3.jpg" alt="" /></a></th>
-                                                        <td><a href="#" className="text-primary fw-bold">Doloribus nisi exercitationem</a></td>
-                                                        <td>$59</td>
-                                                        <td className="fw-bold">74</td>
-                                                        <td>$4,366</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#"><img src="assets/img/product-4.jpg" alt="" /></a></th>
-                                                        <td><a href="#" className="text-primary fw-bold">Officiis quaerat sint rerum error</a></td>
-                                                        <td>$32</td>
-                                                        <td className="fw-bold">63</td>
-                                                        <td>$2,016</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><a href="#"><img src="assets/img/product-5.jpg" alt="" /></a></th>
-                                                        <td><a href="#" className="text-primary fw-bold">Sit unde debitis delectus repellendus</a></td>
-                                                        <td>$79</td>
-                                                        <td className="fw-bold">41</td>
-                                                        <td>$3,239</td>
-                                                    </tr>
+                                                    {data.blackUser ? (
+                                                        data.blackUser.map((item, index) => (
+                                                            <tr key={index}>
+                                                                <td><a href="#" className="text-primary fw-bold">{item.Author}</a></td>
+                                                                <td>{item.Title}</td>
+                                                                <td className="fw-bold black-user-buttons-group">
+                                                                    <button type="button" className="btn btn-danger btn-sm" onClick={() => bannedUser("ADM7ANKA7YA7SVSNL5B6", item.Id, item.TargetID)}>Banned</button>
+                                                                    <button type="button" className="btn btn-outline-warning btn-sm" onClick={() => ignoreReports("ADM7ANKA7YA7SVSNL5B6", item.Id)}>Deleted</button>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan="3">No black users found.</td>
+                                                        </tr>
+                                                    )}
                                                 </tbody>
                                             </table>
 
@@ -1098,7 +1428,7 @@ const Users = () => {
 
                                     </div>
                                 </div>
-                                {/* <!-- End Top Selling --> */}
+                                {/* <!-- End Black Users List --> */}
 
                             </div>
                         </div>
@@ -1112,7 +1442,11 @@ const Users = () => {
                             {/* <!-- Recent Activity --> */}
                             <div className="card">
                                 <div className="filter">
-                                    <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
+                                    <a className="icon" href="#" data-bs-toggle="dropdown">
+                                        <ReactSVG
+                                            src={more}
+                                        />
+                                    </a>
                                     <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                         <li className="dropdown-header text-start">
                                             <h6>Filter</h6>
@@ -1131,7 +1465,6 @@ const Users = () => {
 
                                         <div className="activity-item d-flex">
                                             <div className="activite-label">32 min</div>
-                                            <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
                                             <div className="activity-content">
                                                 Quia quae rerum <a href="#" className="fw-bold text-dark">explicabo officiis</a> beatae
                                             </div>
@@ -1140,7 +1473,6 @@ const Users = () => {
 
                                         <div className="activity-item d-flex">
                                             <div className="activite-label">56 min</div>
-                                            <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
                                             <div className="activity-content">
                                                 Voluptatem blanditiis blanditiis eveniet
                                             </div>
@@ -1149,7 +1481,6 @@ const Users = () => {
 
                                         <div className="activity-item d-flex">
                                             <div className="activite-label">2 hrs</div>
-                                            <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
                                             <div className="activity-content">
                                                 Voluptates corrupti molestias voluptatem
                                             </div>
@@ -1158,7 +1489,6 @@ const Users = () => {
 
                                         <div className="activity-item d-flex">
                                             <div className="activite-label">1 day</div>
-                                            <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
                                             <div className="activity-content">
                                                 Tempore autem saepe <a href="#" className="fw-bold text-dark">occaecati voluptatem</a> tempore
                                             </div>
@@ -1167,7 +1497,6 @@ const Users = () => {
 
                                         <div className="activity-item d-flex">
                                             <div className="activite-label">2 days</div>
-                                            <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
                                             <div className="activity-content">
                                                 Est sit eum reiciendis exercitationem
                                             </div>
@@ -1176,7 +1505,6 @@ const Users = () => {
 
                                         <div className="activity-item d-flex">
                                             <div className="activite-label">4 weeks</div>
-                                            <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
                                             <div className="activity-content">
                                                 Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
                                             </div>

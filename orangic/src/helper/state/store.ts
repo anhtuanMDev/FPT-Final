@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import checkResSlice from "./restaurants/checkResSlice";
 import createResSlice from "./restaurants/createResSlice";
 import updateResSlice from "./restaurants/updateResSlice";
-import imagePickerSlice from "./image/imagePickerSlice";
 
 
 export const store = configureStore({
@@ -10,7 +9,6 @@ export const store = configureStore({
         checkRes: checkResSlice,
         createRes: createResSlice,
         updateRes: updateResSlice,
-        imagePicker: imagePickerSlice,
     }
 })
 

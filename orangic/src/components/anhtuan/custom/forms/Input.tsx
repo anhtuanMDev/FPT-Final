@@ -5,6 +5,7 @@ import {Colors, fonts, forms} from '../style/cpt';
 type Prop = {
   placeholder?: string;
   style?: ViewStyle | ViewStyle[];
+  value?: string;
   onChange?: (text:string) => void;
 };
 
@@ -13,7 +14,7 @@ const Input = (props: Prop) => {
   return (
       <TextInput
         style={[fonts.text, {width: '100%'},forms.input_Cont, props?.style]}
-        value={text}
+        value={props?.value || text}
         placeholderTextColor={Colors.slate}
         onChangeText={(text) => {
             setText(text)

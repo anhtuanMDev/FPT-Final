@@ -29,6 +29,7 @@ export enum svg {
   Edit = 'Edit',
   Like = 'Like',
   Next = 'Next',
+  Search = 'Search',
 }
 
 export type btn = {
@@ -304,20 +305,6 @@ export const forms = StyleSheet.create({
     borderColor: Colors.slate,
     backgroundColor: Colors.white,
   },
-  dropdown_ItemCont: {
-    width: '100%',
-    paddingHorizontal: 10,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: Colors.slate,
-    backgroundColor: Colors.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  dropdown_Form: {
-    width: '100%',
-  },
   tag_Cont: {
     paddingHorizontal: 4,
     paddingVertical: 3,
@@ -325,6 +312,19 @@ export const forms = StyleSheet.create({
     alignSelf: 'flex-start',
     borderRadius: 5,
     backgroundColor: Colors.silver,
+  },
+  search_Cont: {
+    width: '100%',
+    backgroundColor: Colors.white,
+    borderRadius: 15,
+    paddingLeft: 15,
+    paddingRight: 20,
+    marginVertical: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.slate,
   }
 });
 
@@ -334,7 +334,6 @@ export const cards = StyleSheet.create({
     height: 216,
     backgroundColor: Colors.white,
     borderRadius: 15,
-    elevation: 4
   },
   small_NameCont: {
     marginTop: 15,

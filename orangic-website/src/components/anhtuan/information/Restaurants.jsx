@@ -1481,8 +1481,8 @@ const Restaurants = () => {
                                                         </a>
                                                     </li>
                                                     {
-                                                        Array.from({length: data.recentTotalPage}, (_,index)=> {
-                                                            if(data.recentTotalPage > 10){
+                                                        Array.from({ length: data.recentTotalPage }, (_, index) => {
+                                                            if (data.recentTotalPage > 10) {
                                                                 if ((index >= data.recentPage - 2 && index <= data.recentPage + 1) || // 2 pages before and after current page
                                                                     index >= data.recentTotalPage - 2) { // last 2 pages
                                                                     return (
@@ -1491,7 +1491,7 @@ const Restaurants = () => {
                                                                         </li>
                                                                     );
                                                                 }
-                                                            }else {
+                                                            } else {
                                                                 return (
                                                                     <li className={`page-item ${data.recentPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
                                                                         <a className="page-link" onClick={() => dispatchData({ type: 'SET_RECENT_SALE_PAGE', payload: index + 1 })}>{index + 1}</a>

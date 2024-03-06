@@ -23,6 +23,7 @@ This is Anh Tuan Readme
    - native navigation - npm i @react-navigation/native
    - progress bar - npm i react-native-progress
    - sweet alert (website) - npm install sweetalert2
+   - FIX webpack <v5 - npm install node-polyfill-webpack-plugin --save-dev
 
 
 
@@ -159,6 +160,38 @@ This is Anh Tuan Readme
     ```sh
       npm start -- --reset-cache
     ```
+
+  - FIX webpack breaking change
+
+  ```sh
+      Install npm install node-polyfill-webpack-plugin --save-dev rồi chỉnh sửa file webpack.config.js
+      webpack.config.js nằm trong đường dẫn orangic-website > node_modules > react-scripts > config > webpack.config.js 
+      Thêm const NodePolyfillPlugin = require("node-polyfill-webpack-plugin"); vào webpack.config.js
+      Thêm new NodePolyfillPlugin(), vào plugin
+  ```
+  ```js
+      modul.export{
+        resolve: {
+          /// Other code here
+          plugin: [
+                  new NodePolyfillPlugin(),
+          ]
+        }
+      }
+  ```
+  ```sh
+      Nếu còn lỗi fs thì thêm fallback vào resole
+  ```
+  ```js
+      modul.export{
+        resolve: {
+          /// Other code here
+          fallback: {
+            "fs": false,
+          },
+        }
+      }
+  ```
 
 
 3. Feature Process:

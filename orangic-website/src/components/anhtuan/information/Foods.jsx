@@ -33,13 +33,117 @@ import sold from '../assets/img/icons/sold.svg'
 import avatar from '../assets/img/images/ex_avatar.png';
 
 // Conponent
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import { ReactSVG } from 'react-svg';
 import ApexCharts from 'apexcharts';
+import AxiosInstance from '../helpers/AxiosInstance.js';
+
 
 const Foods = () => {
+    const host = "172.16.96.101"
     document.title = 'Informations - Foods';
     const chartRef = useRef(null);
+
+    const initialState = {
+        allFood: [],
+        topFood: [],
+        foodCMM: [],
+        banFood: [],
+
+        allFoodPage: 1,
+        topFoodPage: 1,
+        foodCMMPage: 1,
+        banFoodPage: 1,
+
+        allFoodTotalPage: 1,
+        topFoodTotalPage: 1,
+        foodCMMTotalPage: 1,
+        banFoodTotalPage: 1,
+    }
+
+    const [data, dispatchData] = useReducer((state, action) => {
+        switch (action.type) {
+            case "GET_ALL_FOOD":
+                return { ...state, allFood: action.payload }
+            case "GET_TOP_FOOD":
+                return { ...state, topFood: action.payload }
+            case "GET_FOOD_CMM":
+                return { ...state, foodCMM: action.payload }
+            case "GET_BAN_FOOD":
+                return { ...state, banFood: action.payload }
+
+            case "SET_ALL_FOOD_PAGE":
+                return { ...state, allFoodPage: action.payload }
+            case "SET_TOP_FOOD_PAGE":
+                return { ...state, topFoodPage: action.payload }
+            case "SET_FOOD_CMM_PAGE":
+                return { ...state, foodCMMPage: action.payload }
+            case "SET_BAN_FOOD_PAGE":
+                return { ...state, banFoodPage: action.payload }
+
+            case "SET_ALL_FOOD_TOTAL_PAGE":
+                return { ...state, allFoodTotalPage: action.payload }
+            case "SET_TOP_FOOD_TOTAL_PAGE":
+                return { ...state, topFoodTotalPage: action.payload }
+            case "SET_FOOD_CMM_TOTAL_PAGE":
+                return { ...state, foodCMMTotalPage: action.payload }
+            case "SET_BAN_FOOD_TOTAL_PAGE":
+                return { ...state, banFoodTotalPage: action.payload }
+        }
+    }, initialState)
+
+    {/** Start of getting food list */ }
+
+    const loadAllFood = async () => {
+        const response = await AxiosInstance().get('/getAll-foods.php');
+        const foods = response.foods;
+
+        const foodPerPage = foods.slice(data.allFoodPage * 5 - 5, data.allFoodPage * 5);
+        const list = await Promise.all(foodPerPage.map(async (res) => {
+            const obj = {};
+            obj.data = res
+            const imgaes = await AxiosInstance().get('/get-image.php', { params: { id: res.Id } });
+            obj.image = imgaes.img;
+            return obj;
+        }))
+
+        dispatchData({ type: "GET_ALL_FOOD", payload: list });
+        dispatchData({ type: "SET_ALL_FOOD_TOTAL_PAGE", payload: Math.ceil((foods.length / 5)) })
+
+    }
+
+    useEffect(() => {
+        loadAllFood()
+    }, [data.allFoodPage])
+
+    {/** End of getting food list */ }
+
+    {/** Start of getting top food list */ }
+
+    const loadTopFood = async () => {
+        const response = await AxiosInstance().get('/get-top-food.php');
+        const foods = response.data;
+
+        const foodPerPage = foods.slice(data.topFoodPage * 5 - 5, data.topFoodPage * 5);
+        const list = await Promise.all(foodPerPage.map(async (res) => {
+            const obj = {};
+            obj.data = res
+            const imgaes = await AxiosInstance().get('/get-image.php', { params: { id: res.Id } });
+            obj.image = imgaes.img;
+            return obj;
+        }))
+
+        dispatchData({ type: "GET_TOP_FOOD", payload: list });
+        dispatchData({ type: "SET_TOP_FOOD_TOTAL_PAGE", payload: Math.ceil((foods.length / 5)) })
+    }
+
+    useEffect(() => {
+        loadTopFood()
+    }, [data.topFoodPage])
+
+    {/** End of getting top food list */ }
+
+    {/** Start of data board */ }
 
     useEffect(() => {
         let chart;
@@ -100,6 +204,9 @@ const Foods = () => {
             }
         };
     }, []);
+
+    {/** End of data board */ }
+
     return (
         <div className=''>
 
@@ -816,13 +923,26 @@ const Foods = () => {
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
                                                                 </li>
-                                                                <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                                {
+                                                                    Array.from({ length: data.allFoodTotalPage }, (_, index) => {
+                                                                        if (data.allFoodTotalPage > 10) {
+                                                                            if ((index >= data.allFoodPage - 2 && index <= data.allFoodPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.allFoodTotalPage - 2) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.allFoodPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_FOOD_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.allFoodPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_FOOD_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
                                                                 <li className="page-item">
                                                                     <a className="page-link" href="#" aria-label="Next">
                                                                         <span aria-hidden="true">»</span>
@@ -837,61 +957,32 @@ const Foods = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <>
-                                                                    <th scope="col">Image</th>
-                                                                    <th scope="col">ID</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">Price</th>
-                                                                    <th scope="col">From</th>
-                                                                </>
+                                                                <th scope="col">Image</th>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Price</th>
+                                                                <th scope="col">From</th>
+                                                                <th scope="col">Stauts</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                                    <td>Latte</td>
-                                                                    <td className="fw-bold">$ 82</td>
-                                                                    <td>Serene Palate Café</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                                    <td>Mericano</td>
-                                                                    <td className="fw-bold">$ 25</td>
-                                                                    <td>Mericano Expresco</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                                    <td>Steak</td>
-                                                                    <td className="fw-bold">$ 12</td>
-                                                                    <td>Fusion Flavors Grill</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
-                                                                    <td>Chicken Soup</td>
-                                                                    <td className="fw-bold">$ 72</td>
-                                                                    <td>Ambrosia Eats House</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
-                                                                    <td>Lemonade</td>
-                                                                    <td className="fw-bold">$ 30</td>
-                                                                    <td>Savory Bites Lounge</td>
-                                                                </>
-                                                            </tr>
+                                                            {
+                                                                data.allFood.map((res) => {
+                                                                    return (
+                                                                        <tr>
+                                                                            <th scope="row" style={{ textAlign: 'center' }}>
+                                                                                <a href="#">
+                                                                                    <img src={res.image.length != 0 ? `http://${host}:8686/uploads/${res.image[0].Id}.jpg` : avatar}
+                                                                                        style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" />
+                                                                                </a>
+                                                                            </th>
+                                                                            <td>{res.data.Name}</td>
+                                                                            <td className="fw-bold">{res.data.Price}</td>
+                                                                            <td>{res.data.ResName}</td>
+                                                                            <td><a href="#" className="text-primary fw-bold">{res.data.Status}</a></td>
+                                                                        </tr>
+                                                                    )
+                                                                })
+                                                            }
                                                         </tbody>
                                                     </table>
 
@@ -930,67 +1021,37 @@ const Foods = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <>
-                                                                    <th scope="col">Image</th>
-                                                                    <th scope="col">ID</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">Price</th>
-                                                                    <th scope="col">Sold</th>
-                                                                    <th scope="col">From</th>
-                                                                </>
+                                                                <th scope="col">Image</th>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Price</th>
+                                                                <th scope="col">Sold</th>
+                                                                <th scope="col">Revenue</th>
+                                                                <th scope="col">From</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                                    <td>Latte</td>
-                                                                    <td className="fw-bold">$ 82</td>
-                                                                    <td className="fw-bold">812</td>
-                                                                    <td>Serene Palate Café</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                                    <td>Mericano</td>
-                                                                    <td className="fw-bold">$ 25</td>
-                                                                    <td className="fw-bold">81</td>
-                                                                    <td>Mericano Expresco</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                                    <td>Steak</td>
-                                                                    <td className="fw-bold">$ 12</td>
-                                                                    <td className="fw-bold">12</td>
-                                                                    <td>Fusion Flavors Grill</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
-                                                                    <td>Chicken Soup</td>
-                                                                    <td className="fw-bold">$ 72</td>
-                                                                    <td className="fw-bold">8</td>
-                                                                    <td>Ambrosia Eats House</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
-                                                                    <td>Lemonade</td>
-                                                                    <td className="fw-bold">$ 30</td>
-                                                                    <td className="fw-bold">2</td>
-                                                                    <td>Savory Bites Lounge</td>
-                                                                </>
-                                                            </tr>
+                                                            {
+                                                                data.topFood.map((res) => {
+                                                                    return (
+                                                                        <tr>
+                                                                            <>
+                                                                                <th scope="row" style={{ textAlign: 'center' }}>
+                                                                                    <a href="#">
+                                                                                        <img src={res.image.length != 0 ? `http://${host}:8686/uploads/${res.image[0].Id}.jpg` : avatar} 
+                                                                                        style={{width: 50, height: 40}} alt="" className="avatar" />
+                                                                                    </a>
+                                                                                </th>
+                                                                                <td>{res.data.Name}</td>
+                                                                                <td className="fw-bold">{res.data.Price}</td>
+                                                                                <td className="fw-bold">{res.data.Sold}</td>
+                                                                                <td><a href="#" className="text-primary fw-bold">{res.data.Revenue}</a></td>
+                                                                                <td>{res.data.ResName}</td>
+                                                                            </>
+                                                                        </tr>
+                                                                    )
+
+                                                                })
+                                                            }
                                                         </tbody>
                                                     </table>
 
@@ -1001,13 +1062,26 @@ const Foods = () => {
                                                                     <span aria-hidden="true">«</span>
                                                                 </a>
                                                             </li>
-                                                            <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                            {
+                                                                    Array.from({ length: data.topFoodTotalPage }, (_, index) => {
+                                                                        if (data.topFoodTotalPage > 10) {
+                                                                            if ((index >= data.topFoodPage - 2 && index <= data.topFoodPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.topFoodTotalPage - 2) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.topFoodPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_FOOD_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.topFoodPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_FOOD_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
                                                             <li className="page-item">
                                                                 <a className="page-link" href="#" aria-label="Next">
                                                                     <span aria-hidden="true">»</span>
@@ -1061,7 +1135,7 @@ const Foods = () => {
 
                                                     {/* <!-- Banned Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Foods List</h5>
+                                                        <h5 className="card-title">Banned Foods List</h5>
                                                         <div className="datatable-search">
                                                             <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
                                                         </div>
@@ -1281,6 +1355,119 @@ const Foods = () => {
                                     </div>
                                 </div>
                                 {/* <!-- End Recent Sales --> */}
+
+                                {/* <!-- Declined/Cancelled Orders --> */}
+                                <div className="col-12">
+                                    <div className="card recent-sales overflow-auto">
+
+                                        <div className="filter">
+                                            <a className="icon" href="#" data-bs-toggle="dropdown">
+                                                <ReactSVG
+                                                    src={more}
+                                                />
+                                            </a>
+                                            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                <li className="dropdown-header text-start">
+                                                    <h6>Filter</h6>
+                                                </li>
+
+                                                <li><a className="dropdown-item" href="#">Today</a></li>
+                                                <li><a className="dropdown-item" href="#">This Month</a></li>
+                                                <li><a className="dropdown-item" href="#">This Year</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="card-body">
+                                            <h5 className="card-title">Declined/Cancelled Orders <span>| Today</span></h5>
+
+                                            <table className="table table-borderless"
+                                                style={{ textAlign: 'start' }}
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <>
+                                                            <th scope="col">Order's ID</th>
+                                                            <th scope="col">Customer Name</th>
+                                                            <th scope="col">Items</th>
+                                                            <th scope="col">Revenue</th>
+                                                            <th scope="col">Status</th>
+                                                        </>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <>
+                                                            <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
+                                                            <td>Dvid</td>
+                                                            <td className="fw-bold">2</td>
+                                                            <td className="fw-bold">$ 20</td>
+                                                            <td className="fw-bold">Waitnig</td>
+                                                        </>
+                                                    </tr>
+                                                    <tr>
+                                                        <>
+                                                            <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
+                                                            <td>Mecree</td>
+                                                            <td className="fw-bold">5</td>
+                                                            <td className="fw-bold">$ 58</td>
+                                                            <td className="fw-bold">Done</td>
+                                                        </>
+                                                    </tr>
+                                                    <tr>
+                                                        <>
+                                                            <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
+                                                            <td>Mercy</td>
+                                                            <td className="fw-bold">1</td>
+                                                            <td className="fw-bold">$ 5</td>
+                                                            <td className="fw-bold">Deliverying</td>
+                                                        </>
+                                                    </tr>
+                                                    <tr>
+                                                        <>
+                                                            <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
+                                                            <td>Mei</td>
+                                                            <td className="fw-bold">1</td>
+                                                            <td className="fw-bold">$ 5</td>
+                                                            <td className="fw-bold">Deliverying</td>                                                            </>
+                                                    </tr>
+                                                    <tr>
+                                                        <>
+                                                            <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
+                                                            <td>Ana</td>
+                                                            <td className="fw-bold">1</td>
+                                                            <td className="fw-bold">$ 5</td>
+                                                            <td className="fw-bold">Deliverying</td>                                                           </>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <nav aria-label="Page navigation example" style={{ float: 'right' }}>
+                                                <ul className="pagination">
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Previous">
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    <li className="page-item active"><a className="page-link" href="#">1</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">2</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">3</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">4</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">5</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">6</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Next">
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                {/* <!-- End Declined/Cancelled Orders --> */}
 
 
                             </div>

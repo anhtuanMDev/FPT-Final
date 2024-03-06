@@ -4,7 +4,7 @@ const AxiosInstance = (contentType = 'application/json') => {
     const axiosInstance = axios.create({
         // baseURL: 'http://127.0.0.1:8686/'
         // baseURL: 'http://192.168.1.4:8686/'
-        baseURL: 'http://172.16.122.111:8686/'
+        baseURL: 'http://172.16.96.101:8686/'
 
     });
 

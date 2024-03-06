@@ -28,7 +28,7 @@ const NoRestoScreen = () => {
 
 
   return (
-    <View style={[screens.main_Cont]}>
+    <View style={[screens.main_Cont, {backgroundColor: Colors.white}]}>
       <StatusBar backgroundColor={Colors.white} barStyle="dark-content" />
       <Titlebar
         title={{text: 'Your Restaurant'}}

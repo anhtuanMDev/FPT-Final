@@ -7,17 +7,26 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 include_once 'connection.php'; 
 
-    $query = "SELECT Id, Name, Introduction, Address, District, Ward, City, Email, Phone, Status 
-                  FROM restaurants 
-                  WHERE Status != 'Remove' AND Status != 'Banned'";
+    $query = "SELECT * from restaurants WHERE `Status` like 'Banned' ";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $res = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+
+    if (count($res) == 0) {
+        echo json_encode(
+            array(
+                "res" => $res,
+                "status" => false,
+                "message" => "Don't have banned restaurants",
+            )
+        );
+        return;
+    }
     echo json_encode(
         array(
-            "data" => $res,
+            "res" => $res,
             "status" => true,
-            "message" => "Success to get restaurant list successfully!",
+            "message" => "Success to get banned restaurants!",
         )
     )
 

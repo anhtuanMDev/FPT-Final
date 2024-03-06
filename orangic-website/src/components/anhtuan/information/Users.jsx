@@ -45,10 +45,12 @@ import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
 const Users = () => {
+    const host = "192.168.1.4";
     document.title = 'Informations - Users';
     const chartRef = useRef(null);
 
     const navigate = useNavigate();
+    let currentTime = new Date();
 
     const changePage = (link) => {
         navigate(link);
@@ -119,40 +121,43 @@ const Users = () => {
 
     {/** Get user's list */ }
 
-    useEffect(() => {
-        const getUsers = async () => {
-            try {
-                const response = await AxiosInstance().get('/get-all-users.php');
-                // only take 5 users
-                const length = response.users.length;
-                // const list = response.users.slice(length - 5, page * 5);
-                let list = response.users.slice(data.userPage * 5 - 5, data.userPage * 5);
-                dispatchData({ type: 'GET_USERS', payload: list });
-                dispatchData({ type: 'SET_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
-            } catch (error) {
-                console.log("Fail to get users because of: " + error);
-            }
+    const loadUsers = async () => {
+        try {
+            const response = await AxiosInstance().get('/get-all-users.php');
+            // only take 5 users
+            const length = response.users.length;
+            // const list = response.users.slice(length - 5, page * 5);
+            let list = response.users.slice(data.userPage * 5 - 5, data.userPage * 5);
+            dispatchData({ type: 'GET_USERS', payload: list });
+            dispatchData({ type: 'SET_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
+        } catch (error) {
+            console.log("Fail to get users because of: " + error);
         }
-        getUsers();
+    }
+
+    useEffect(() => {
+        
+        loadUsers();
     }, [data.userPage]);
 
     {/** End of get user's list */ }
 
     {/** Get top user's list */ }
 
-    useEffect(() => {
-        const getTopUsers = async () => {
-            try {
-                const response = await AxiosInstance().get('/get-top-users.php');
-                const length = response.users.length;
-                let list = response.users.slice(data.topUsersPage * 5 - 5, data.topUsersPage * 5);
-                dispatchData({ type: 'GET_TOP_USERS', payload: list });
-                dispatchData({ type: 'SET_TOP_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
-            } catch (error) {
-                console.log("Fail to get top users because of: " + error);
-            }
+    const loadTopUsers = async () => {
+        try {
+            const response = await AxiosInstance().get('/get-top-users.php');
+            const length = response.users.length;
+            let list = response.users.slice(data.topUsersPage * 5 - 5, data.topUsersPage * 5);
+            dispatchData({ type: 'GET_TOP_USERS', payload: list });
+            dispatchData({ type: 'SET_TOP_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
+        } catch (error) {
+            console.log("Fail to get top users because of: " + error);
         }
-        getTopUsers();
+    }
+
+    useEffect(() => {
+        loadTopUsers();
     }, [data.topUsersPage]);
 
     useEffect(() => {
@@ -176,10 +181,32 @@ const Users = () => {
         loadBannedUser();
     }, [data.bannedUsersPage])
 
-    const unBannedUsers = async (userID) => {
-        const response = await AxiosInstance().post('/unbanned-users.php', { id: userID });
-        loadBannedUser();
-        console.log(response);
+    const unBannedUsers = async (userID, name, updateAt) => {
+        Swal.fire({
+            title: `Did you really want to enable ${name}`,
+            text: `This user has been banned since ${updateAt}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            preConfirm: async () => {
+                try {
+                    const response = await AxiosInstance().post('/unbanned-users.php', { id: userID });
+                    loadBannedUser();
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        text: `Request failed: ${error}`
+                    })
+                }
+            },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    text: `${name} has been removed out of banned users`
+                })
+            }
+        })
     }
 
     {/** End of banned user's list */ }
@@ -894,7 +921,7 @@ const Users = () => {
                                                     />
                                                 </div>
                                                 <div className="ps-3">
-                                                    <h6>145</h6>
+                                                    <h6>{data.newUser.length}</h6>
                                                     <span className="text-success small pt-1 fw-bold">12%</span> <span className="text-muted small pt-2 ps-1">increase</span>
 
                                                 </div>
@@ -1043,19 +1070,35 @@ const Users = () => {
                                             <ul className="nav nav-tabs nav-tabs-bordered">
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#list-users-overview">List</button>
+                                                    {/** The button will re render item if it getting press at another tab */}
+                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#list-users-overview" onMouseDown={(e)=>{
+                                                        if(!e.target.classList.contains('active')){
+                                                            loadUsers();
+                                                        }
+                                                    }}>List</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#users-leaderboard">Leader Board</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#users-leaderboard" onMouseDown={(e)=>{
+                                                        if(e.target.classList.contains('active')){
+                                                            loadTopUsers()
+                                                        }
+                                                    }} >Leader Board</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#user-comments">Comments</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#user-comments" onMouseDown={(e)=>{
+                                                        if(e.target.classList.contains('active')){
+                                                        }
+                                                    }} >Comments</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#banned-users">Banned</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#banned-users" onMouseDown={(e)=>{
+                                                        if(e.target.classList.contains('active')){
+                                                            loadBannedUser();
+                                                        }
+                                                    }} >Banned</button>
                                                 </li>
 
                                             </ul>
@@ -1106,12 +1149,10 @@ const Users = () => {
                                                     </div>
 
                                                     <table className="table table-borderless"
-                                                        style={{ textAlign: 'start' }}
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Avatar</th>
-                                                                <th scope="col">ID</th>
+                                                                <th scope="col" style={{textAlign: 'center'}}>Avatar</th>
                                                                 <th scope="col">Name</th>
                                                                 <th scope="col">Email</th>
                                                             </tr>
@@ -1122,7 +1163,6 @@ const Users = () => {
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
                                                                         <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
                                                                     </th>
-                                                                    <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
                                                                     <td>{item.Name}</td>
                                                                     <td className="fw-bold">{item.Email}</td>
                                                                 </tr>
@@ -1184,9 +1224,9 @@ const Users = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Avatar</th>
-                                                                <th scope="col">ID</th>
+                                                                <th scope="col" style={{textAlign: 'center'}}>Avatar</th>
                                                                 <th scope="col">Name</th>
+                                                                <th scope="col">Email</th>
                                                                 <th scope="col">Rank</th>
                                                             </tr>
                                                         </thead>
@@ -1196,8 +1236,8 @@ const Users = () => {
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
                                                                         <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
                                                                     </th>
-                                                                    <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
                                                                     <td>{item.Name}</td>
+                                                                    <td>{item.Email}</td>
                                                                     <td className="fw-bold">{item.Rank}</td>
                                                                 </tr>
                                                             ))}
@@ -1294,9 +1334,9 @@ const Users = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Avatar</th>
-                                                                <th scope="col">ID</th>
+                                                                <th scope="col" style={{textAlign: 'center'}}>Avatar</th>
                                                                 <th scope="col">Name</th>
+                                                                <th scope="col">Get Banned Since</th>
                                                                 <th scope="col">Action</th>
                                                             </tr>
                                                         </thead>
@@ -1307,10 +1347,10 @@ const Users = () => {
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
                                                                         <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
                                                                     </th>
-                                                                    <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
                                                                     <td>{item.Name}</td>
+                                                                    <td>{item.UpdateAt}</td>
                                                                     <td>
-                                                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => unBannedUsers(item.Id)}>Enable User</button>
+                                                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => unBannedUsers(item.Id, item.Name, item.UpdateAt)}>Enable User</button>
                                                                     </td>
                                                                 </tr>
                                                             ))}
@@ -1359,10 +1399,10 @@ const Users = () => {
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Avatar</th>
-                                                        <th scope="col">ID</th>
+                                                        <th scope="col" style={{textAlign: 'center'}}>Avatar</th>
                                                         <th scope="col">Name</th>
                                                         <th scope="col">Email</th>
+                                                        <th scope="col">Create At</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1371,10 +1411,9 @@ const Users = () => {
                                                             <th scope="row" style={{ textAlign: 'center' }}>
                                                                 <a href="#"><img src={item.avatar || avatar} alt="" className="avatar" /></a>
                                                             </th>
-                                                            <td><a href="#" className="text-primary fw-bold">{item.Id}</a></td>
                                                             <td>{item.Name}</td>
                                                             <td className="fw-bold">{item.Email}</td>
-
+                                                            <td><a href="#" className="text-primary fw-bold">{item.CreateAt}</a></td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

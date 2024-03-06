@@ -32,14 +32,240 @@ import more from '../assets/img/icons/more.svg';
 import avatar from '../assets/img/images/ex_avatar.png';
 
 // Conponent
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import { ReactSVG } from 'react-svg';
 import ApexCharts from 'apexcharts';
 import { Navigate, useNavigate, useHref } from 'react-router-dom';
+import Swal from 'sweetalert2'
+import AxiosInstance from '../helpers/AxiosInstance.js';
 
 const Restaurants = () => {
+    const host = '192.168.1.4';
     document.title = 'Informations - Restaurants';
     const chartRef = useRef(null);
+    const Swal = require('sweetalert2');
+
+    const initialState = {
+        allRestaurants: [],
+        topRestaurants: [],
+        restaurantCmms: [],
+        banRestaurants: [],
+        topSaleItems: [],
+        recentSale: [],
+
+        allResPage: 1,
+        topResPage: 1,
+        resCmmPage: 1,
+        banResPage: 1,
+        topSalePage: 1,
+        recentPage: 1,
+
+        allResTotalPage: 1,
+        topResTotalPage: 1,
+        resCmmTotalPage: 1,
+        banResTotalPage: 1,
+        topSaleTotalPage: 1,
+        recentTotalPage: 1,
+    }
+    const [data, dispatchData] = useReducer((state, action) => {
+        switch (action.type) {
+            case 'GET_ALL_RESTAURANT':
+                return { ...state, allRestaurants: action.payload };
+            case "GET_TOP_RESTAURANT":
+                return { ...state, topRestaurants: action.payload };
+            case "GET_RES_COMMENT":
+                return { ...state, restaurantCmms: action.payload };
+            case "GET_BANNED_RESTAURANT":
+                return { ...state, banRestaurants: action.payload };
+            case "GET_TOP_SALE_ITEMS":
+                return { ...state, topSaleItems: action.payload };
+            case "GET_RECENT_SALE":
+                return { ...state, recentSale: action.payload };
+
+            case "SET_ALL_REST_PAGE":
+                return { ...state, allResPage: action.payload };
+            case "SET_TOP_REST_PAGE":
+                return { ...state, topResPage: action.payload };
+            case "SET_RES_CMM_PAGE":
+                return { ...state, resCmmPage: action.payload };
+            case "SET_BANNED_RES_PAGE":
+                return { ...state, banResPage: action.payload };
+            case "SET_TOP_SALE_PAGE":
+                return { ...state, topSalePage: action.payload };
+            case "SET_RECENT_SALE_PAGE":
+                return { ...state, recentPage: action.payload };
+
+            case "SET_ALL_REST_TOTALPAGE":
+                return { ...state, allResTotalPage: action.payload };
+            case "SET_TOP_REST_TOTALPAGE":
+                return { ...state, topResTotalPage: action.payload };
+            case "SET_RES_CMM_TOTALPAGE":
+                return { ...state, resCmmTotalPage: action.payload };
+            case "SET_BANNED_RES_TOTALPAGE":
+                return { ...state, banResTotalPage: action.payload };
+            case "SET_TOP_SALE_TOTALPAGE":
+                return { ...state, topSaleTotalPage: action.payload };
+            case "SET_RECENT_SALE_TOTALPAGE":
+                return { ...state, recentTotalPage: action.payload };
+
+            default:
+                return state;
+        }
+    }, initialState);
+
+
+    {/** Start of get all restaurants */ }
+
+    async function loadAllRes() {
+        let response = await AxiosInstance().get('getAll-res.php');
+        const length = response.data.length;
+
+        const foodPerPage = response.data.slice(data.allResPage * 5 - 5, data.allResPage * 5);;
+        let list = await Promise.all(foodPerPage.map(async res => {
+            let db = {};
+            db.data = res;
+            const picture = await AxiosInstance().get('/get-image.php', { params: { id: res.Id } });
+            db.image = picture.img;
+            const foods = await AxiosInstance().get('/get-foods.php', { params: { id: res.Id } });
+            db.food = foods.foods; // Assuming foods is the response object from Axios
+            return db;
+        }));
+        dispatchData({ type: 'GET_ALL_RESTAURANT', payload: list });
+        dispatchData({ type: 'SET_ALL_REST_TOTALPAGE', payload: (Math.ceil(length / 5)) });
+    }
+
+    useEffect(() => {
+        loadAllRes()
+    }, [data.allResPage])
+
+    {/** End of get all restaurants */ }
+
+    {/** Start of get top restaurants */ }
+
+    async function loadTopRes() {
+        let response = await AxiosInstance().get('getAll-res.php')
+        const res = response.data;
+
+        let list = await Promise.all(res.map(async res => {
+            let db = {};
+            const allOrders = await AxiosInstance().get('/get-all-res-order.php', { params: { id: res.Id } });
+            db.data = allOrders.orders;
+            const picture = await AxiosInstance().get('/get-image.php', { params: { id: res.Id } });
+            db.image = picture.img;
+            const foods = await AxiosInstance().get('/get-foods.php', { params: { id: res.Id } });
+            db.food = foods.foods;
+            db.name = res.Name;
+            db.email = res.Email;
+
+            return db;
+        })).then(list => list.map((res) => {
+            const revenue = res.data.reduce((sum, order) => sum + Number(order.Price), 0);
+            return { ...res, revenue };
+        }).sort((a, b) => b.revenue - a.revenue).slice(data.topResPage * 5 - 5, data.topResPage * 5));
+
+        dispatchData({ type: 'GET_TOP_RESTAURANT', payload: list });
+        dispatchData({ type: 'SET_TOP_REST_TOTALPAGE', payload: (Math.ceil(res.length / 5)) });
+    }
+
+    useEffect(() => {
+        loadTopRes()
+    }, [data.topResPage])
+
+    {/** End of get top restaurants */ }
+
+    {/** Start of get banned restaurants */ }
+
+    async function loadBanRes() {
+        let response = await AxiosInstance().get('/get-banned-res.php');
+        const length = response.res.length;
+        const resPerPage = response.res.slice(data.banResPage * 5 - 5, data.banResPage * 5);
+        let list = await Promise.all(resPerPage.map(async res => {
+            let db = {};
+            db.data = res;
+            const picture = await AxiosInstance().get('/get-image.php', { params: { id: res.Id } });
+            db.image = picture.img;
+            return db;
+        }));
+        dispatchData({ type: 'GET_BANNED_RESTAURANT', payload: list });
+        dispatchData({ type: 'SET_BANNED_RES_TOTALPAGE', payload: (Math.ceil(length / 5)) });
+    }
+
+    async function unBanRestaurant(resID, name) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You want to unban ${name} restaurant?`,
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            preConfirm: async () => {
+                try {
+                    const response = await AxiosInstance().post('unbanned-res.php', { id: resID });
+                    loadBanRes();
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                }
+
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    text: `${name} has been removed out of banned users`
+                })
+            }
+        })
+    }
+
+    useEffect(() => {
+        loadBanRes()
+    }, [data.banResPage])
+
+    {/** End of get banned restaurants */ }
+
+    {/** Start of get top selling */ }
+
+    const loadTopSelling = async () => {
+        const response = await AxiosInstance().get('/get-top-selling-items.php');
+        const items = response.data;
+        const itemPerPage = items.slice(data.topSalePage * 5 - 5, data.topSalePage * 5);
+
+        const list = await Promise.all(itemPerPage.map(async (res) => {
+            const obj = {};
+            const image = await AxiosInstance().get('/get-image.php', { params: { id: res.Id } });
+            obj.image = image.img;
+            obj.data = res;
+            return obj
+        }));
+
+        dispatchData({ type: "GET_TOP_SALE_ITEMS", payload: list });
+        dispatchData({ type: "SET_TOP_SALE_TOTALPAGE", payload: (Math.ceil(items.length / 5)) })
+    }
+
+    useEffect(() => {
+        loadTopSelling()
+    }, [data.topSalePage]);
+
+    {/** End of get top selling */ }
+
+    {/** Start of get recent sale */ }
+
+    const loadRecentSale = async () => {
+        const respsonse = await AxiosInstance().get('/get-recent-order.php');
+        const order = respsonse.data;
+        const orderPerPage = order.slice(data.recentPage * 5 - 5, data.recentPage * 5);
+
+        console.log("orderPerPage", orderPerPage)
+
+        dispatchData({ type: "GET_RECENT_SALE", payload: orderPerPage });
+        dispatchData({ type: "SET_RECENT_SALE_TOTALPAGE", payload: (Math.ceil(order.length / 5)) })
+    }
+
+    useEffect(() => {
+        loadRecentSale()
+    }, [data.recentPage])
+
+    {/** End of get recent sale */ }
+
+    {/** Start of data board */ }
 
     useEffect(() => {
         let chart;
@@ -100,6 +326,8 @@ const Restaurants = () => {
             }
         };
     }, []);
+
+    {/** End of data board */ }
 
     const navigate = useNavigate();
 
@@ -385,7 +613,7 @@ const Restaurants = () => {
                         </a>
                         <ul id="components-nav" className="nav-content collapse show" data-bs-parent="#sidebar-nav">
                             <li>
-                                <a href='/informations/users' onClick={()=> changePage('/informations/users')}>
+                                <a href='/informations/users' onClick={() => changePage('/informations/users')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -411,7 +639,7 @@ const Restaurants = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href='/informations/restaurants' onClick={()=> changePage('/informations/restaurants')} className='active'>
+                                <a href='/informations/restaurants' onClick={() => changePage('/informations/restaurants')} className='active'>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -424,7 +652,7 @@ const Restaurants = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href='/informations/foods' onClick={()=> changePage('/informations/foods')}>
+                                <a href='/informations/foods' onClick={() => changePage('/informations/foods')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -523,7 +751,7 @@ const Restaurants = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href='/errors/report-restaurants' onClick={()=> changePage('/errors/report-restaurants')}>
+                                <a href='/errors/report-restaurants' onClick={() => changePage('/errors/report-restaurants')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -536,7 +764,7 @@ const Restaurants = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href='/errors/report-foods' onClick={()=> changePage('/errors/report-foods')}>
+                                <a href='/errors/report-foods' onClick={() => changePage('/errors/report-foods')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -549,7 +777,7 @@ const Restaurants = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href='/errors/report-users' onClick={()=> changePage('/errors/report-users')}>
+                                <a href='/errors/report-users' onClick={() => changePage('/errors/report-users')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -819,13 +1047,26 @@ const Restaurants = () => {
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
                                                                 </li>
-                                                                <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                                {
+                                                                    Array.from({ length: data.allResTotalPage }, (_, index) => {
+                                                                        if (data.allResTotalPage > 10) {
+                                                                            if ((index >= data.allResPage - 2 && index <= data.allResPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.allResTotalPage - 2) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.allResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.allResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
                                                                 <li className="page-item">
                                                                     <a className="page-link" href="#" aria-label="Next">
                                                                         <span aria-hidden="true">»</span>
@@ -840,55 +1081,25 @@ const Restaurants = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <>
-                                                                    <th scope="col">Image</th>
-                                                                    <th scope="col">ID</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">Foods</th>
-                                                                </>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Image</th>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Email</th>
+                                                                <th scope="col">Foods</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                                    <td>Serene Palate Café</td>
-                                                                    <td className="fw-bold">82</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                                    <td>Mericano Expresco</td>
-                                                                    <td className="fw-bold">25</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                                    <td>Fusion Flavors Grill</td>
-                                                                    <td className="fw-bold">12</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
-                                                                    <td>Ambrosia Eats House</td>
-                                                                    <td className="fw-bold">72</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
-                                                                    <td>Savory Bites Lounge</td>
-                                                                    <td className="fw-bold">30</td>
-                                                                </>
-                                                            </tr>
+                                                            {
+                                                                data.allRestaurants.map((res, index) => {
+                                                                    return (
+                                                                        <tr key={index}>
+                                                                            <th scope="row"><a href="#"><img src={res.image.length != 0 ? `http://${host}:8686/uploads/${res.image[0].Id}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.data.Name}</a></td>
+                                                                            <td>{res.data.Email}</td>
+                                                                            <td className="fw-bold">{res.food.length}</td>
+                                                                        </tr>
+                                                                    )
+                                                                })
+                                                            }
                                                         </tbody>
                                                     </table>
 
@@ -923,67 +1134,29 @@ const Restaurants = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <>
-                                                                    <th scope="col">Image</th>
-                                                                    <th scope="col">ID</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">Foods</th>
-                                                                    <th scope="col">Orders</th>
-                                                                    <th scope="col">Revenue</th>
-                                                                </>
+                                                                <th scope="col">Image</th>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Email</th>
+                                                                <th scope="col">Foods</th>
+                                                                <th scope="col">Orders</th>
+                                                                <th scope="col">Revenue</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                                    <td>Serene Palate Café</td>
-                                                                    <td className="fw-bold">82</td>
-                                                                    <td className="fw-bold">820</td>
-                                                                    <td className="fw-bold">$ 85202</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                                    <td>Mericano Expresco</td>
-                                                                    <td className="fw-bold">25</td>
-                                                                    <td className="fw-bold">568</td>
-                                                                    <td className="fw-bold">$ 15382</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                                    <td>Fusion Flavors Grill</td>
-                                                                    <td className="fw-bold">12</td>
-                                                                    <td className="fw-bold">252</td>
-                                                                    <td className="fw-bold">$ 15102</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
-                                                                    <td>Ambrosia Eats House</td>
-                                                                    <td className="fw-bold">72</td>
-                                                                    <td className="fw-bold">252</td>
-                                                                    <td className="fw-bold">$ 15102</td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
-                                                                    <td>Savory Bites Lounge</td>
-                                                                    <td className="fw-bold">30</td>
-                                                                    <td className="fw-bold">252</td>
-                                                                    <td className="fw-bold">$ 15102</td>
-                                                                </>
-                                                            </tr>
+
+                                                            {
+                                                                data.topRestaurants
+                                                                    .map((res, index) => (
+                                                                        <tr key={index}>
+                                                                            <th scope="row"><a href="#"><img src={res.image.length != 0 ? `http://${host}:8686/uploads/${res.image[0].Id}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.name}</a></td>
+                                                                            <td>{res.email}</td>
+                                                                            <td className="fw-bold" style={{ textAlign: 'center' }}>{res.food.length}</td>
+                                                                            <td className="fw-bold" style={{ textAlign: 'center' }}>{res.data.length}</td>
+                                                                            <td className="fw-bold" style={{ textAlign: 'center' }}>{res.revenue}</td>
+                                                                        </tr>
+                                                                    ))
+                                                            }
                                                         </tbody>
                                                     </table>
 
@@ -994,13 +1167,26 @@ const Restaurants = () => {
                                                                     <span aria-hidden="true">«</span>
                                                                 </a>
                                                             </li>
-                                                            <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                            <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                            {
+                                                                Array.from({ length: data.topResTotalPage }, (_, index) => {
+                                                                    if (data.topResTotalPage > 10) {
+                                                                        if ((index >= data.topResPage - 2 && index <= data.topResPage + 1) || // 2 pages before and after current page
+                                                                            index >= data.topResTotalPage - 2) { // last 2 pages
+                                                                            return (
+                                                                                <li className={`page-item ${data.topResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    } else {
+                                                                        return (
+                                                                            <li className={`page-item ${data.topResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                            </li>
+                                                                        );
+                                                                    }
+                                                                })
+                                                            }
                                                             <li className="page-item">
                                                                 <a className="page-link" href="#" aria-label="Next">
                                                                     <span aria-hidden="true">»</span>
@@ -1065,13 +1251,26 @@ const Restaurants = () => {
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
                                                                 </li>
-                                                                <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                                <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                                {
+                                                                    Array.from({ length: data.banResTotalPage }, (_, index) => {
+                                                                        if (data.banResTotalPage > 10) {
+                                                                            if ((index >= data.banResPage - 2 && index <= data.banResPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.banResTotalPage - 2) { // last 2 pages
+                                                                                return (
+                                                                                    <li className={`page-item ${data.banResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_BAN_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.banResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_BAN_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
+                                                                    })
+                                                                }
                                                                 <li className="page-item">
                                                                     <a className="page-link" href="#" aria-label="Next">
                                                                         <span aria-hidden="true">»</span>
@@ -1086,45 +1285,27 @@ const Restaurants = () => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <>
-                                                                    <th scope="col">Image</th>
-                                                                    <th scope="col">ID</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">Action</th>
-                                                                </>
+                                                                <th scope="col">Image</th>
+                                                                <th scope="col">Name</th>
+                                                                <th scope="col">Email</th>
+                                                                <th scope="col">Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                                    <td>Serene Palate Café</td>
-                                                                    <td>
-                                                                        <button type="button" className="btn btn-warning btn-sm">UnBan</button>
-                                                                    </td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                                    <td>Mericano Expresco</td>
-                                                                    <td>
-                                                                        <button type="button" className="btn btn-warning btn-sm">UnBan</button>
-                                                                    </td>
-                                                                </>
-                                                            </tr>
-                                                            <tr>
-                                                                <>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                                    <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                                    <td>Fusion Flavors Grill</td>
-                                                                    <td>
-                                                                        <button type="button" className="btn btn-warning btn-sm">UnBan</button>
-                                                                    </td>
-                                                                </>
-                                                            </tr>
+                                                            {
+                                                                data.banRestaurants.map((res, index) => {
+                                                                    return (
+                                                                        <tr key={index}>
+                                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={res.image.length != 0 ? `http://${host}:8686/uploads/${res.image[0].Id}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <td><a href="#" className="text-primary fw-bold">{res.data.Name}</a></td>
+                                                                            <td>{res.data.Email}</td>
+                                                                            <td>
+                                                                                <button type="button" className="btn btn-warning btn-sm" onClick={() => unBanRestaurant(res.data.Id)}>UnBan</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    )
+                                                                })
+                                                            }
                                                         </tbody>
                                                     </table>
                                                     {/* <!-- End Change Password Form --> */}
@@ -1169,66 +1350,31 @@ const Restaurants = () => {
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <>
-                                                            <th scope="col">Image</th>
-                                                            <th scope="col">ID</th>
-                                                            <th scope="col">Name</th>
-                                                            <th scope="col">Foods</th>
-                                                            <th scope="col">Orders</th>
-                                                            <th scope="col">Revenue</th>
-                                                        </>
+                                                        <th scope="col">Image</th>
+                                                        <th scope="col">Food Name</th>
+                                                        <th scope="col">Restaurant Name</th>
+                                                        <th scope="col">Price</th>
+                                                        <th scope="col">Quantity</th>
+                                                        <th scope="col">Orders</th>
+                                                        <th scope="col">Revenue</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <>
-                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                            <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                            <td>Serene Palate Café</td>
-                                                            <td className="fw-bold">82</td>
-                                                            <td className="fw-bold">820</td>
-                                                            <td className="fw-bold">$ 85202</td>
-                                                        </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                            <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                            <td>Mericano Expresco</td>
-                                                            <td className="fw-bold">25</td>
-                                                            <td className="fw-bold">568</td>
-                                                            <td className="fw-bold">$ 15382</td>
-                                                        </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                            <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                            <td>Fusion Flavors Grill</td>
-                                                            <td className="fw-bold">12</td>
-                                                            <td className="fw-bold">252</td>
-                                                            <td className="fw-bold">$ 15102</td>
-                                                        </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                            <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
-                                                            <td>Ambrosia Eats House</td>
-                                                            <td className="fw-bold">72</td>
-                                                            <td className="fw-bold">252</td>
-                                                            <td className="fw-bold">$ 15102</td>                                                            </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={avatar} alt="" className="avatar" /></a></th>
-                                                            <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
-                                                            <td>Savory Bites Lounge</td>
-                                                            <td className="fw-bold">30</td>
-                                                            <td className="fw-bold">252</td>
-                                                            <td className="fw-bold">$ 15102</td>
-                                                        </>
-                                                    </tr>
+                                                    {
+                                                        data.topSaleItems.map((res) => {
+                                                            return (
+                                                                <tr key={res.data.Id}>
+                                                                    <th scope="row"><a href="#"><img src={res.image.length != 0 ? `http://${host}:8686/uploads/${res.image[0].Id}.jpg` : avatar} style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                    <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.data.FoodName}</a></td>
+                                                                    <td>{res.data.RestaurantName}</td>
+                                                                    <td className="fw-bold" style={{ textAlign: 'center' }}>{res.data.Price}</td>
+                                                                    <td className="fw-bold" style={{ textAlign: 'center' }}>{res.data.Sold}</td>
+                                                                    <td className="fw-bold" style={{ textAlign: 'center' }}>{res.data.Orders}</td>
+                                                                    <td className="fw-bold" style={{ textAlign: 'center' }}>{res.data.Revenue}</td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
                                                 </tbody>
                                             </table>
 
@@ -1239,13 +1385,26 @@ const Restaurants = () => {
                                                             <span aria-hidden="true">«</span>
                                                         </a>
                                                     </li>
-                                                    <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                    {
+                                                        Array.from({ length: data.topSaleTotalPage }, (_, index) => {
+                                                            if (data.topSaleTotalPage > 10) {
+                                                                if ((index >= data.topSalePage - 2 && index <= data.topSalePage + 1) || // 2 pages before and after current page
+                                                                    index >= data.topSaleTotalPage - 2) { // last 2 pages
+                                                                    return (
+                                                                        <li className={`page-item ${data.topSalePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                            <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_SALE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                        </li>
+                                                                    );
+                                                                }
+                                                            } else {
+                                                                return (
+                                                                    <li className={`page-item ${data.topSalePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_SALE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                    </li>
+                                                                );
+                                                            }
+                                                        })
+                                                    }
                                                     <li className="page-item">
                                                         <a className="page-link" href="#" aria-label="Next">
                                                             <span aria-hidden="true">»</span>
@@ -1290,59 +1449,27 @@ const Restaurants = () => {
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <>
-                                                            <th scope="col">Order's ID</th>
-                                                            <th scope="col">Restaurant's Name</th>
-                                                            <th scope="col">Items</th>
-                                                            <th scope="col">Revenue</th>
-                                                            <th scope="col">Status</th>
-                                                        </>
+                                                        <th scope="col">Item Name</th>
+                                                        <th scope="col">Restaurant's Name</th>
+                                                        <th scope="col">Items</th>
+                                                        <th scope="col">Revenue</th>
+                                                        <th scope="col">Status</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <>
-                                                            <td><a href="#" className="text-primary fw-bold">RES250FFADGCYKOXQFH6</a></td>
-                                                            <td>Serene Palate Café</td>
-                                                            <td className="fw-bold">2</td>
-                                                            <td className="fw-bold">$ 20</td>
-                                                            <td className="fw-bold">Waitnig</td>
-                                                        </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <td><a href="#" className="text-primary fw-bold">RES5L34FFRKLG2H50BYV</a></td>
-                                                            <td>Mericano Expresco</td>
-                                                            <td className="fw-bold">5</td>
-                                                            <td className="fw-bold">$ 58</td>
-                                                            <td className="fw-bold">Done</td>
-                                                        </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <td><a href="#" className="text-primary fw-bold">RES73Q93CYCJHYBWCC3R</a></td>
-                                                            <td>Fusion Flavors Grill</td>
-                                                            <td className="fw-bold">1</td>
-                                                            <td className="fw-bold">$ 5</td>
-                                                            <td className="fw-bold">Deliverying</td>
-                                                        </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <td><a href="#" className="text-primary fw-bold">RES9AGN0H6ZCFXH4FI5X</a></td>
-                                                            <td>Ambrosia Eats House</td>
-                                                            <td className="fw-bold">1</td>
-                                                            <td className="fw-bold">$ 5</td>
-                                                            <td className="fw-bold">Deliverying</td>                                                            </>
-                                                    </tr>
-                                                    <tr>
-                                                        <>
-                                                            <td><a href="#" className="text-primary fw-bold">RESFSSMNV5PRF1SA6IW0</a></td>
-                                                            <td>Savory Bites Lounge</td>
-                                                            <td className="fw-bold">1</td>
-                                                            <td className="fw-bold">$ 5</td>
-                                                            <td className="fw-bold">Deliverying</td>                                                           </>
-                                                    </tr>
+                                                    {
+                                                        data.recentSale.map((res) => {
+                                                            return (
+                                                                <tr>
+                                                                    <td><a href="#" className="text-primary fw-bold">{res.FoodName}</a></td>
+                                                                    <td>{res.RestaurantName}</td>
+                                                                    <td className="fw-bold">{res.Quantity}</td>
+                                                                    <td className="fw-bold">{res.Price}</td>
+                                                                    <td className="fw-bold">{res.Status}</td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
                                                 </tbody>
                                             </table>
 
@@ -1353,13 +1480,26 @@ const Restaurants = () => {
                                                             <span aria-hidden="true">«</span>
                                                         </a>
                                                     </li>
-                                                    <li className="page-item active"><a className="page-link" href="#">1</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">2</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">3</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">4</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">5</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">6</a></li>
-                                                    <li className="page-item"><a className="page-link" href="#">7</a></li>
+                                                    {
+                                                        Array.from({length: data.recentTotalPage}, (_,index)=> {
+                                                            if(data.recentTotalPage > 10){
+                                                                if ((index >= data.recentPage - 2 && index <= data.recentPage + 1) || // 2 pages before and after current page
+                                                                    index >= data.recentTotalPage - 2) { // last 2 pages
+                                                                    return (
+                                                                        <li className={`page-item ${data.recentPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                            <a className="page-link" onClick={() => dispatchData({ type: 'SET_RECENT_SALE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                        </li>
+                                                                    );
+                                                                }
+                                                            }else {
+                                                                return (
+                                                                    <li className={`page-item ${data.recentPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_RECENT_SALE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                    </li>
+                                                                );
+                                                            }
+                                                        })
+                                                    }
                                                     <li className="page-item">
                                                         <a className="page-link" href="#" aria-label="Next">
                                                             <span aria-hidden="true">»</span>

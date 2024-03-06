@@ -175,6 +175,6 @@ This is Anh Tuan Readme
    Cấm nhà hàng -                      Đang làm
    Cấm món ăn -                        Đang làm
    Xóa lượt bình luận đánh giá -       Đang làm
-   Quản lý danh sách nhà hàng -        Đang làm
-   Quản lý danh sách món ăn -          Đang làm
+   Quản lý danh sách nhà hàng -        Đã xong
+   Quản lý danh sách món ăn -          Đã xong
 ```

@@ -74,8 +74,9 @@ export {Leaderboard, LikeShapes, Location, Logout};
 import Mail from './mail.svg';
 import Menu from './menu.svg';
 import Minus from './minus.svg';
+import More from './more.svg';
 
-export {Mail, Menu, Minus};
+export {Mail, Menu, Minus, More};
 
 // N
 import Next from './next.svg';

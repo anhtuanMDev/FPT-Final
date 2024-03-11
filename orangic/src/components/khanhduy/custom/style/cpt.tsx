@@ -181,6 +181,16 @@ export const buttons = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  typeButton_Cont: {
+    padding: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.slate,
+  }, 
+  typeButton_ContActive: {
+    padding: 5,
+    borderRadius: 5,
+    backgroundColor: Colors.orange,
+  }, 
 });
 
 export const actionbars = StyleSheet.create({

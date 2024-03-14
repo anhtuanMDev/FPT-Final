@@ -21,17 +21,16 @@ try {
         array(
             "data" => $id,
             "status" => true,
-            "statusText" => "Success to add image!",
+            "statusText" => "Thêm ảnh thành công với id: $id!",
         )
     );
 
 } catch (Exception $e) {
     echo json_encode(
         array(
-            "id" => null,
+            "data" => null,
             "status" => false,
-            "statusText" => "Failed to add image!",
-            "error" => $e->getMessage(),
+            "statusText" => "Thêm ảnh không thành công bởi vì: $e",
         )
     );
 }

@@ -1,0 +1,9 @@
+{
+    "assessmentLevels": [
+        "Very Bad",
+        "Bad",
+        "Neutral",
+        "Good",
+        "Very Good"
+    ]
+}

@@ -25,6 +25,7 @@ try {
     $city = $data->city;
     $district = $data->district;
     $ward = $data->ward;
+    $ownerID = $data ->ownerID;
     
     $query = "INSERT INTO address (Id, OwnerID, Phone, Address, City, District, Ward) VALUE('$id', '$ownerID', '$phone', '$address', '$city', '$district', '$ward')";
     $stmt = $dbConn->prepare($query);
@@ -33,7 +34,7 @@ try {
         echo json_encode(
             array(
                 "status" => true,
-                "statusText" => "Thêm địa chỉ thành công cho người dùng $id",
+                "statusText" => "Thêm địa chỉ thành công cho người dùng $ownerID",
             )
         );
 } catch (Exception $e) {

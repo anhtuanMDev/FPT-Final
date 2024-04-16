@@ -16,11 +16,11 @@ try {
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $ord = $stmt->fetch(PDO::FETCH_ASSOC);
-    if($ord == null) {
+    if (!$ord) {
         echo json_encode(
             array(
-                "data" => [],
-                "status" => true,
+                "data" => $ord,
+                "status" => false,
                 "statusText" => "Không có đơn hàng nào cho người dùng $id!",
             )
         );
@@ -29,8 +29,8 @@ try {
     $orderID = $ord['Id'];
     $addressID = $ord['AddressID'];
     $status = $ord['Status'];
-    
-    $query = "SELECT orderitems.Id, orderitems.FoodID, orderitems.Quantity,
+
+    $query = "SELECT orderitems.Id, orderitems.FoodID, orderitems.Quantity, orderitems.Pick as value,
     foods.Name, foods.Price, foods.Discount, foods.Description from orderitems 
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     WHERE `OrderID` = '$orderID' AND foods.Status = 'Sale'";
@@ -38,29 +38,33 @@ try {
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    if($orderItems == null) {
+    if (!$orderItems) {
         echo json_encode(
             array(
-                "data" => [],
-                "status" => true,
-                "statusText" => "Không có món ăn nào trong đơn hàng cho người dùng $id!",
+                "data" => $orderItems,
+                "status" => false,
+                "statusText" => "Không có món ăn nào trong giỏ hàng $orderID!",
             )
         );
         return;
-    } else {
+    }else {
         foreach ($orderItems as $key => $value) {
-            $orderItems[$key]['value'] = false;
+            $query = "SELECT Id FROM images WHERE OwnerID = '$value[FoodID]'";
+            $stmt = $dbConn->prepare($query);
+            $stmt->execute();
+            $image = $stmt->fetchColumn();
+            $orderItems[$key]['Image'] = $image;
         }
-        $ord['data'] = $orderItems;
-        echo json_encode(
-            array(
-                "data" => $ord,
-                "status" => true,
-                "statusText" => "Lấy đơn hàng thành công cho người dùng $id!",
-            )
-        );
     }
-    
+    $ord['data'] = $orderItems;
+
+    echo json_encode(
+        array(
+            "data" => $ord,
+            "status" => true,
+            "statusText" => "Lấy đơn hàng thành công cho người dùng $id!",
+        )
+    );
 } catch (Exception $e) {
     echo json_encode(
         array(

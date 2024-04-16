@@ -16,22 +16,45 @@ try {
     foods.FeatureItem, foods.Price, foods.Discount, foods.RestaurantID, restaurants.Status as RestaurantStatus, restaurants.Name 
     as RestaurantName, COUNT(DISTINCT reviews.`Id`) as ReviewCount, 
     COALESCE(ROUND(AVG(reviews.Point),1),0) as Rating,
-    GROUP_CONCAT(reviews.Comment SEPARATOR ', ') as Comments,
     CASE WHEN COUNT(favlist.Id) > 0 THEN 1 ELSE 0 END as userFavorite,
     CASE WHEN COUNT(orders.`Id`) > 0 THEN 1 ELSE 0 END as hasUseService
     from foods 
     LEFT JOIN restaurants ON foods.RestaurantID = restaurants.Id 
-    LEFT JOIN reviews ON foods.Id = reviews.TargetID 
+    LEFT JOIN reviews ON foods.Id = reviews.TargetID AND reviews.Status = 'Active'
     LEFT JOIN favlist ON foods.Id = favlist.`TargetID` AND favlist.`UserID` = '$user'
     LEFT JOIN orderitems ON orderitems.`FoodID` = foods.`Id`
+    AND orderitems.`Status` = 'Done'
     LEFT JOIN orders ON orders.UserID = '$user' 
-    AND orders.Id = orderitems.OrderID AND orders.`Status` != 'Denied'
-    AND orders.`Status` != 'Cancel'
-    WHERE foods.Id = '$id'
+    AND orders.Id = orderitems.OrderID
+    WHERE foods.Id = '$id' AND foods.Status = 'Sale'
     GROUP BY foods.Id";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $food = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Get reviews of food
+
+    $query = "SELECT reviews.*, images.Id as ImageID, users.Name as UserName,
+    users.Rank as UserRank, users.Id as UserID
+    FROM reviews
+    LEFT JOIN images ON reviews.UserID = images.OwnerID
+    LEFT JOIN users ON reviews.UserID = users.Id
+    WHERE TargetID = '$id' AND reviews.Status = 'Active' AND UserID = '$user'";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $opinion = $stmt->fetch(PDO::FETCH_ASSOC);
+    $food['Opinion'] = $opinion;
+
+    $query = "SELECT reviews.*, images.Id as ImageID, users.Name as UserName, 
+    users.Rank as UserRank, users.Id as UserID
+    FROM reviews 
+    LEFT JOIN images ON reviews.UserID = images.OwnerID
+    LEFT JOIN users ON reviews.UserID = users.Id
+    WHERE TargetID = '$id' AND reviews.Status = 'Active' AND UserID != '$user'";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $food['Reviews'] = $reviews;
 
     if ($food) {
 
@@ -41,7 +64,9 @@ try {
         $stmtDetail->bindParam(':id', $food['Id']);
         $stmtDetail->execute();
         $images = $stmtDetail->fetchAll(PDO::FETCH_ASSOC);
-        $food['Images'] = $images;
+        $food['Images'] = array_map(function($image) {
+            return $image['Id'];
+        }, $images);
 
         // Get images of restaurant
         $queryRes = "SELECT Id from images WHERE OwnerID = :id";

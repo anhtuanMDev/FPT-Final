@@ -8,8 +8,14 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
+    $data = json_decode(file_get_contents("php://input"));
+    $id = $data->id;
 
-    $query = "SELECT foods.Id, foods.TimeMade, foods.Price, foods.Name, foods.FeatureItem, foods.Discount FROM foods WHERE FeatureItem = 1 AND Status = 'Sale' limit 20";
+    $query = "SELECT foods.Id, foods.TimeMade, foods.Price, foods.Name, foods.FeatureItem, 
+    foods.Discount, COUNT(favlist.Id) as UserFavorite FROM foods LEFT JOIN favlist
+    ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
+    WHERE foods.FeatureItem = 1 AND foods.Status = 'Sale'
+    GROUP BY foods.Id limit 20";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);

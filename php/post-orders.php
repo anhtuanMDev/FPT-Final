@@ -31,12 +31,17 @@ try {
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $address = $stmt->fetchColumn();
-    if ($address == null) {
+    if ($address) {
         $query = "SELECT Id from address WHERE `OwnerID` = '$user'";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
         $address = $stmt->fetchColumn();
+        if(!$address){
+            echo json_encode(array("address" => $address,  "user" => $user, "status" => 400));
+            return;
+        }
     }
+
 
     // Get order in waiting status
 
@@ -52,8 +57,8 @@ try {
 
         // Insert item into order
         $itemID = generateRandomString("ORI");
-        $query = "INSERT INTO orderitems (Id,OrderID, FoodID, Quantity) 
-        VALUES ('$itemID','$id','$foodID','$quantity')";
+        $query = "INSERT INTO orderitems (Id,OrderID, FoodID, Quantity, Pick) 
+        VALUES ('$itemID','$id','$foodID','$quantity',0)";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
 
@@ -84,8 +89,8 @@ try {
         }
         // Insert item into order
         $itemID = generateRandomString("ORI");
-        $query = "INSERT INTO orderitems (Id,OrderID, FoodID, Quantity) 
-        VALUES ('$itemID','$order','$foodID','$quantity')";
+        $query = "INSERT INTO orderitems (Id,OrderID, FoodID, Quantity, Pick) 
+        VALUES ('$itemID','$order','$foodID','$quantity',0)";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
         echo json_encode(
@@ -98,7 +103,7 @@ try {
 } catch (Exception $e) {
     echo json_encode(
         array(
-            "status" => false,
+            "status" => 500,
             "statusText" => "Thêm dơn hàng thất bại bởi vì $e!",
             "data" => null,
         )

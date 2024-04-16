@@ -30,7 +30,7 @@ try {
     echo json_encode(
         array(
             "status" => false,
-            "statusText" => "Thêm dơn hàng thất bại bởi vì $e!",
+            "statusText" => "Xóa đơn hàng thất bại bởi vì $e!",
             "data" => null,
         )
     );

@@ -8,6 +8,9 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
+    $data = json_decode(file_get_contents("php://input"));
+    $id = $data->id;
+
     $query = "SELECT 
     restaurants.Id
     ,restaurants.Name
@@ -19,10 +22,13 @@ try {
     ,restaurants.Phone
     ,restaurants.Email
     ,restaurants.Status
-    ,restaurants.ownerID,
-     SUM(orderitems.Quantity) as Sold FROM restaurants 
+    ,restaurants.ownerID
+    ,SUM(orderitems.Quantity) as Sold 
+    ,COUNT(favlist.Id) as UserFavorite
+    FROM restaurants    
     INNER JOIN foods ON restaurants.Id = foods.RestaurantId
     INNER JOIN orderitems ON foods.Id = orderitems.FoodId
+    LEFT JOIN favlist ON restaurants.Id = favlist.TargetID AND favlist.UserID = '$id'
     WHERE foods.Status != 'Banned' AND foods.Status != 'Removed' AND restaurants.Status != 'Banned' 
     AND restaurants.Status != 'Removed' GROUP BY restaurants.Id ORDER BY Sold DESC LIMIT 20";
     $stmt = $dbConn->prepare($query);

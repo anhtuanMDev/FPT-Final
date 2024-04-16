@@ -19,6 +19,7 @@
             array(
                 "status" => true,
                 "statusText" => "Upload Image successful with id: $fileName",
+                "data" => $fileName
             )
         );
     } catch (Exception $e) {

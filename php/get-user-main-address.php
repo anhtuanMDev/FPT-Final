@@ -11,10 +11,10 @@ try {
     $data = json_decode(file_get_contents("php://input"));
     $id = $data -> id;
 
-    $query = "SELECT * FROM address WHERE OwnerID = '$id' AND Priority = 1 LIMIT 1";
+    $query = "SELECT * FROM address WHERE OwnerID = '$id' AND Priority = 1 AND Status != 'Removed'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
-    $adr = $stmt->fetch(PDO::FETCH_ASSOC);
+    $adr = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(
         array(
             "data" => $adr,

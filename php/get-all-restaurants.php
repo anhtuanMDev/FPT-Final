@@ -24,7 +24,7 @@ try {
     INNER JOIN foods ON restaurants.Id = foods.RestaurantId
     INNER JOIN orderitems ON foods.Id = orderitems.FoodId
     WHERE foods.Status != 'Banned' AND foods.Status != 'Removed' AND restaurants.Status != 'Banned' 
-    AND restaurants.Status != 'Removed' GROUP BY restaurants.Id ORDER BY Sold DESC LIMIT";
+    AND restaurants.Status != 'Removed' GROUP BY restaurants.Id";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -47,6 +47,15 @@ try {
             $review = $stmtReview->fetch(PDO::FETCH_ASSOC);
             $restaurants[$key]['TotalReview'] = $review ? $review['TotalReview'] : 0;
             $restaurants[$key]['Point'] = $review ? $review['AverageRating'] : 0;
+        }
+
+        foreach ($restaurants as $key => $restaurant) {
+            $queryFoods = "SELECT Id from foods WHERE RestaurantID = :id";
+            $stmtFoods = $dbConn->prepare($queryFoods);
+            $stmtFoods->bindParam(':id', $restaurant['Id']);
+            $stmtFoods->execute();
+            $foods = $stmtFoods->fetchAll(PDO::FETCH_ASSOC);
+            $restaurants[$key]['Foods'] = $foods ? $foods : [];
         }
         echo json_encode(
             array(

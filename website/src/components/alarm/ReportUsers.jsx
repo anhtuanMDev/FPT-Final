@@ -654,7 +654,7 @@ const ReportUsers = () => {
                     <li className="nav-heading">Pages</li>
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" href="users-profile.html">
+                        <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
                             <ReactSVG
                                 src={employee}
                                 className='nav-link-icon'

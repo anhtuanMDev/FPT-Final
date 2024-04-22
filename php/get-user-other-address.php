@@ -11,7 +11,7 @@ try {
     $data = json_decode(file_get_contents("php://input"));
     $id = $data -> id;
 
-    $query = "SELECT * FROM address WHERE OwnerID = '$id' AND Priority = 0 ";
+    $query = "SELECT * FROM address WHERE OwnerID = '$id' AND Priority = 0 AND Status != 'Removed'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $adr = $stmt->fetchAll(PDO::FETCH_ASSOC);

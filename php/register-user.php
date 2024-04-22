@@ -22,6 +22,7 @@ try {
     $id = generateRandomString("USR");
     $name = $data->name;
     $email = $data->email;
+    $token = $data->token;
     $password = $data->password;
     $rank = 0;
     
@@ -38,10 +39,31 @@ try {
             )
         );
     } else {
+        $query = "SELECT * FROM confirmations WHERE Email = '$email' AND Token = '$token' AND ExpireAt > NOW() AND Status = 1";
+        $stmt = $dbConn->prepare($query);
+        $stmt->execute();
+        $tokens = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$tokens) {
+            echo json_encode(
+                array(
+                    "status" => false,
+                    "statusText" => "Mã xác nhận không hợp lệ!",
+                    "data" => null,
+                )
+            );
+            return;
+        }else {
+            $query = "UPDATE confirmations SET Status = 0 WHERE Email = '$email' AND Token = '$token' AND ExpireAt > NOW() AND Status = 1";
+            $stmt = $dbConn->prepare($query);
+            $stmt->execute();
+        }
+
         $query = "INSERT INTO users(Id, Name, Email, Password, `Rank`, CreateAt, Status)
         VALUES('$id', '$name', '$email', '$password', $rank, now(), 'Active')";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
+        
         echo json_encode(
             array(
                 "status" => true,
@@ -49,6 +71,8 @@ try {
                 "data" => $id,
             )
         );
+
+
     }
 } catch (Exception $e) {
     echo json_encode(

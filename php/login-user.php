@@ -12,7 +12,7 @@ try {
     $email = $data->email;
     $password = $data->password;
 
-    $sql = "SELECT * FROM users WHERE Email='$email' AND Password='$password' AND Status = 'Active'";
+    $sql = "SELECT Id, Name, `Rank` FROM users WHERE Email ='$email' AND Password='$password' AND Status = 'Active'";
     $stmt = $dbConn->prepare($sql);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -31,7 +31,7 @@ try {
             array(
                 "status" => false,
                 "statusText" => "Đăng nhập không thành công!",
-                "data" => null,
+                "data" => $user,
             )
         );
     }

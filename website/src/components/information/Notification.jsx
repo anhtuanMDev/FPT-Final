@@ -31,6 +31,8 @@ import avatar from '../assets/img/images/ex_avatar.png';
 import React, { useEffect, useReducer, useRef } from 'react'
 import { Navigate, useNavigate, useHref, Form } from 'react-router-dom';
 import { ReactSVG } from 'react-svg';
+import Swal from 'sweetalert2'
+
 import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
@@ -173,6 +175,7 @@ const Notification = (prop) => {
     const getRestaurantID = async () => {
         const response = await AxiosInstance().get('/get-all-restaurants.php');
         const cal = Math.ceil(response.data.length / 10);
+        console.log('/get-all-restaurants.php response', response);
         if (response.status) {
             console.log(response.data)
             dispatchData({ type: 'NOTIFY_RESTAURANT_RECEIVE', payload: response.data })
@@ -187,6 +190,9 @@ const Notification = (prop) => {
         getUserID();
         getRestaurantID();
     }, []);
+
+    // console.log("notifyRestaurantReceive", data.notifyRestaurantReceive);
+    // console.log("notifyReceive", data.notifyReceive);
 
     /*
         $adminID = $data->id;
@@ -207,11 +213,92 @@ const Notification = (prop) => {
             gift,
             userID
         });
+        // console.log(response.statusText);
+        // console.log(response);
         if (response.status) {
             getNotification();
+            Swal.fire({
+                title: 'Success',
+                // text: 'Account successfully created',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
+        } else {
+
+            Swal.fire({
+                title: 'Failed',
+                // text: 'Account creation failed',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
         }
     }
 
+    const handleSendUserNotifi = async (event) => {
+        event.preventDefault();
+                                                                
+        let title = document.getElementById('user-notification-title').value;
+        let content = document.getElementById('user-notification-content').value;
+        let select = document.querySelector('#form-select-userID').selectedOptions;
+        let gift = document.getElementById('user-addGift').checked;
+        let userID = new Array();
+        for (const item of select) {
+            if (item.value !== "Open this select menu") {
+                userID.push(item.value);
+            }
+        }
+        // // userID 0 = Open this select menu
+        // userID.splice(0, 1);
+        console.log(userID)
+        createUsersNotification(adminID, title, content, gift, userID);
+    }
+
+    const createRestaurantsNotification = async (adminID, title, content, restaurantIDs ) => {
+        const response = await AxiosInstance().post('/post-create-restaurants-notification.php', {
+            id: adminID,
+            title: title,
+            content: content,
+            restaurantIDs
+        });
+        console.log(response.statusText);
+        console.log(response);
+        if (response.status) {
+            getRestaurantNotification();
+            Swal.fire({
+                title: 'Success',
+                // text: 'Account successfully created',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
+        } else {
+
+            Swal.fire({
+                title: 'Failed',
+                // text: 'Account creation failed',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        }
+    }
+
+    const handleSendRestaurantNotifi = async (event) => {
+        event.preventDefault();
+                                                                
+        let title = document.getElementById('restaurant-notification-title').value;
+        let content = document.getElementById('restaurant-notification-content').value;
+        let select = document.querySelector('#form-select-restaurantID').selectedOptions;
+
+        let restaurantIDs = new Array();
+        for (const item of select) {
+            if (item.value !== "Open this select menu") {
+                restaurantIDs.push(item.value);
+            }
+        }
+        // // restaurantIDs 0 = Open this select menu
+        // restaurantIDs.splice(0, 1);
+        console.log("restaurantIDs ",restaurantIDs);
+        createRestaurantsNotification(adminID, title, content, restaurantIDs);
+    }
 
     return (
         <div className=''>
@@ -675,7 +762,7 @@ const Notification = (prop) => {
                     <li className="nav-heading">Pages</li>
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed">
+                        <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
                             <ReactSVG
                                 src={employee}
                                 className='nav-link-icon'
@@ -823,22 +910,22 @@ const Notification = (prop) => {
                                                             <ul className="pagination">
                                                                 <li className="page-item">
                                                                     <a className="page-link" aria-label="Previous" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                        dispatchData({ type: 'SET_BAN_FOOD_PAGE', payload: 1 })
+                                                                        dispatchData({ type: 'SET_NOTIFY_RESTAURANT_LIST_PAGE', payload: 1 })
                                                                     }}>
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
                                                                 </li>
                                                                 {
-                                                                    Array.from({ length: data.banFoodTotalPage }, (_, index) => {
+                                                                    Array.from({ length: data.notifyRestaurantListTotalPage }, (_, index) => {
                                                                         return (
                                                                             <li key={index} className={`page-item ${data.banFoodPage === index + 1 ? 'active' : ''}`}><a className="page-link" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                                dispatchData({ type: 'SET_BAN_FOOD_PAGE', payload: index + 1 })
+                                                                                dispatchData({ type: 'SET_NOTIFY_RESTAURANT_LIST_PAGE', payload: index + 1 })
                                                                             }}>{index + 1}</a></li>
                                                                         )
                                                                     })
                                                                 }
                                                                 <li className="page-item">
-                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_BAN_FOOD_PAGE', payload: data.banFoodTotalPage }) }}>
+                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_NOTIFY_RESTAURANT_LIST_PAGE', payload: data.notifyRestaurantListTotalPage }) }}>
                                                                         <span aria-hidden="true">»</span>
                                                                     </a>
                                                                 </li>
@@ -890,18 +977,18 @@ const Notification = (prop) => {
                                                     <form className='need-validation'>
                                                         <div className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
                                                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-                                                                <label htmlFor="notification-title" className="form-label">Title</label>
+                                                                <label htmlFor="user-notification-title" className="form-label">Title</label>
                                                                 <div>
-                                                                    <input type="checkbox" id="addGift" name="add gift" style={{ marginRight: 5 }} />
-                                                                    <label for="addGift" style={{ cursor: 'pointer' }}> Add Gift</label>
+                                                                    <input type="checkbox" id="user-addGift" name="add gift" style={{ marginRight: 5 }} />
+                                                                    <label for="user-addGift" style={{ cursor: 'pointer' }}> Add Gift</label>
                                                                 </div>
                                                             </div>
-                                                            <input type="text" className="form-control" id="notification-title" maxLength={50} minLength={10} />
+                                                            <input type="text" className="form-control" id="user-notification-title" maxLength={50} minLength={10} />
                                                             <div className="invalid-feedback">Please check this input context.</div>
                                                         </div>
                                                         <div className="mb-3">
-                                                            <label htmlFor="notification-content" className="form-label">Content</label>
-                                                            <textarea className="form-control" id="notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
+                                                            <label htmlFor="user-notification-content" className="form-label">Content</label>
+                                                            <textarea className="form-control" id="user-notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
                                                             <div className="invalid-feedback">Please check if this input context is correct ? .</div>
                                                         </div>
 
@@ -913,9 +1000,9 @@ const Notification = (prop) => {
                                                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
                                                                 <label htmlFor="exampleInputPassword1" className="form-label">To</label>
                                                                 <div>
-                                                                    <input type="checkbox" id="selectAll" name="select all" style={{ marginRight: 5 }} onClick={() => {
-                                                                        document.getElementById('selectAll').addEventListener('change', function () {
-                                                                            let selects = document.querySelectorAll('.form-select');
+                                                                    <input type="checkbox" id="user-selectAll" name="select all" style={{ marginRight: 5 }} onClick={() => {
+                                                                        document.getElementById('user-selectAll').addEventListener('change', function () {
+                                                                            let selects = document.querySelectorAll('#form-select-userID');
                                                                             for (const select of selects) {
                                                                                 for (const option of select.options) {
                                                                                     option.selected = this.checked;
@@ -923,10 +1010,10 @@ const Notification = (prop) => {
                                                                             }
                                                                         });
                                                                     }} />
-                                                                    <label for="selectAll" style={{ cursor: 'pointer' }}> Check All</label>
+                                                                    <label for="user-selectAll" style={{ cursor: 'pointer' }}> Check All</label>
                                                                 </div>
                                                             </div>
-                                                            <select multiple className="form-select" aria-label="Default select example" style={{ height: 200 }}>
+                                                            <select multiple className="form-select" id="form-select-userID" aria-label="Default select example" style={{ height: 200 }}>
                                                                 <option selected style={{ display: 'none' }}>Open this select menu</option>
                                                                 {
                                                                     data.notifyReceive.map((item, index) => {
@@ -938,19 +1025,7 @@ const Notification = (prop) => {
                                                             </select>
                                                         </div><div className="mb-3 text-end">
                                                             <button type="submit" className="btn btn-primary" onClick={(event) => {
-                                                                event.preventDefault();
-                                                                
-                                                                let title = document.getElementById('notification-title').value;
-                                                                let content = document.getElementById('notification-content').value;
-                                                                let select = document.querySelector('.form-select').selectedOptions;
-                                                                let gift = document.getElementById('addGift').checked;
-                                                                let userID = [];
-                                                                for (const item of select) {
-                                                                    userID.push(item.value);
-                                                                }
-
-                                                                console.log(userID)
-                                                                createUsersNotification(adminID, title, content, gift, userID);
+                                                                handleSendUserNotifi(event);
                                                             }}>Submit</button>
                                                         </div>
                                                     </form>
@@ -962,13 +1037,13 @@ const Notification = (prop) => {
 
                                                     <form className='need-validation'>
                                                         <div className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
-                                                            <label htmlFor="notification-title" className="form-label">Title</label>
-                                                            <input type="text" className="form-control" id="notification-title" maxLength={50} minLength={10} />
+                                                            <label htmlFor="restaurant-notification-title" className="form-label">Title</label>
+                                                            <input type="text" className="form-control" id="restaurant-notification-title" maxLength={50} minLength={10} />
                                                             <div className="invalid-feedback">Please check this input context.</div>
                                                         </div>
                                                         <div className="mb-3">
-                                                            <label htmlFor="notification-content" className="form-label">Content</label>
-                                                            <textarea className="form-control" id="notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
+                                                            <label htmlFor="restaurant-notification-content" className="form-label">Content</label>
+                                                            <textarea className="form-control" id="restaurant-notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
                                                             <div className="invalid-feedback">Please check if this input context is correct ? .</div>
                                                         </div>
 
@@ -980,9 +1055,9 @@ const Notification = (prop) => {
                                                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
                                                                 <label htmlFor="exampleInputPassword1" className="form-label">To</label>
                                                                 <div>
-                                                                    <input type="checkbox" id="selectAll" name="select all" style={{ marginRight: 5 }} onClick={() => {
-                                                                        document.getElementById('selectAll').addEventListener('change', function () {
-                                                                            let selects = document.querySelectorAll('.form-select');
+                                                                    <input type="checkbox" id="restaurant-selectAll" name="select all" style={{ marginRight: 5 }} onClick={() => {
+                                                                        document.getElementById('restaurant-selectAll').addEventListener('change', function () {
+                                                                            let selects = document.querySelectorAll('#form-select-restaurantID');
                                                                             for (const select of selects) {
                                                                                 for (const option of select.options) {
                                                                                     option.selected = this.checked;
@@ -990,13 +1065,13 @@ const Notification = (prop) => {
                                                                             }
                                                                         });
                                                                     }} />
-                                                                    <label for="selectAll" style={{ cursor: 'pointer' }}> Check All</label>
+                                                                    <label for="restaurant-selectAll" style={{ cursor: 'pointer' }}> Check All</label>
                                                                 </div>
                                                             </div>
-                                                            <select multiple className="form-select" aria-label="Default select example" style={{ height: 200 }}>
+                                                            <select multiple className="form-select" id="form-select-restaurantID" aria-label="Default select example" style={{ height: 200 }}>
                                                                 <option selected style={{ display: 'none' }}>Open this select menu</option>
                                                                 {
-                                                                    data.notifyRestaurantReceive.map((item, index) => {
+                                                                    data?.notifyRestaurantReceive?.map((item, index) => {
                                                                         return (
                                                                             <option key={index} value={item.Id}>{`${item.Id} * ${item.Name}`}</option>
                                                                         )
@@ -1004,8 +1079,11 @@ const Notification = (prop) => {
                                                                 }
                                                             </select>
                                                         </div><div className="mb-3 text-end">
-                                                            <button type="submit" className="btn btn-primary" onClick={() => {
-                                                                validateForm();
+                                                            <button type="submit" className="btn btn-primary" onClick={(event) => {
+                                                                // validateForm();
+                                                                // event.preventDefault();
+                                                                handleSendRestaurantNotifi(event);
+                                                                console.log('send restaurant');
                                                             }}>Submit</button>
                                                         </div>
                                                     </form>

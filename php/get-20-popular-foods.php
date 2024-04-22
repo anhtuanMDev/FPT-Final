@@ -8,10 +8,13 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
+    $data = json_decode(file_get_contents("php://input"));
+    $id = $data->id;
 
-    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold 
+    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold, COUNT(favlist.Id) as UserFavorite
     FROM foods 
     INNER JOIN orderitems ON foods.Id = orderitems.FoodID 
+    LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
     WHERE foods.Status = 'Sale' 
     GROUP BY foods.Id 
     ORDER BY Sold DESC, TimeMade DESC, Price ASC 

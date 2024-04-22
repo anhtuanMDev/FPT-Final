@@ -1,6 +1,6 @@
 <?php
 $databaseHost = '127.0.0.1:3306';
-$databaseName = 'orangic';
+$databaseName = 'orangic2';
 $databaseUsername = 'root';
 $databasePassword = 'WASERE12345@';
 

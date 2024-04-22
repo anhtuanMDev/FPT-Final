@@ -9,9 +9,13 @@ include_once 'connection.php';
 
 try {
 
-    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold 
+    $data = json_decode(file_get_contents("php://input"));
+    $id = $data->id;
+
+    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold, COUNT(favlist.Id) as UserFavorite  
     FROM foods 
     INNER JOIN orderitems ON foods.Id = orderitems.FoodID 
+    LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
     WHERE foods.Status = 'Sale' 
     GROUP BY foods.Id 
     ORDER BY CreateAt DESC, Sold DESC, TimeMade DESC 

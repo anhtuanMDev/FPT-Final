@@ -9,7 +9,9 @@ include_once 'connection.php';
 
 try {
 
-    $query = "SELECT * FROM admin WHERE Status = 'Active'";
+    $query = "SELECT A.Id AS Id, A.Name AS Name, A.Email AS Email, A.Job AS Job, I.ID AS Image 
+                    FROM admin A LEFT JOIN images I ON A.Id = I.OwnerID
+                    WHERE A.Status = 'Active'";
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
@@ -26,24 +28,11 @@ try {
         return;
     }
 
-    foreach($staffs as $key => $staff){
-        $query = "SELECT Id from images WHERE Id = :id LIMIT 1";
-        $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(":id", $staff['Image']);
-        $stmt->execute();
-        $image = $stmt->fetch(PDO::FETCH_ASSOC);
-        if($image == null){
-            $staffs[$key]['Image'] = null;
-        }else {
-            $staffs[$key]['Image'] = $image['Id'];
-        }
-
-    }
     echo json_encode(
         array(
             "staffs" => $staffs,
             "status" => true,
-            "message" => "Success to get your foods!",
+            "message" => "Success to get all staffs!",
         )
     );
 } catch (Exception $e) {

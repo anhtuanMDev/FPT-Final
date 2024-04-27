@@ -4,6 +4,7 @@ import logo from '../assets/img/images/logo.svg';
 import AxiosInstance from '../helpers/AxiosInstance'
 import { ReactSVG } from 'react-svg';
 import { Navigate, useNavigate, useHref } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 const Login = (prop) => {
     const { setID } = prop;
@@ -29,7 +30,21 @@ const Login = (prop) => {
         if (response.status) {
             setID(response.data.Id);
             console.log("success")
-        } else console.log("failed")
+            Swal.fire({
+                title: 'Success',
+                text: 'Login successfully',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
+        } else {
+            console.log("failed");
+            Swal.fire({
+                title: 'Failed',
+                text: 'Login failed',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        }
     }
 
     const navigate = useNavigate();

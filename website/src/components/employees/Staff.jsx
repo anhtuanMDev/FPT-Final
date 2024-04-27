@@ -64,6 +64,24 @@ const Staffs = (prop) => {
         setShowPassword(!showPassword);
     };
 
+    // image
+    const [image, setImage] = useState(null);
+    const [fileImage, setFileImage] = useState(null);
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        
+        file && setFileImage(file);
+
+        reader.onload = () => {
+            const imageDataURL = reader.result;
+            setImage(imageDataURL);
+        };
+
+        reader.readAsDataURL(file);
+    };
+
     const initialState = {
         allStaffs: [],
         reqPassChange: [],
@@ -105,6 +123,7 @@ const Staffs = (prop) => {
             const response = await AxiosInstance().get('/get-all-staffs.php');
             // only take 5 users
             const length = response.staffs.length;
+            console.log(response);
 
             let list = response.staffs.slice(data.allStaffPage * 5 - 5, data.allStaffPage * 5);
 
@@ -144,28 +163,82 @@ const Staffs = (prop) => {
 
     {/** End of get staff list request password change */ }
 
+
+    const generateID = (prefix) => {
+        const chars =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let id = prefix;
+        for (let i = 0; i < 17; i++) {
+            id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return id;
+    };
+
+    const generateRandomOTP = () => {
+        const length = 6; // Độ dài của mã OTP
+        let otp = '';
+        for (let i = 0; i < length; i++) {
+            otp += Math.floor(Math.random() * 10); // Chọn một số ngẫu nhiên từ 0 đến 9 và thêm vào chuỗi OTP
+        }
+        return otp;
+    };
+
+    const sendOTP = async () => {
+        let email = document.getElementById('yourUsername').value;
+        Swal.fire({
+            title: 'Sending',
+            html: 'Please wait...',
+            allowOutsideClick: false,
+        });
+        const response = await AxiosInstance().post('/post-send-register-email-admin.php', { email, token: generateRandomOTP(), type: 'Đăng ký tài khoản' });
+        console.log(response);
+
+        if (response.status) {
+            console.log("success");
+            Swal.fire({
+                title: 'Success',
+                text: 'Mã xác thực đã được gửi',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            })
+        } else {
+            console.log("failed");
+            Swal.fire({
+                title: 'Failed',
+                text: response.statusText,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        }
+    };
+
+
     const handleCreateAccount = async (event) => {
         event.preventDefault(); // prevent form submission
         console.log("press in")
-        let signIn = true;
+        let boole = true;
         var needsValidation = document.querySelectorAll('.needs-validation');
+
         Array.prototype.slice.call(needsValidation)
             .forEach(function (form) {
                 if (!form.checkValidity()) {
                     event.stopPropagation();
                     form.classList.add('was-validated');
-                    signIn = false;
+                    boole = false;
                 }
             });
 
-        if (!signIn) return;
+        if (!boole) return;
 
         let name = document.getElementById('yourName').value;
         let email = document.getElementById('yourUsername').value;
         let password = document.getElementById('yourPassword').value;
+        let token = document.getElementById('yourToken').value;
         let job = document.getElementById('yourJob').value;
         console.log(email, password);
-        const response = await AxiosInstance().post('/create-admin.php', { name, email, password, job });
+
+
+        const response = await AxiosInstance().post('/register-admin.php', { name, email, password, job,  token});
         console.log(response.statusText);
 
         if (response.status) {
@@ -175,16 +248,41 @@ const Staffs = (prop) => {
                 text: 'Account successfully created',
                 icon: 'success',
                 confirmButtonText: 'OK'
-            })
+            });
+
+            if(!fileImage) return;
+
+            const formData = new FormData();
+            const id = generateID('IMG');
+            // console.log(fileImage);
+            formData.append('image', fileImage, `${id}.jpg`);
+
+            // formData.append('image', {
+            //     uri: image,
+            //     name: `${id}.jpg`,
+            //     type: 'image/jpg',
+            // });
+            // console.log(formData);
+
+            const result = await AxiosInstance('multipart/form-data').post('/upload-file.php', formData);
+            // console.log(result);
+            const data = {
+                id: id,
+                ownerID: response.data,
+            };
+            const upload = await AxiosInstance().post('/insert-image.php', data);
         } else {
             console.log("failed");
             Swal.fire({
                 title: 'Failed',
-                text: 'Account creation failed',
+                // text: 'Account creation failed',
+                text: response.statusText,
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
         }
+
+
     }
 
     const handleResetPass = async (resetterId, resetRequesterId) => {
@@ -780,7 +878,7 @@ const Staffs = (prop) => {
                                                         </nav>
                                                     </div>
 
-                                                    <table className="table table-borderless"
+                                                    <table className="table table-borderless table-hover table-vcenter"
                                                         style={{ textAlign: 'start' }}
                                                     >
                                                         <thead>
@@ -899,28 +997,72 @@ const Staffs = (prop) => {
                                                 {/* <!-- Create Account Form --> */}
                                                 <div className="tab-pane fade" id="create-account">
                                                     <div className="card-body">
+                                                        <div className='row'>
+                                                            <div className="col-2 pt-4 pb-2 ">
+                                                                <div className="card-body text-center">
+                                                                    <input
+                                                                        type="file"
+                                                                        accept="image/*"
+                                                                        onChange={handleImageUpload}
+                                                                        style={{ display: 'none' }}
+                                                                        id="image-upload"
+                                                                    />
+                                                                    <label htmlFor="image-upload" className="btn" style={{ width: '100px', height: '100px', padding: 0, border: '2px solid orange' }} >
+                                                                        {image ? (
+                                                                            <img src={image} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                        ) : (
+                                                                            <img src={avatar} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                        )}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
 
-                                                        <div className="pt-4 pb-2">
-                                                            <h5 className="card-title text-center pb-0 fs-4">Create Account</h5>
-                                                            <p className="text-center small">Enter your information to create</p>
+                                                            <div className="col-8"> {/* Chia cột thành 6/12 phần (50%) */}
+                                                                <div className="pt-4 pb-2">
+                                                                    <h5 className="card-title text-center pb-0 fs-4">Create Account</h5>
+                                                                    <p className="text-center small">Enter your information to create</p>
+                                                                </div>
+                                                            </div>
                                                         </div>
+
 
                                                         <form className="row g-3 needs-validation">
 
                                                             <div className="col-12">
                                                                 <label htmlFor="yourName" className="form-label">Name</label>
                                                                 <div className="input-group has-validation">
-
                                                                     <input type="text" name="name" className="form-control" id="yourName" required defaultValue={'nguyen van teo'} />
-                                                                    <div className="invalid-feedback">Please enter your name.</div>
                                                                 </div>
+                                                                <div className="invalid-feedback">Please enter your name.</div>
                                                             </div>
 
-                                                            <div className="col-12">
-                                                                <label htmlFor="yourUsername" className="form-label">Email</label>
-                                                                <div className="input-group has-validation">
-                                                                    <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'anhtt676@gmail.com'} />
-                                                                    <div className="invalid-feedback">Please enter your username.</div>
+                                                            <div className="col-12" >
+                                                                <div className='row'>
+                                                                    <div className="col-6" >
+                                                                        <label htmlFor="yourUsername" className="form-label">Email</label>
+                                                                        <div className="input-group has-validation">
+                                                                            <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'anhtt676@gmail.com'} />
+                                                                            <button type="button" id="toggleConfirm" className="btn btn-outline-secondary"
+                                                                                onClick={() => { sendOTP() }}>
+                                                                                {
+                                                                                    <ReactSVG
+                                                                                        src={send_notify}
+                                                                                        className='show-pass-icon'
+                                                                                    />
+                                                                                }
+                                                                            </button>
+                                                                            <div className="invalid-feedback">Please enter your email.</div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="col-6" >
+                                                                        <label htmlFor="yourToken" className="form-label">OTP</label>
+                                                                        <div className="input-group has-validation">
+                                                                            <input type="text" name="token" className="form-control" id="yourToken" required />
+                                                                        </div>
+                                                                        <div className="invalid-feedback">Please enter your OTP.</div>
+
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
@@ -997,5 +1139,12 @@ const Staffs = (prop) => {
         </div>
     )
 }
+
+const styles = {
+    image: {
+        width: '100px',
+        height: '100px'
+    },
+};
 
 export default Staffs;

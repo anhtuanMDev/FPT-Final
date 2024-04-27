@@ -37,15 +37,16 @@ import Swal from 'sweetalert2'
 import avatar from '../assets/img/images/ex_avatar.png';
 
 // Conponent
-import React, { useEffect, useReducer, useRef, useState } from 'react'
+import React, { isValidElement, useEffect, useReducer, useRef, useState } from 'react'
 import ApexCharts from 'apexcharts'
 import { ReactSVG } from 'react-svg';
 import { Navigate, useNavigate, useHref } from 'react-router-dom';
 import AxiosInstance from '../helpers/AxiosInstance.js';
+// import Swal from 'sweetalert2'
 
 
 const Discounts = (prop) => {
-    const {host} = prop
+    const { host, adminID } = prop
     document.title = 'Informations - Users';
     const chartRef = useRef(null);
 
@@ -56,334 +57,218 @@ const Discounts = (prop) => {
         navigate(link);
     };
 
-    const Swal = require('sweetalert2');
+    const selectEventEditTab = () => {
+        const tabToSwitch = document.querySelector('[data-bs-target="#event-edit"]'); // Lấy phần tử có data-bs-target="#event-edit"
 
-    {/** declare user storage */ }
+        if (tabToSwitch) {
+            // Kích hoạt sự kiện click trên phần tử để chuyển đến tab "event-edit"
+            tabToSwitch.click();
+        }
+    }
+
+
+    const typeCouponsList = ["Times", "Count"];
+    const [typeCoupon, setTypeCoupon] = useState(typeCouponsList[0]);
+    const [typeCouponEdit, setTypeCouponEdit] = useState(typeCouponsList[0]);
+    const [typeCouponCouponEdit, setTypeCouponCouponEdit] = useState(typeCouponsList[0]);
+
+    {/** declare event storage */ }
 
     const initialState = {
-        
-        users: [],
-        topUsers: [],
-        bannedUsers: [],
-        usersComment: [],
-        blackUser: [],
-        newUser: [],
 
-        userPage: 1,
-        topUsersPage: 1,
-        bannedUsersPage: 1,
-        usersCommentPage: 1,
+        events: [],
+        eventDetail: null,
+        eventEdit: null,
 
-        userTotalPage: 1,
-        topUsersTotalPage: 1,
-        bannedUsersTotalPage: 1,
-        usersCommentTotalPage: 1,
+        eventPage: 1,
+
+        eventTotalPage: 1,
+
     };
 
     const [data, dispatchData] = useReducer((state, action) => {
         switch (action.type) {
-            case 'GET_USERS':
-                return { ...state, users: action.payload };
-            case 'GET_TOP_USERS':
-                return { ...state, topUsers: action.payload };
-            case 'GET_BANNED_USERS':
-                return { ...state, bannedUsers: action.payload };
-            case 'GET_USERS_COMMENT':
-                return { ...state, usersComment: action.payload };
-            case 'GET_BLACK_USER':
-                return { ...state, blackUser: action.payload };
-            case 'GET_NEW_USERS':
-                return { ...state, newUser: action.payload };
+            case 'GET_EVENTS':
+                return { ...state, events: action.payload };
 
-            case 'SET_USERS_PAGE':
-                return { ...state, userPage: action.payload };
-            case 'SET_TOP_USERS_PAGE':
-                return { ...state, topUsersPage: action.payload };
-            case 'SET_BANNED_USERS_PAGE':
-                return { ...state, bannedUsersPage: action.payload };
-            case 'SET_USERS_COMMENT_PAGE':
-                return { ...state, usersCommentPage: action.payload };
+            case 'GET_EVENT_DETAIL':
+                return { ...state, eventDetail: action.payload };
 
-            case 'SET_USERS_TOTAL_PAGE':
-                return { ...state, userTotalPage: action.payload };
-            case 'SET_TOP_USERS_TOTAL_PAGE':
-                return { ...state, topUsersTotalPage: action.payload };
-            case 'SET_BANNED_USERS_TOTAL_PAGE':
-                return { ...state, bannedUsersTotalPage: action.payload };
-            case 'SET_USERS_COMMENT_TOTAL_PAGE':
-                return { ...state, usersCommentTotalPage: action.payload };
+            case 'GET_EVENT_EDIT':
+                return { ...state, eventEdit: action.payload };
+
+            case 'SET_EVENTS_PAGE':
+                return { ...state, eventPage: action.payload };
+
+            case 'SET_EVENTS_TOTAL_PAGE':
+                return { ...state, eventTotalPage: action.payload };
+
 
             default:
                 return state;
         }
     }, initialState)
 
-    {/** End of declare user storage */ }
+    {/** End of declare event storage */ }
 
-    {/** Get user's list */ }
+    const loadAllEvents = async () => {
+        const response = await AxiosInstance().get("get-all-events.php");
 
-    const loadUsers = async () => {
-        try {
-            const response = await AxiosInstance().get('/get-all-users.php');
-            // only take 5 users
-            const length = response.users.length;
-            // const list = response.users.slice(length - 5, page * 5);
-            let list = response.users.slice(data.userPage * 5 - 5, data.userPage * 5);
-            dispatchData({ type: 'GET_USERS', payload: list });
-            dispatchData({ type: 'SET_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
-        } catch (error) {
-            console.log("Fail to get users because of: " + error);
-        }
+        const length = response.data.length;
+
+
+        let numberItemDisplayed = 5;
+        let list = response.data.slice(data.eventPage * numberItemDisplayed - numberItemDisplayed, data.eventPage * numberItemDisplayed);
+
+        dispatchData({ type: "GET_EVENTS", payload: list });
+        dispatchData({ type: "SET_EVENTS_TOTAL_PAGE", payload: Math.ceil(length / numberItemDisplayed) });
     }
 
     useEffect(() => {
+        loadAllEvents();
+    }, [data.eventPage])
 
-        loadUsers();
-    }, [data.userPage]);
-
-    {/** End of get user's list */ }
-
-    {/** Get top user's list */ }
-
-    const loadTopUsers = async () => {
-        try {
-            const response = await AxiosInstance().get('/get-top-users.php');
-            const length = response.users.length;
-            let list = response.users.slice(data.topUsersPage * 5 - 5, data.topUsersPage * 5);
-            dispatchData({ type: 'GET_TOP_USERS', payload: list });
-            dispatchData({ type: 'SET_TOP_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
-        } catch (error) {
-            console.log("Fail to get top users because of: " + error);
-        }
+    const loadEventDetail = async (eventId) => {
+        const response = await AxiosInstance().get("get-event-detail.php", { params: { id: eventId } });
+        dispatchData({ type: "GET_EVENT_DETAIL", payload: response.eventDetail });
     }
 
-    useEffect(() => {
-        loadTopUsers();
-    }, [data.topUsersPage]);
-
-
-    {/** End of get top user's list */ }
-
-    {/** Get Banned user's list */ }
-
-    const loadBannedUser = async () => {
-        const response = await AxiosInstance().get('/get-banned-users.php');
-        const length = response.users.length;
-        let list = response.users.slice(data.topUsersPage * 5 - 5, data.topUsersPage * 5);
-        dispatchData({ type: 'GET_BANNED_USERS', payload: list });
-        dispatchData({ type: 'SET_BANNED_USERS_TOTAL_PAGE', payload: (Math.ceil(length / 5)) });
+    const setEventEdit = (eventInfo) => {
+        dispatchData({ type: "GET_EVENT_EDIT", payload: eventInfo });
     }
 
-    useEffect(() => {
-        loadBannedUser();
-    }, [data.bannedUsersPage])
+    const setInfoEventEdit = (eventDe) => {
+        let title = document.getElementById('eventTitle-edit');
+        let content = document.getElementById('eventContent-edit');
+        let code = document.getElementById('couponCode-edit');
+        let discount = document.getElementById('eventDiscount-edit');
+        let type = document.getElementById('typeCoupon-edit');
+        let amount = document.getElementById('couponAmount-edit');
+        let start = document.getElementById('eventStart-edit');
+        let end = document.getElementById('eventEnd-edit');
 
-    const unBannedUsers = async (reportID, userID, name, updateAt) => {
-        Swal.fire({
-            title: `Did you really want to enable ${name}`,
-            text: `This user has been banned since ${updateAt}`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Confirm',
-            preConfirm: async () => {
-                try {
-                    const response = await AxiosInstance().post('/post-update-user-status.php', { id: userID });
-                    loadBannedUser();
-                } catch (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        text: `Request failed: ${error}`
-                    })
-                }
-            },
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    text: `${name} has been removed out of banned users`
-                })
-            }
-        })
+        title.value = eventDe.Title;
+        content.value = eventDe.Content;
+        code.value = eventDe.CouponCode;
+        discount.value = eventDe.Discount;
+        type.value = eventDe.Type;
+        setTypeCouponEdit(type.value);
+        amount.value = eventDe.Amount !== -1 ? eventDe.Amount : "";
+        start.value = eventDe.Start;
+        end.value = eventDe.End;
     }
 
-    {/** End of banned user's list */ }
+    const handleCreateEvent = async (event) => {
+        event.preventDefault(); // prevent form submission
+        console.log("press in")
+        let boole = true;
+        var needsValidation = document.querySelectorAll('.needs-validation.create-event');
 
-    {/** Get new users */ }
-
-    const loadNewUsers = async () => {
-        const response = await AxiosInstance().get('/get-new-users.php');
-        dispatchData({ type: 'GET_NEW_USERS', payload: response.users })
-    }
-
-    useEffect(() => {
-        loadNewUsers();
-    }, [])
-
-    {/** End get new users */ }
-
-    {/** Get reports */ }
-
-    const loadReports = async () => {
-        const response = await AxiosInstance().get('/get-report-users.php');
-        dispatchData({ type: 'GET_BLACK_USER', payload: response.users });
-    }
-
-
-    const ignoreReports = async (adminID, reportID) => {
-        Swal.fire({
-            title: 'Your reason ?!',
-            text: 'This message is gonna show to the customer so response respectfully.',
-            icon: 'question',
-            input: "textarea",
-            inputPlaceholder: "Type your message here...",
-            inputAttributes: {
-                "aria-label": "Type your message here"
-            },
-            showLoaderOnConfirm: true,
-            showCancelButton: true,
-            inputValidator: (value) => {
-                if (!value) {
-                    return "Please our customer need reason.!";
-                }
-            },
-            confirmButtonText: 'Send',
-            preConfirm: async (resp) => {
-                try {
-                    const response = await AxiosInstance().post('/response-user-report.php', {
-                        id: reportID,
-                        reply: resp,
-                        replyBy: adminID,
-                    });
-                    loadReports();
-
-                } catch (error) {
-                    Swal.showValidationMessage(`
-                    Request failed: ${error}
-                  `);
-                }
-            },
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    text: 'Your Reply has been successed send to the customer'
-                })
-            }
-        })
-    }
-
-
-    const bannedUser = async (adminID, reportID, targetID) => {
-        Swal.fire({
-            title: 'Your reason ?!',
-            text: 'This message is gonna show to the customer so response respectfully.',
-            icon: 'warning',
-            input: "textarea",
-            inputPlaceholder: "Type your message here...",
-            inputAttributes: {
-                "aria-label": "Type your message here"
-            },
-            showLoaderOnConfirm: true,
-            showCancelButton: true,
-            inputValidator: (value) => {
-                if (!value) {
-                    return "Please our customer need reason.!";
-                }
-            },
-            confirmButtonText: 'Send',
-            preConfirm: async (resp) => {
-                try {
-                    const response = await AxiosInstance().post('/response-user-report.php', {
-                        id: reportID,
-                        reply: resp,
-                        replyBy: adminID,
-                    });
-                    const banned = await AxiosInstance().post('/banned-user.php', { id: targetID })
-                    loadReports();
-
-                } catch (error) {
-                    Swal.showValidationMessage(`
-                    Request failed: ${error}
-                  `);
-                }
-            },
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    text: 'Your Reply has been successed send to the customer'
-                })
-            }
-        })
-    }
-
-    useEffect(() => {
-        loadReports();
-    }, [])
-
-    {/** End get reports */ }
-
-    {/** Data board */ }
-    useEffect(() => {
-        let chart;
-        if (chartRef.current) {
-            chart = new ApexCharts(document.getElementById("reportsChart"), {
-                series: [{
-                    name: 'New Users',
-                    data: [31, 40, 28, 51, 42, 82, 56],
-                }, {
-                    name: 'Partnership',
-                    data: [11, 32, 45, 32, 34, 52, 41]
-                }, {
-                    name: 'Banned',
-                    data: [15, 11, 32, 18, 9, 24, 11]
-                }],
-                chart: {
-                    height: 350,
-                    type: 'area',
-                    toolbar: {
-                        show: false
-                    },
-                },
-                markers: {
-                    size: 4
-                },
-                colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                fill: {
-                    type: "gradient",
-                    gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.3,
-                        opacityTo: 0.4,
-                        stops: [0, 90, 100]
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth',
-                    width: 2
-                },
-                xaxis: {
-                    type: 'datetime',
-                    categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                },
-                tooltip: {
-                    x: {
-                        format: 'dd/MM/yy HH:mm'
-                    },
+        Array.prototype.slice.call(needsValidation)
+            .forEach(function (form) {
+                if (!form.checkValidity()) {
+                    event.stopPropagation();
+                    form.classList.add('was-validated');
+                    boole = false;
                 }
             });
-            chart.render();
+
+        if (!boole) return;
+
+        const title = document.getElementById('eventTitle').value;
+        const content = document.getElementById('eventContent').value;
+        const code = document.getElementById('couponCode').value;
+        const discount = document.getElementById('eventDiscount').value;
+        const type = document.getElementById('typeCoupon').value;
+        const amount = document.getElementById('couponAmount').value;
+        const start = document.getElementById('eventStart').value;
+        const end = document.getElementById('eventEnd').value;
+
+        const response = await AxiosInstance().post("create-event.php", { title, content, code, discount, type, amount, start, end, adminID });
+
+        if (response.status) {
+            console.log("success");
+            Swal.fire({
+                title: 'Success',
+                text: 'Event successfully created',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            loadAllEvents();
+        } else {
+            console.log("failed");
+            Swal.fire({
+                title: 'Failed',
+                text: 'Event creation failed',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
         }
-        return () => {
-            if (chart) {
-                chart.destroy();
-            }
-        };
-    }, []);
-    {/** End data board */ }
+    }
+
+    const handleUpdateEvent = async (event, eventInfo) => {
+        event.preventDefault(); // prevent form submission
+        console.log("press in")
+        let boole = true;
+        var needsValidation = document.querySelectorAll('.needs-validation.update-event');
+
+        Array.prototype.slice.call(needsValidation)
+            .forEach(function (form) {
+                if (!form.checkValidity()) {
+                    event.stopPropagation();
+                    form.classList.add('was-validated');
+                    boole = false;
+                }
+            });
+
+        if (!boole) return;
+
+        const eventId = eventInfo.Id;
+        const couponId = eventInfo.CouponID;
+
+        if (!eventId) {
+            Swal.fire({
+                title: 'Failed',
+                text: 'No Id',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+            return;
+        }
+
+        const title = document.getElementById('eventTitle-edit').value;
+        const content = document.getElementById('eventContent-edit').value;
+        const code = document.getElementById('couponCode-edit').value;
+        const discount = document.getElementById('eventDiscount-edit').value;
+        const type = document.getElementById('typeCoupon-edit').value;
+        const amount = document.getElementById('couponAmount-edit').value;
+        const start = document.getElementById('eventStart-edit').value;
+        const end = document.getElementById('eventEnd-edit').value;
+
+
+
+        const response = await AxiosInstance().post("update-event.php", { id: eventId, couponId: couponId, title, content, code, discount, type, amount, start, end, adminID });
+
+        if (response.status) {
+            console.log("success");
+            Swal.fire({
+                title: 'Success',
+                text: 'Event successfully updated',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            loadAllEvents();
+        } else {
+            console.log("failed");
+            Swal.fire({
+                title: 'Failed',
+                text: 'Event updation failed',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        }
+    }
+
 
     return (
         <div className=''>
@@ -866,11 +751,11 @@ const Discounts = (prop) => {
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Users Dashboard</h1>
+                    <h1>Discount</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a>Informations</a></li>
-                            <li className="breadcrumb-item active">Users</li>
+                            <li className="breadcrumb-item"><a>Income</a></li>
+                            <li className="breadcrumb-item active">Discount</li>
                         </ol>
                     </nav>
                 </div>
@@ -880,11 +765,9 @@ const Discounts = (prop) => {
                 <section className="section dashboard">
                     <div className="row">
 
-
                         {/* <!-- Left side columns --> */}
                         <div className="col-lg-8">
                             <div className="row">
-
 
                                 {/* <!-- Tab Bar --> */}
                                 <div className="col-12">
@@ -896,44 +779,28 @@ const Discounts = (prop) => {
                                             <ul className="nav nav-tabs nav-tabs-bordered">
 
                                                 <li className="nav-item">
-                                                    {/** The button will re render item if it getting press at another tab */}
-                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#list-users-overview" onMouseDown={(e) => {
-                                                        if (!e.target.classList.contains('active')) {
-                                                            loadUsers();
-                                                        }
-                                                    }}>List</button>
+                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#event-list">Event list</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#users-leaderboard" onMouseDown={(e) => {
-                                                        if (e.target.classList.contains('active')) {
-                                                            loadTopUsers()
-                                                        }
-                                                    }} >Leader Board</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#event-edit">Event edit</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#user-comments" onMouseDown={(e) => {
-                                                        if (e.target.classList.contains('active')) {
-                                                        }
-                                                    }} >Comments</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#create-event">Create event</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#banned-users" onMouseDown={(e) => {
-                                                        if (e.target.classList.contains('active')) {
-                                                            loadBannedUser();
-                                                        }
-                                                    }} >Banned</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#coupon-edit">Coupon edit</button>
                                                 </li>
-
                                             </ul>
+
                                             <div className="tab-content pt-2">
 
-                                                <div className="tab-pane fade show active profile-overview" id="list-users-overview">
-
+                                                {/*Event list*/}
+                                                <div className="tab-pane fade show active" id="event-list">
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Users List</h5>
+                                                        <h5 className="card-title">Events List</h5>
                                                         <div className="datatable-search">
                                                             <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
                                                         </div>
@@ -942,273 +809,350 @@ const Discounts = (prop) => {
                                                             <ul className="pagination">
                                                                 <li className="page-item">
                                                                     <a className="page-link" aria-label="Previous" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                        dispatchData({ type: 'SET_USERS_PAGE', payload: 1 })
+                                                                        dispatchData({ type: 'SET_EVENT_PAGE', payload: 1 })
                                                                     }}>
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
                                                                 </li>
                                                                 {
-                                                                    Array.from({ length: data.userTotalPage }, (_, index) => {
-                                                                        if (data.userTotalPage > 10) {
-                                                                            if ((index >= data.userPage - 3 && index <= data.userPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.userTotalPage - 2) { // last 2 pages
+                                                                    Array.from({ length: data.eventTotalPage }, (_, index) => {
+                                                                        if (data.eventTotalPage > 10) {
+                                                                            if ((index >= data.eventPage - 2 && index <= data.eventPage + 1) || // 2 pages before and after current page
+                                                                                index >= data.eventTotalPage - 2) { // last 2 pages
                                                                                 return (
-                                                                                    <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => data.userPage !== 1 ? dispatchData({ type: 'SET_USERS_PAGE', payload: index + 1 }) : null}>{index + 1}</a>
+                                                                                    <li className={`page-item ${data.eventPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_EVENT_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
                                                                             }
                                                                         } else {
                                                                             return (
-                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                    <a className="page-link" onClick={() => data.userPage !== data.userTotalPage ? dispatchData({ type: 'SET_USERS_PAGE', payload: index + 1 }) : null}>{index + 1}</a>
+                                                                                <li className={`page-item ${data.eventPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_EVENT_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                 </li>
                                                                             );
                                                                         }
                                                                     })
                                                                 }
                                                                 <li className="page-item">
-                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_USERS_PAGE', payload: data.userTotalPage }) }}>
+                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_EVENT_PAGE', payload: data.eventTotalPage }) }}>
                                                                         <span aria-hidden="true">»</span>
                                                                     </a>
                                                                 </li>
                                                             </ul>
                                                         </nav>
                                                     </div>
+                                                    <div className="table-responsive">
 
-                                                    <table className="table table-borderless"
-                                                    >
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Email</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {data.users.map((item, index) => (
-                                                                <tr key={item.Id}>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                    </th>
-                                                                    <td>{item.Name}</td>
-                                                                    <td className="fw-bold">{item.Email}</td>
+                                                        <table className="table table-hover table-vcenter">
+                                                            <thead>
+                                                                <tr key={'thead'}>
+                                                                    <th>Title</th>
+                                                                    {/* <th>Content</th> */}
+                                                                    <th>Discount</th>
+                                                                    <th>Start date</th>
+                                                                    <th>End date</th>
                                                                 </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody>
+                                                                {data?.events?.map((item, index) => (
+                                                                    <tr
+                                                                        key={item.Id}
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() => { loadEventDetail(item.Id) }}
+                                                                    >
+                                                                        <td>{item.Title}</td>
+                                                                        {/* <td>{item.Content}</td> */}
+                                                                        <td>{item.Discount}</td>
+                                                                        <td>{item.Start}</td>
+                                                                        <td>{item.End}</td>
+
+                                                                        {/* <td className="fw-bold">
+  
+                                                                            <button onClick={() => {
+                                                                                console.log("resetPass");
+                                                                                handleResetPass(adminID, item.Id);
+                                                                            }}
+                                                                                type="button" className="btn btn-outline-warning btn-sm" >Reset Pass</button>
+                                                                        </td> */}
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+
+                                                        </table>
+
+                                                    </div>
                                                 </div>
-                                                {/* <!-- End List Users Overview Tab --> */}
+                                                {/*End Event list*/}
 
-                                                <div className="tab-pane fade profile-edit pt-3" id="users-leaderboard">
+                                                {/*Event edit*/}
+                                                <div className="tab-pane fade" id="event-edit">
+                                                    <div className="pt-4 pb-2 tab-title">
+                                                        <h5 className="card-title text-center pb-0 fs-4">Edit Event</h5>
+                                                        {/* <p className="text-center small">Enter information to create</p> */}
+                                                    </div>
 
-                                                    {/* <!-- Users LeaderBoard table --> */}
-                                                    <div className="tab-title search nav">
-                                                        <h5 className="card-title">Leader Board</h5>
-                                                        <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                    <form className='row g-3 needs-validation .update-event'>
+                                                        <div className='col-12'>
+                                                            <label htmlFor="eventTitle-edit" className="form-label">Event title</label>
+                                                            <div className='input-group'>
+                                                                <input type='text' className='form-control' id='eventTitle-edit' name='eventTitle-edit' required />
+                                                            </div>
+                                                            <div className='invalid-feedback'>Please enter Event title!</div>
                                                         </div>
 
-                                                        <nav aria-label="Page navigation example">
-                                                            <ul className="pagination">
-                                                                <li className="page-item">
-                                                                    <a className="page-link" aria-label="Previous" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                        if (data.topUsersPage !== 1) {
-                                                                            dispatchData({ type: 'SET_TOP_USERS_PAGE', payload: 1 });
-                                                                        }
-                                                                    }}>
-                                                                        <span aria-hidden="true">«</span>
-                                                                    </a>
-                                                                </li>
-
-                                                                {
-                                                                    Array.from({ length: data.topUsersTotalPage }, (_, index) => {
-                                                                        if (data.topUsersTotalPage > 10) {
-                                                                            if ((index >= data.topUsersPage - 3 && index <= data.topUsersPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.topUsersTotalPage - 2) { // last 2 pages
-                                                                                return (
-                                                                                    <li className={`page-item ${data.topUsersPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
-                                                                                    </li>
-                                                                                );
-                                                                            }
-                                                                        } else {
-                                                                            return (
-                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_TOP_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
-                                                                                </li>
-                                                                            );
-                                                                        }
-                                                                    })
-                                                                }
-
-                                                                <li className="page-item">
-                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                        if (data.topUsersPage !== data.topUsersTotalPage) {
-                                                                            dispatchData({ type: 'SET_TOP_USERS_PAGE', payload: data.topUsersTotalPage });
-                                                                        }
-                                                                    }}>
-                                                                        <span aria-hidden="true">»</span>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </nav>
-                                                    </div>
-
-                                                    <table className="table table-borderless"
-                                                        style={{ textAlign: 'start' }}
-                                                    >
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Email</th>
-                                                                <th scope="col">Rank</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {data.topUsers.map((item, index) => (
-                                                                <tr key={index}>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                    </th>
-                                                                    <td>{item.Name}</td>
-                                                                    <td>{item.Email}</td>
-                                                                    <td className="fw-bold">{item.Rank}</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                    {/* <!-- Users LeaderBoard table --> */}
-
-                                                </div>
-
-                                                <div className="tab-pane fade pt-3" id="user-comments">
-
-                                                    {/* <!-- Comment Table --> */}
-                                                    <div className="tab-title search nav">
-                                                        <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                        <div className='col-12'>
+                                                            <label htmlFor="eventContent-edit" className="form-label">Event content</label>
+                                                            <div className='input-group'>
+                                                                <textarea type='text' className='form-control' id='eventContent-edit' name='eventContent-edit' rows="5" required />
+                                                            </div>
+                                                            <div className='invalid-feedback'>Please enter Event content!</div>
                                                         </div>
 
-                                                        <nav aria-label="Page navigation example">
-                                                            <ul className="pagination">
-                                                                <li className="page-item">
-                                                                    <a className="page-link" aria-label="Previous">
-                                                                        <span aria-hidden="true">«</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li className="page-item active"><a className="page-link">1</a></li>
-                                                                <li className="page-item"><a className="page-link">2</a></li>
-                                                                <li className="page-item"><a className="page-link">3</a></li>
-                                                                <li className="page-item"><a className="page-link">4</a></li>
-                                                                <li className="page-item"><a className="page-link">5</a></li>
-                                                                <li className="page-item"><a className="page-link">6</a></li>
-                                                                <li className="page-item"><a className="page-link">7</a></li>
-                                                                <li className="page-item">
-                                                                    <a className="page-link" aria-label="Next">
-                                                                        <span aria-hidden="true">»</span>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </nav>
-                                                    </div>
-                                                    {/* <!-- End Comment Table --> */}
+                                                        <div className="col-12" >
+                                                            <div className='row'>
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="couponCode-edit" className="form-label">Coupon Code</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='text' className='form-control' id='couponCode-edit' name='couponCode-edit' required maxLength={6} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Coupon Code!</div>
+                                                                </div>
 
-                                                    <h5 className="card-title">Nothing</h5>
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="eventDiscount-edit" className="form-label">Discount (%)</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='number' className='form-control' id='eventDiscount-edit' name='eventDiscount-edit' required maxLength={2} min={0} max={100} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Discount!</div>
+                                                                </div>
 
-                                                </div>
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="typeCoupon-edit" className="form-label">Type</label>
+                                                                    <select className="form-select" id="typeCoupon-edit" required onChange={(event) => { setTypeCouponEdit(event.target.value) }}>
+                                                                        {
+                                                                            typeCouponsList.map((item, index) => (
+                                                                                <option key={index} value={item} defaultValue={index === 1}>{item}</option>
+                                                                            ))
+                                                                        }
+                                                                    </select>
+                                                                </div>
 
-                                                <div className="tab-pane fade pt-3" id="banned-users">
-
-                                                    {/* <!-- Users Banned List table --> */}
-                                                    <div className="tab-title search nav">
-                                                        <h5 className="card-title">Banned Users</h5>
-                                                        <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                                <div className="col-3 " >
+                                                                    <label htmlFor="couponAmount-edit" className="form-label" >Coupon amount</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='numcer' className='form-control' id='couponAmount-edit' name='couponAmount-edit' required disabled={typeCouponEdit !== "Count"} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Coupon amount!</div>
+                                                                </div>
+                                                            </div>
                                                         </div>
 
-                                                        <nav aria-label="Page navigation example">
-                                                            <ul className="pagination">
-                                                                <li className="page-item">
-                                                                    <a className="page-link" style={{ cursor: 'pointer' }} aria-label="Previous" onClick={() => {
-                                                                        if (data.bannedUsersPage !== 1) {
-                                                                            dispatchData({ type: 'SET_BANNED_USERS_PAGE', payload: data.bannedUsersPage - 1 })
-                                                                        }
-                                                                    }}>
-                                                                        <span aria-hidden="true">«</span>
-                                                                    </a>
-                                                                </li>
+                                                        <div className="col-12" >
+                                                            <div className='row'>
+                                                                <div className="col-6" >
+                                                                    <label htmlFor="eventStart-edit" className="form-label">Start date</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='datetime-local' className='form-control' id='eventStart-edit' name='eventStart-edit' required />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Start date!</div>
+                                                                </div>
 
-                                                                {
-                                                                    Array.from({ length: data.bannedUsersTotalPage }, (_, index) => {
-                                                                        if (data.userTotalPage > 10) {
-                                                                            if ((index >= data.bannedUsersPage - 2 && index <= data.bannedUsersPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.bannedUsersTotalPage - 3) { // last 2 pages
-                                                                                return (
-                                                                                    <li className={`page-item ${data.bannedUsersPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_BANNED_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
-                                                                                    </li>
-                                                                                );
-                                                                            }
-                                                                        } else {
-                                                                            return (
-                                                                                <li className={`page-item ${data.bannedUsersPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_BANNED_USERS_PAGE', payload: index + 1 })}>{index + 1}</a>
-                                                                                </li>
-                                                                            );
-                                                                        }
-                                                                    })
-                                                                }
-                                                                <li className="page-item">
-                                                                    <a className="page-link" style={{ cursor: 'pointer' }} aria-label="Next" onClick={() => {
-                                                                        if (data.bannedUsersPage !== 1) {
-                                                                            dispatchData({ type: 'SET_BANNED_USERS_PAGE', payload: data.bannedUsersPage})
-                                                                        }
-                                                                    }}>
-                                                                        <span aria-hidden="true">»</span>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </nav>
+                                                                <div className="col-6 " >
+                                                                    <label htmlFor="eventEnd-edit" className="form-label">End date</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='datetime-local' className='form-control' id='eventEnd-edit' name='eventEnd-edit' required />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter End date!</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-12">
+                                                            <button className="btn btn-primary w-100" type="button" style={{ background: '#fd7e14', marginTop: 50, borderWidth: 0 }}
+                                                                onClick={(event) => {
+                                                                    console.log("press create admin");
+                                                                    handleUpdateEvent(event, data?.eventEdit);
+                                                                }}>Submit</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                {/*End Event edit*/}
+
+                                                {/*Create event*/}
+                                                <div className="tab-pane fade" id="create-event">
+
+                                                    <div className="pt-4 pb-2 tab-title">
+                                                        <h5 className="card-title text-center pb-0 fs-4">Create Event</h5>
+                                                        <p className="text-center small">Enter information to create</p>
                                                     </div>
 
-                                                    <table className="table table-borderless"
-                                                        style={{ textAlign: 'start' }}
-                                                    >
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Get Banned Since</th>
-                                                                <th scope="col">Action</th>
-                                                            </tr>
-                                                        </thead>
-                                                        {data.bannedUser ? <tbody>
+                                                    <form className='row g-3 needs-validation create-event'>
+                                                        <div className='col-12'>
+                                                            <label htmlFor="eventTitle" className="form-label">Event title</label>
+                                                            <div className='input-group'>
+                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required />
+                                                            </div>
+                                                            <div className='invalid-feedback'>Please enter Event title!</div>
+                                                        </div>
 
-                                                            {data.bannedUsers.map((item, index) => (
-                                                                <tr key={index}>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.avatar || avatar} alt="" className="avatar" /></a>
-                                                                    </th>
-                                                                    <td>{item.Name}</td>
-                                                                    <td>{item.UpdateAt}</td>
-                                                                    <td>
-                                                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => unBannedUsers(item.Id, item.Name, item.UpdateAt)}>Enable User</button>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody> 
-                                                        :
-                                                        <tbody>
-                                                                <tr>
-                                                                    <td colSpan="4">No banned users found.</td>
-                                                                </tr>
-                                                        </tbody>}
-                                                    </table>
-                                                    {/* <!-- Users Banned List table --> */}
+                                                        <div className='col-12'>
+                                                            <label htmlFor="eventContent" className="form-label">Event content</label>
+                                                            <div className='input-group'>
+                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required />
+                                                            </div>
+                                                            <div className='invalid-feedback'>Please enter Event content!</div>
+                                                        </div>
 
+                                                        <div className="col-12" >
+                                                            <div className='row'>
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="couponCode" className="form-label">Coupon Code</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='text' className='form-control' id='couponCode' name='couponCode' required maxLength={6} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Coupon Code!</div>
+                                                                </div>
+
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="eventDiscount" className="form-label">Discount (%)</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='number' className='form-control' id='eventDiscount' name='eventDiscount' required maxLength={2} min={0} max={100} defaultValue={0} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Discount!</div>
+                                                                </div>
+
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="typeCoupon" className="form-label">Type</label>
+                                                                    <select className="form-select" id="typeCoupon" required onChange={(event) => { setTypeCoupon(event.target.value) }}>
+                                                                        {
+                                                                            typeCouponsList.map((item, index) => (
+                                                                                <option key={index} value={item} defaultValue={index === 1}>{item}</option>
+                                                                            ))
+                                                                        }
+                                                                    </select>
+                                                                </div>
+
+                                                                <div className="col-3 " >
+                                                                    <label htmlFor="couponAmount" className="form-label" >Coupon amount</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='numcer' className='form-control' id='couponAmount' name='couponAmount' required disabled={typeCoupon !== "Count"} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Coupon amount!</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-12" >
+                                                            <div className='row'>
+                                                                <div className="col-6" >
+                                                                    <label htmlFor="eventStart" className="form-label">Start date</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='datetime-local' className='form-control' id='eventStart' name='eventStart' required />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Start date!</div>
+                                                                </div>
+
+                                                                <div className="col-6 " >
+                                                                    <label htmlFor="eventEnd" className="form-label">End date</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='datetime-local' className='form-control' id='eventEnd' name='eventEnd' required />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter End date!</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-12">
+                                                            <button className="btn btn-primary w-100" type="button" style={{ background: '#fd7e14', marginTop: 50, borderWidth: 0 }}
+                                                                onClick={(event) => {
+                                                                    console.log("press create event");
+                                                                    handleCreateEvent(event);
+
+                                                                }}>Create</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
+                                                {/*End Create event*/}
+
+                                                {/*Coupon edit*/}
+                                                <div className="tab-pane fade" id="coupon-edit">
+                                                    <div className="pt-4 pb-2 tab-title">
+                                                        <h5 className="card-title text-center pb-0 fs-4">Edit Coupon</h5>
+                                                        {/* <p className="text-center small">Enter information to create</p> */}
+                                                    </div>
+
+                                                    <form className='row g-3 needs-validation'>
+                                                        <div className='col-12'>
+                                                            <label htmlFor="couponCode-editCoupon" className="form-label">Coupon Code</label>
+                                                            <div className='input-group'>
+                                                                <input type='text' className='form-control' id='couponCode-editCoupon' name='couponCode-editCoupon' required />
+                                                            </div>
+                                                            <div className='invalid-feedback'>Please enter Coupon Code!</div>
+                                                        </div>
+
+                                                        <div className="col-12" >
+                                                            <div className='row'>
+                                                                <div className="col-6" >
+                                                                    <label htmlFor="couponDiscount-editCoupon" className="form-label">Discount (%)</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='number' className='form-control' id='couponDiscount-editCoupon' name='couponDiscount-editCoupon' required min={0} max={100} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Discount!</div>
+                                                                </div>
+
+                                                                <div className="col-3" >
+                                                                    <label htmlFor="typeCoupon-editCoupon" className="form-label">Type</label>
+                                                                    <select className="form-select" id="typeCoupon-editCoupon" required onChange={(event) => { setTypeCouponCouponEdit(event.target.value) }}>
+                                                                        {
+                                                                            typeCouponsList.map((item, index) => (
+                                                                                <option key={index} value={item} defaultValue={index === 1}>{item}</option>
+                                                                            ))
+                                                                        }
+                                                                    </select>
+                                                                </div>
+
+                                                                <div className="col-3 " >
+                                                                    <label htmlFor="couponAmount-editCoupon" className="form-label" >Coupon amount</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='numcer' className='form-control' id='couponAmount-editCoupon' name='couponAmount-editCoupon' required disabled={typeCouponEdit !== "Count"} />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Coupon amount!</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-12" >
+                                                            <div className='row'>
+                                                                <div className="col-6" >
+                                                                    <label htmlFor="couponStart-editCoupon" className="form-label">Start date</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='datetime-local' className='form-control' id='couponStart-editCoupon' name='couponStart-editCoupon' required />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter Start date!</div>
+                                                                </div>
+
+                                                                <div className="col-6 " >
+                                                                    <label htmlFor="couponEnd-editCoupon" className="form-label">End date</label>
+                                                                    <div className='input-group'>
+                                                                        <input type='datetime-local' className='form-control' id='couponEnd-editCoupon' name='couponEnd-editCoupon' required />
+                                                                    </div>
+                                                                    <div className='invalid-feedback'>Please enter End date!</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-12">
+                                                            <button className="btn btn-primary w-100" type="button" style={{ background: '#fd7e14', marginTop: 50, borderWidth: 0 }}
+                                                                onClick={(event) => {
+                                                                    console.log("press create admin");
+                                                                    // handleCreateAccount(event);
+
+                                                                }}>Submit</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                {/*End Coupon edit*/}
 
                                             </div>
                                             {/* <!-- End Bordered Tabs --> */}
@@ -1229,83 +1173,146 @@ const Discounts = (prop) => {
                         <div className="col-lg-4">
 
 
-                            {/* <!-- Recent Activity --> */}
-                            <div className="card">
-                                <div className="filter">
-                                    <a className="icon" data-bs-toggle="dropdown">
-                                        <ReactSVG
-                                            src={more}
-                                        />
-                                    </a>
-                                    <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                        <li className="dropdown-header text-start">
-                                            <h6>Filter</h6>
-                                        </li>
+                            {/* <!-- Event Detail --> */}
+                            {
+                                data?.eventDetail &&
+                                <div className="card">
+                                    <div className="filter" style={{ cursor: "pointer" }}>
+                                        <a className="icon" data-bs-toggle="dropdown">
+                                            <ReactSVG
+                                                src={more}
+                                            />
+                                        </a>
+                                        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                            <li className="dropdown-header text-start">
+                                                <h6>Action</h6>
+                                            </li>
 
-                                        <li><a className="dropdown-item">Today</a></li>
-                                        <li><a className="dropdown-item">This Month</a></li>
-                                        <li><a className="dropdown-item">This Year</a></li>
-                                    </ul>
-                                </div>
+                                            <li><button type="button" className="dropdown-item"
 
-                                <div className="card-body">
-                                    <h5 className="card-title">Recent Activity <span>| Today</span></h5>
-
-                                    <div className="activity">
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">32 min</div>
-                                            <div className="activity-content">
-                                                Quia quae rerum <a className="fw-bold text-dark">explicabo officiis</a> beatae
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">56 min</div>
-                                            <div className="activity-content">
-                                                Voluptatem blanditiis blanditiis eveniet
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">2 hrs</div>
-                                            <div className="activity-content">
-                                                Voluptates corrupti molestias voluptatem
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">1 day</div>
-                                            <div className="activity-content">
-                                                Tempore autem saepe <a className="fw-bold text-dark">occaecati voluptatem</a> tempore
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">2 days</div>
-                                            <div className="activity-content">
-                                                Est sit eum reiciendis exercitationem
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">4 weeks</div>
-                                            <div className="activity-content">
-                                                Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
+                                                onClick={() => {
+                                                    setInfoEventEdit(data?.eventDetail);
+                                                    setEventEdit(data?.eventDetail);
+                                                    selectEventEditTab();
+                                                }}>Edit</button></li>
+                                        </ul>
                                     </div>
 
+                                    <div className="card-body">
+                                        <h5 className="card-title">Event Detail</h5>
+
+                                        <div className="activity">
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Title</div>
+                                                <div className="activity-content fw-bold text-dark">
+                                                    {data?.eventDetail?.Title || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }} >Content</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.Content || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Start</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.Start || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>End</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.End || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Created At</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.CreateAt || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Created By</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.CreateBy || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            {
+                                                data?.eventDetail?.UpdateAt &&
+                                                <div className="activity-item d-flex">
+                                                    <div className="activite-label" style={{ minWidth: 90 }}>Update At</div>
+                                                    <div className="activity-content">
+                                                        {data?.eventDetail?.UpdateAt || " "}
+                                                    </div>
+                                                </div>
+                                            }
+                                            {/* <!-- End detail item--> */}
+
+                                            {
+                                                data?.eventDetail?.UpdateBy &&
+                                                <div className="activity-item d-flex">
+                                                    <div className="activite-label" style={{ minWidth: 90 }}>Update By</div>
+                                                    <div className="activity-content">
+                                                        {data?.eventDetail?.UpdateBy || " "}
+                                                    </div>
+                                                </div>
+                                            }
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Coupon Code</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.CouponCode || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Discount</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.Discount + '(%)' || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+
+                                            <div className="activity-item d-flex">
+                                                <div className="activite-label" style={{ minWidth: 90 }}>Coupon Type</div>
+                                                <div className="activity-content">
+                                                    {data?.eventDetail?.Type || " "}
+                                                </div>
+                                            </div>
+                                            {/* <!-- End detail item--> */}
+                                            {
+                                                data?.eventDetail?.Amount !== -1 &&
+                                                <div className="activity-item d-flex">
+                                                    <div className="activite-label" style={{ minWidth: 90 }}>Amount</div>
+                                                    <div className="activity-content">
+                                                        {data?.eventDetail?.Amount}
+                                                    </div>
+                                                </div>
+                                            }
+                                            {/* <!-- End detail item--> */}
+
+                                        </div>
+
+                                    </div>
                                 </div>
-                            </div>
-                            {/* <!-- End Recent Activity --> */}
+                            }
+                            {/* <!-- End Event Detail --> */}
 
 
                         </div>

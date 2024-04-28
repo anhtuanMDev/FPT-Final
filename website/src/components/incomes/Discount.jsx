@@ -72,6 +72,27 @@ const Discounts = (prop) => {
     const [typeCouponEdit, setTypeCouponEdit] = useState(typeCouponsList[0]);
     const [typeCouponCouponEdit, setTypeCouponCouponEdit] = useState(typeCouponsList[0]);
 
+    // image
+    const [image, setImage] = useState(null);
+    const [fileImage, setFileImage] = useState(null);
+
+    const handleImageUpload = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        file && setFileImage(file);
+
+        reader.onload = () => {
+            const imageDataURL = reader.result;
+            setImage(imageDataURL);
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+
+
+
     {/** declare event storage */ }
 
     const initialState = {
@@ -130,12 +151,23 @@ const Discounts = (prop) => {
 
     const loadEventDetail = async (eventId) => {
         const response = await AxiosInstance().get("get-event-detail.php", { params: { id: eventId } });
+        console.log(response.eventDetail);
         dispatchData({ type: "GET_EVENT_DETAIL", payload: response.eventDetail });
     }
 
     const setEventEdit = (eventInfo) => {
         dispatchData({ type: "GET_EVENT_EDIT", payload: eventInfo });
     }
+
+    const generateID = (prefix) => {
+        const chars =
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let id = prefix;
+        for (let i = 0; i < 17; i++) {
+            id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return id;
+    };
 
     const setInfoEventEdit = (eventDe) => {
         let title = document.getElementById('eventTitle-edit');
@@ -195,11 +227,28 @@ const Discounts = (prop) => {
                 confirmButtonText: 'OK'
             });
             loadAllEvents();
+
+
+            if (!fileImage) return;
+
+            const formData = new FormData();
+            const id = generateID('IMG');
+            // console.log(fileImage);
+            formData.append('image', fileImage, `${id}.jpg`);
+
+            const result = await AxiosInstance('multipart/form-data').post('/upload-file.php', formData);
+            // console.log(result);
+            const data = {
+                id: id,
+                ownerID: response.data,
+            };
+            const upload = await AxiosInstance().post('/insert-image.php', data);
         } else {
             console.log("failed");
             Swal.fire({
                 title: 'Failed',
-                text: 'Event creation failed',
+                text: response.statusText,
+                // text: 'Event creation failed',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -981,11 +1030,35 @@ const Discounts = (prop) => {
 
                                                 {/*Create event*/}
                                                 <div className="tab-pane fade" id="create-event">
+                                                    <div className='row'>
+                                                        <div className="col-2 pt-4 pb-2 ">
+                                                            <div className="card-body text-center">
+                                                                <input
+                                                                    type="file"
+                                                                    accept="image/*"
+                                                                    onChange={handleImageUpload}
+                                                                    style={{ display: 'none' }}
+                                                                    id="image-upload"
+                                                                />
+                                                                <label htmlFor="image-upload" className="btn" style={{ width: '100px', height: '100px', padding: 0, border: '2px solid orange' }} >
+                                                                    {image ? (
+                                                                        <img src={image} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                    ) : (
+                                                                        <img src={avatar} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                    )}
+                                                                </label>
+                                                            </div>
+                                                        </div>
 
-                                                    <div className="pt-4 pb-2 tab-title">
-                                                        <h5 className="card-title text-center pb-0 fs-4">Create Event</h5>
-                                                        <p className="text-center small">Enter information to create</p>
+                                                        <div className="col-8">
+                                                            <div className="pt-4 pb-2 tab-title">
+                                                                <h5 className="card-title text-center pb-0 fs-4">Create Event</h5>
+                                                                <p className="text-center small">Enter information to create</p>
+                                                            </div>
+                                                        </div>
                                                     </div>
+
+
 
                                                     <form className='row g-3 needs-validation create-event'>
                                                         <div className='col-12'>
@@ -1201,113 +1274,126 @@ const Discounts = (prop) => {
                                     <div className="card-body">
                                         <h5 className="card-title">Event Detail</h5>
 
-                                        <div className="activity">
+                                        <dl className="detail">
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Title</div>
-                                                <div className="activity-content fw-bold text-dark">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Title</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.Title || " "}
-                                                </div>
+                                                </dd>
                                             </div>
+
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }} >Content</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2" >Content</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.Content || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Start</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Start</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.Start || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>End</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">End</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.End || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Created At</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Created At</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.CreateAt || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
-
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Created By</div>
-                                                <div className="activity-content">
-                                                    {data?.eventDetail?.CreateBy || " "}
-                                                </div>
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Created By</dt>
+                                                <dd className="d-flex align-items-center ms-4 p-1 ">
+                                                    <img src={data?.eventDetail?.ImageCreateBy ? `http://${host}/uploads/${data?.eventDetail?.ImageCreateBy}.jpg` : avatar} alt="Avatar"
+                                                        className="me-2" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                                                    <div>
+                                                        <span>{data?.eventDetail?.CreateBy || " "}</span>
+                                                        <span className="ms-2">|</span>
+                                                        <span className="ms-2">{data?.eventDetail?.EmailCreateBy}</span>
+                                                    </div>
+                                                </dd>
                                             </div>
+
                                             {/* <!-- End detail item--> */}
 
                                             {
                                                 data?.eventDetail?.UpdateAt &&
-                                                <div className="activity-item d-flex">
-                                                    <div className="activite-label" style={{ minWidth: 90 }}>Update At</div>
-                                                    <div className="activity-content">
+                                                <div className="my-3 bg-light">
+                                                    <dt className="my-2 bg-info p-2">Update At</dt>
+                                                    <dd className="ms-4 p-1 ">
                                                         {data?.eventDetail?.UpdateAt || " "}
-                                                    </div>
+                                                    </dd>
                                                 </div>
                                             }
                                             {/* <!-- End detail item--> */}
 
                                             {
                                                 data?.eventDetail?.UpdateBy &&
-                                                <div className="activity-item d-flex">
-                                                    <div className="activite-label" style={{ minWidth: 90 }}>Update By</div>
-                                                    <div className="activity-content">
-                                                        {data?.eventDetail?.UpdateBy || " "}
-                                                    </div>
+                                                <div className="my-3 bg-light">
+                                                    <dt className="my-2 bg-info p-2">Update By</dt>
+                                                    <dd className="d-flex align-items-center ms-4 p-1 ">
+                                                        <img src={data?.eventDetail?.ImageUpdateBy ? `http://${host}/uploads/${data?.eventDetail?.ImageUpdateBy}.jpg` : avatar} alt="Avatar"
+                                                            className="me-2" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                                                        <div>
+                                                            <span>{data?.eventDetail?.UpdateBy || " "}</span>
+                                                            <span className="ms-2">|</span>
+                                                            <span className="ms-2">{data?.eventDetail?.EmailUpdateBy}</span>
+                                                        </div>
+                                                    </dd>
                                                 </div>
                                             }
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Coupon Code</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Coupon Code</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.CouponCode || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Discount</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Discount</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.Discount + '(%)' || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
 
-                                            <div className="activity-item d-flex">
-                                                <div className="activite-label" style={{ minWidth: 90 }}>Coupon Type</div>
-                                                <div className="activity-content">
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 bg-info p-2">Coupon Type</dt>
+                                                <dd className="ms-4 p-1 ">
                                                     {data?.eventDetail?.Type || " "}
-                                                </div>
+                                                </dd>
                                             </div>
                                             {/* <!-- End detail item--> */}
                                             {
                                                 data?.eventDetail?.Amount !== -1 &&
-                                                <div className="activity-item d-flex">
-                                                    <div className="activite-label" style={{ minWidth: 90 }}>Amount</div>
-                                                    <div className="activity-content">
+                                                <div className="my-3 bg-light">
+                                                    <dt className="my-2 bg-info p-2">Amount</dt>
+                                                    <dd className="ms-4 p-1 ">
                                                         {data?.eventDetail?.Amount}
-                                                    </div>
+                                                    </dd>
                                                 </div>
                                             }
                                             {/* <!-- End detail item--> */}
 
-                                        </div>
+                                        </dl>
 
                                     </div>
                                 </div>

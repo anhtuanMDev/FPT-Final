@@ -8,7 +8,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
-    function generateRandomString($prefix)
+    function generateID($prefix)
     {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $randomString = $prefix;
@@ -21,8 +21,8 @@ try {
     }
 
     $data = json_decode(file_get_contents('php://input'));
-    $id = generateRandomString('EVT');
-    $idCpn = generateRandomString('CPN');
+    $id = generateID('EVT');
+    $idCpn = generateID('CPN');
     $adminID = $data->adminID;
     $title = $data->title;
     $content = $data->content;
@@ -44,7 +44,7 @@ try {
         $stmt->execute();
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($res) {
-            $id = generateRandomString("EVT");
+            $id = generateID("EVT");
         } else {
             break;
         }
@@ -57,7 +57,7 @@ try {
         $stmt->execute();
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($res) {
-            $idCpn = generateRandomString("CPN");
+            $idCpn = generateID("CPN");
         } else {
             break;
         }
@@ -78,6 +78,27 @@ try {
     $stmt->execute();
     $event = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Get user IDs based on type
+    $query = ($type == "Times") ? "SELECT Id FROM users" : "SELECT Id FROM users ORDER BY RAND() LIMIT $amount";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $userIDs = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+
+
+    foreach ($userIDs as $user) {
+        $copID = generateID('CPU');
+        $query = "INSERT INTO couponuser (Id,UserID, CouponID, Status) VALUES ('$copID','$user', '$idCpn', 'Available')";
+        $stmt = $dbConn->prepare($query);
+        $stmt->execute();
+
+        $idNot = generateID('NOT');
+        $query = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, GiftID, TargetID, Creator) VALUES 
+        ('$idNot', 'Event: $title', '$content', 0, NOW(), '$idCpn', '$user', '$adminID')";
+        $stmt = $dbConn->prepare($query);
+        $stmt->execute();
+    }
+
 
     // Commit the transaction
     $dbConn->commit();
@@ -86,7 +107,7 @@ try {
         array(
             "status" => true,
             "statusText" => "Tạo event thành công!",
-            "data" => null,
+            "data" => $id,
         )
     );
 

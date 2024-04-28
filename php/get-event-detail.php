@@ -18,9 +18,13 @@ try {
                     E.Start AS Start, 
                     E.End AS End, 
                     E.CreateAt AS CreateAt, 
+                    I_create.ID AS ImageCreateBy,
                     A_create.Name AS CreateBy,
+                    A_create.Email AS EmailCreateBy,
                     E.UpdateAt AS UpdateAt, 
+                    I_update.ID AS ImageUpdateBy,
                     A_update.Name AS UpdateBy,
+                    A_update.Email AS EmailUpdateBy,
                     E.CouponID AS CouponID,
                     C.Code AS CouponCode,
                     C.Discount AS Discount,
@@ -34,8 +38,13 @@ try {
                     admin A_update ON E.UpdateBy = A_update.Id
                 LEFT JOIN 
                     coupons C ON E.CouponID = C.Id
+                LEFT JOIN 
+                    images I_create ON E.UpdateBy = I_create.OwnerID
+                LEFT JOIN 
+                    images I_update ON E.UpdateBy = I_update.OwnerID
                 WHERE 
                     E.Id = '$id'";
+
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

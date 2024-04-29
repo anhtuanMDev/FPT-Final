@@ -40,7 +40,7 @@ import Swal from 'sweetalert2';
 
 
 const Foods = (prop) => {
-    const { host, adminID } = prop;
+    const { host, adminID, setID, adminDetail } = prop;
     document.title = 'Informations - Foods';
     const chartRef = useRef(null);
 
@@ -49,6 +49,11 @@ const Foods = (prop) => {
     const changePage = (link) => {
         navigate(link);
     };
+
+    const logOut = () => {
+        console.log("log out");
+        setID('');
+    }
 
     const initialState = {
         allFood: [],
@@ -289,21 +294,21 @@ const Foods = (prop) => {
     {/** Start of reply users */ }
     const replyUserReports = async (reportID, userName, adminID, targetID) => {
         Swal.fire({
-            title: `What do you want to send to ${userName}`,
-            text: "After sending message the target report user will be banned ",
+            title: `Bạn muốn gửi gì tới ${userName}`,
+            text: "Sau khi gửi tin nhắn, người dùng báo cáo mục tiêu sẽ bị cấm",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Send',
+            confirmButtonText: 'Gửi',
             input: "textarea",
-            inputPlaceholder: "Type your message here...",
+            inputPlaceholder: "Gõ tin nhắn của bạn ở đây...",
             inputAttributes: {
-                "aria-label": "Type your message here"
+                "aria-label": "Gõ tin nhắn của bạn ở đây"
             },
             showLoaderOnConfirm: true,
             showCancelButton: true,
             inputValidator: (value) => {
                 if (!value) {
-                    return "Sorry your input was invalid!";
+                    return "Rất tiếc thông tin nhập của bạn không hợp lệ!";
                 }
             },
             preConfirm: async (resp) => {
@@ -326,7 +331,7 @@ const Foods = (prop) => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -334,7 +339,7 @@ const Foods = (prop) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    text: `Your message has been send to ${userName} and ${targetID} has been banned!`
+                    text: `Tin nhắn của bạn đã được gửi tới ${userName} và ${targetID} đã bị cấm!`
                 })
             }
         })
@@ -345,11 +350,11 @@ const Foods = (prop) => {
 
     const updateStatusFood = async (name, adminID, status, targetID) => {
         Swal.fire({
-            title: `Do you want to update dish ${name}'s status to ${status}?`,
-            text: "Press confirm button to continue",
+            title: `Bạn có muốn cập nhật trạng thái của món ${name} lên ${status} không?`,
+            text: "Nhấn nút xác nhận để tiếp tục",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Confirm',
+            confirmButtonText: 'Xác nhận',
             showLoaderOnConfirm: true,
             preConfirm: async (res) => {
                 try {
@@ -365,7 +370,7 @@ const Foods = (prop) => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -373,7 +378,7 @@ const Foods = (prop) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    text: `User ${name}'s status has been updated to ${status}!`
+                    text: `Trạng thái của món ${name} đã được cập nhật thành ${status}!`
                 })
             }
         });
@@ -428,25 +433,25 @@ const Foods = (prop) => {
             switch (statistics.foodTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchStatistics({ type: 'FOOD_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'FOOD_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'FOOD_GROWTH', payload: cal });
                     dispatchStatistics({ type: 'FOOD_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchStatistics({ type: 'FOOD_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'FOOD_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'FOOD_GROWTH', payload: cal1 });
                     dispatchStatistics({ type: 'FOOD_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchStatistics({ type: 'FOOD_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'FOOD_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'FOOD_GROWTH', payload: cal2 });
                     dispatchStatistics({ type: 'FOOD_NUMBER', payload: statistic.THIS_YEAR });
                     break;
             }
         } else {
-            dispatchStatistics({ type: 'FOOD_STATE', payload: 'No record' });
+            dispatchStatistics({ type: 'FOOD_STATE', payload: 'Không có hồ sơ' });
             dispatchStatistics({ type: 'FOOD_GROWTH', payload: 0 });
             dispatchStatistics({ type: 'FOOD_NUMBER', payload: 0 });
         }
@@ -469,25 +474,25 @@ const Foods = (prop) => {
             switch (statistics.revenueTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchStatistics({ type: 'REVENUE_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'REVENUE_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'REVENUE_GROWTH', payload: cal });
                     dispatchStatistics({ type: 'REVENUE_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchStatistics({ type: 'REVENUE_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'REVENUE_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'REVENUE_GROWTH', payload: cal1 });
                     dispatchStatistics({ type: 'REVENUE_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchStatistics({ type: 'REVENUE_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'REVENUE_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'REVENUE_GROWTH', payload: cal2 });
                     dispatchStatistics({ type: 'REVENUE_NUMBER', payload: statistic.THIS_YEAR });
                     break;
             }
         } else {
-            dispatchStatistics({ type: 'REVENUE_STATE', payload: 'No record' });
+            dispatchStatistics({ type: 'REVENUE_STATE', payload: 'Không có hồ sơ' });
             dispatchStatistics({ type: 'REVENUE_GROWTH', payload: 0 });
             dispatchStatistics({ type: 'REVENUE_NUMBER', payload: 0 });
         }
@@ -510,19 +515,19 @@ const Foods = (prop) => {
             switch (statistics.bannedTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: cal });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: cal1 });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: cal2 });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic.THIS_YEAR });
                     break;
@@ -532,7 +537,7 @@ const Foods = (prop) => {
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: Object.values(statistic).reduce((a, b) => a + b, 0) });
             }
         } else {
-            dispatchStatistics({ type: 'BANNED_STATE', payload: 'No record' });
+            dispatchStatistics({ type: 'BANNED_STATE', payload: 'Không có hồ sơ' });
             dispatchStatistics({ type: 'BANNED_GROWTH', payload: 0 });
             dispatchStatistics({ type: 'BANNED_NUMBER', payload: 0 });
         }
@@ -581,13 +586,13 @@ const Foods = (prop) => {
 
         ApexCharts.exec('dashboard', 'updateOptions', {
             series: [{
-                name: 'New foods',
+                name: 'Món ăn mới',
                 data: result.output.foods,
             }, {
-                name: 'Partnership',
+                name: 'Đối tác',
                 data: result.output.revenues
             }, {
-                name: 'Banned',
+                name: 'Bị cấm',
                 data: result.output.banneds
             }],
             xaxis: {
@@ -606,13 +611,13 @@ const Foods = (prop) => {
         if (chartRef.current) {
             chart = new ApexCharts(document.getElementById("reportsChart"), {
                 series: [{
-                    name: 'New foods',
+                    name: 'Món ăn mới',
                     data: statistics.foodSeries,
                 }, {
-                    name: 'Partnership',
+                    name: 'Đối tác',
                     data: statistics.revenueSeries
                 }, {
-                    name: 'Banned',
+                    name: 'Bị cấm',
                     data: statistics.bannedSeries
                 }],
                 chart: {
@@ -679,7 +684,7 @@ const Foods = (prop) => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -705,8 +710,8 @@ const Foods = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -716,8 +721,8 @@ const Foods = (prop) => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -729,8 +734,8 @@ const Foods = (prop) => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -742,8 +747,8 @@ const Foods = (prop) => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -754,9 +759,9 @@ const Foods = (prop) => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -764,7 +769,7 @@ const Foods = (prop) => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a>Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -783,8 +788,8 @@ const Foods = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -795,8 +800,8 @@ const Foods = (prop) => {
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -809,8 +814,8 @@ const Foods = (prop) => {
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -823,8 +828,8 @@ const Foods = (prop) => {
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -833,7 +838,7 @@ const Foods = (prop) => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a>Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -845,8 +850,10 @@ const Foods = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -862,7 +869,7 @@ const Foods = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -872,7 +879,7 @@ const Foods = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -882,7 +889,7 @@ const Foods = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -890,9 +897,9 @@ const Foods = (prop) => {
                                 </li>
 
                                 <li>
-                                    <a className="dropdown-item d-flex align-items-center">
+                                    <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -920,20 +927,20 @@ const Foods = (prop) => {
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
-                        <a className="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
+                        <a className="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
                             <ReactSVG
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -950,7 +957,7 @@ const Foods = (prop) => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
@@ -963,7 +970,7 @@ const Foods = (prop) => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
@@ -976,7 +983,7 @@ const Foods = (prop) => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -989,7 +996,7 @@ const Foods = (prop) => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -1002,7 +1009,7 @@ const Foods = (prop) => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -1015,7 +1022,7 @@ const Foods = (prop) => {
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -1023,7 +1030,7 @@ const Foods = (prop) => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a onClick={() => changePage('/incomes/discount')}>
+                                <a onClick={() => changePage('/incomes/discount')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -1032,7 +1039,7 @@ const Foods = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
                             <li>
@@ -1045,7 +1052,7 @@ const Foods = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -1058,7 +1065,7 @@ const Foods = (prop) => {
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -1075,7 +1082,7 @@ const Foods = (prop) => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
@@ -1088,7 +1095,7 @@ const Foods = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -1101,7 +1108,7 @@ const Foods = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -1114,14 +1121,14 @@ const Foods = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
@@ -1129,7 +1136,7 @@ const Foods = (prop) => {
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -1143,11 +1150,11 @@ const Foods = (prop) => {
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Foods Dashboard</h1>
+                    <h1>Thống kê món ăn</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a>Informations</a></li>
-                            <li className="breadcrumb-item active">Foods</li>
+                            <li className="breadcrumb-item"><a>Thông tin</a></li>
+                            <li className="breadcrumb-item active">Món ăn</li>
                         </ol>
                     </nav>
                 </div>
@@ -1175,26 +1182,26 @@ const Foods = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-food-card-title-span')
                                                     dispatchStatistics({ type: 'FOOD_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-food-card-title-span')
                                                     dispatchStatistics({ type: 'FOOD_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-food-card-title-span')
                                                     dispatchStatistics({ type: 'FOOD_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">New Foods | <span id='new-food-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Món ăn mới | <span id='new-food-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1229,26 +1236,26 @@ const Foods = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'revenue-card-title-span')
                                                     dispatchStatistics({ type: 'REVENUE_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'revenue-card-title-span')
                                                     dispatchStatistics({ type: 'REVENUE_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'revenue-card-title-span')
                                                     dispatchStatistics({ type: 'REVENUE_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Sold | <span id='revenue-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Bán ra | <span id='revenue-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1284,26 +1291,26 @@ const Foods = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'banned-card-title-span')
                                                     dispatchStatistics({ type: 'BANNED_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'banned-card-title-span')
                                                     dispatchStatistics({ type: 'BANNED_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'banned-card-title-span')
                                                     dispatchStatistics({ type: 'BANNED_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Banned | <span id='banned-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Bị cấm | <span id='banned-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1337,26 +1344,26 @@ const Foods = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchStatistics({ type: 'DATA_BOARD_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchStatistics({ type: 'DATA_BOARD_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchStatistics({ type: 'DATA_BOARD_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Reports / <span id='reports-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Báo cáo / <span id='reports-card-title-span'>Hôm nay</span></h5>
 
 
                                             {/* <!-- Line Chart --> */}
@@ -1380,7 +1387,7 @@ const Foods = (prop) => {
                                             <ul className="nav nav-tabs nav-tabs-bordered">
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">List</button>
+                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Danh sách</button>
                                                 </li>
 
                                                 <li className="nav-item">
@@ -1404,7 +1411,7 @@ const Foods = (prop) => {
                                                     <div className="tab-title search nav">
                                                         <h5 className="card-title">Foods List</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1450,11 +1457,11 @@ const Foods = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Image</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Price</th>
-                                                                <th scope="col">From</th>
-                                                                <th scope="col">Stauts</th>
+                                                                <th scope="col">Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Giá</th>
+                                                                <th scope="col">Từ</th>
+                                                                <th scope="col">Trạng thái</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -1486,9 +1493,9 @@ const Foods = (prop) => {
 
                                                     {/* <!-- Leader Board Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Leader Board</h5>
+                                                        <h5 className="card-title">Bảng xếp hạng</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <div className="filter">
@@ -1499,12 +1506,12 @@ const Foods = (prop) => {
                                                             </a>
                                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                                 <li className="dropdown-header text-start">
-                                                                    <h6>Filter</h6>
+                                                                    <h6>Lọc</h6>
                                                                 </li>
 
-                                                                <li><a className="dropdown-item">Today</a></li>
-                                                                <li><a className="dropdown-item">This Month</a></li>
-                                                                <li><a className="dropdown-item">This Year</a></li>
+                                                                <li><a className="dropdown-item">Hôm nay</a></li>
+                                                                <li><a className="dropdown-item">Tháng này</a></li>
+                                                                <li><a className="dropdown-item">Năm này</a></li>
                                                             </ul>
                                                         </div>
                                                     </div>
@@ -1514,12 +1521,12 @@ const Foods = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Image</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Price</th>
-                                                                <th scope="col">Sold</th>
-                                                                <th scope="col">Revenue</th>
-                                                                <th scope="col">From</th>
+                                                                <th scope="col">Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Giá</th>
+                                                                <th scope="col">Bán ra</th>
+                                                                <th scope="col">Doanh thu</th>
+                                                                <th scope="col">Từ</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -1593,7 +1600,7 @@ const Foods = (prop) => {
                                                     {/* <!-- Comments Table --> */}
                                                     <div className="tab-title search nav">
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1619,7 +1626,7 @@ const Foods = (prop) => {
                                                         </nav>
                                                     </div>
 
-                                                    <h5 className="card-title">Nothing...</h5>
+                                                    <h5 className="card-title">Không có gì cả...</h5>
 
 
                                                     {/* <!-- End Comments Table --> */}
@@ -1630,9 +1637,9 @@ const Foods = (prop) => {
 
                                                     {/* <!-- Banned Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Banned Foods List</h5>
+                                                        <h5 className="card-title">Danh sách món ăn bị cấm</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1679,11 +1686,11 @@ const Foods = (prop) => {
                                                         <thead>
                                                             <tr>
                                                                 <>
-                                                                    <th scope="col">Image</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">From</th>
-                                                                    <th scope="col">Price</th>
-                                                                    <th scope="col">Action</th>
+                                                                    <th scope="col">Ảnh</th>
+                                                                    <th scope="col">Tên</th>
+                                                                    <th scope="col">Từ</th>
+                                                                    <th scope="col">Giá</th>
+                                                                    <th scope="col">Hành động</th>
                                                                 </>
                                                             </tr>
                                                         </thead>
@@ -1705,7 +1712,7 @@ const Foods = (prop) => {
                                                                     );
                                                                 }) : (
                                                                     <tr>
-                                                                        <td colSpan={5} className=''>Don't have banned food</td>
+                                                                        <td colSpan={5} className=''>Không có món nào bị cấm</td>
                                                                     </tr>
                                                                 )
                                                             }
@@ -1736,28 +1743,28 @@ const Foods = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
-                                                <li><a className="dropdown-item">Today</a></li>
-                                                <li><a className="dropdown-item">This Month</a></li>
-                                                <li><a className="dropdown-item">This Year</a></li>
+                                                <li><a className="dropdown-item">Hôm nay</a></li>
+                                                <li><a className="dropdown-item">Tháng này</a></li>
+                                                <li><a className="dropdown-item">Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Recent Sales <span>| Today</span></h5>
+                                            <h5 className="card-title">Bán hàng gần đây <span>| Today</span></h5>
 
                                             <table className="table table-borderless"
                                                 style={{ textAlign: 'start' }}
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Customer Name</th>
-                                                        <th scope="col">List</th>
-                                                        <th scope="col">Items</th>
-                                                        <th scope="col">Revenue</th>
-                                                        <th scope="col">Status</th>
+                                                        <th scope="col">Tên khách hàng</th>
+                                                        <th scope="col">Danh sách</th>
+                                                        <th scope="col">Món hàng</th>
+                                                        <th scope="col">Doanh thu</th>
+                                                        <th scope="col">Trạng thái</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1834,12 +1841,12 @@ const Foods = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
-                                                <li><a className="dropdown-item">Today</a></li>
-                                                <li><a className="dropdown-item">This Month</a></li>
-                                                <li><a className="dropdown-item">This Year</a></li>
+                                                <li><a className="dropdown-item">Hôm nay</a></li>
+                                                <li><a className="dropdown-item">Tháng này</a></li>
+                                                <li><a className="dropdown-item">Năm này</a></li>
                                             </ul>
                                         </div>
 
@@ -1851,11 +1858,11 @@ const Foods = (prop) => {
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Customer Name</th>
-                                                        <th scope="col">List</th>
-                                                        <th scope="col">Items</th>
-                                                        <th scope="col">Revenue</th>
-                                                        <th scope="col">Status</th>
+                                                        <th scope="col">Tên khách hàng</th>
+                                                        <th scope="col">Danh sách</th>
+                                                        <th scope="col">Món hàng</th>
+                                                        <th scope="col">Doanh thu</th>
+                                                        <th scope="col">Trạng thái</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1936,70 +1943,71 @@ const Foods = (prop) => {
                                     <a className="icon" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
                                     <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                         <li className="dropdown-header text-start">
-                                            <h6>Filter</h6>
+                                            <h6>Lọc</h6>
                                         </li>
 
-                                        <li><a className="dropdown-item">Today</a></li>
-                                        <li><a className="dropdown-item">This Month</a></li>
-                                        <li><a className="dropdown-item">This Year</a></li>
+                                        <li><a className="dropdown-item">Hôm nay</a></li>
+                                        <li><a className="dropdown-item">Tháng này</a></li>
+                                        <li><a className="dropdown-item">Năm này</a></li>
                                     </ul>
                                 </div>
 
                                 <div className="card-body">
-                                    <h5 className="card-title">Recent Activity <span>| Today</span></h5>
+                                    <h5 className="card-title">Hoạt động gần đây <span>| Hôm nay</span></h5>
 
                                     <div className="activity">
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">32 min</div>
+                                            <div className="activite-label">32 phút</div>
                                             <i className='bi bi-circle-fill activity-badge text-success align-self-start'></i>
                                             <div className="activity-content">
-                                                Quia quae rerum <a className="fw-bold text-dark">explicabo officiis</a> beatae
+                                                Bởi vì tôi sẽ giải thích những điều <a className="fw-bold text-dark">may mắn</a>
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">56 min</div>
+                                            <div className="activite-label">56 phút</div>
                                             <i className='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
                                             <div className="activity-content">
-                                                Voluptatem blanditiis blanditiis eveniet
+                                                Niềm vui được nịnh nọt sẽ đến
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">2 hrs</div>
+                                            <div className="activite-label">2 giờ</div>
                                             <i className='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
                                             <div className="activity-content">
-                                                Voluptates corrupti molestias voluptatem
+                                                Niềm vui bị hủy hoại bởi niềm vui
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">1 day</div>
+                                            <div className="activite-label">1 ngày</div>
                                             <i className='bi bi-circle-fill activity-badge text-info align-self-start'></i>
                                             <div className="activity-content">
-                                                Tempore autem saepe <a className="fw-bold text-dark">occaecati voluptatem</a> tempore
+                                                Và theo thời gian, họ thường <a className="fw-bold text-dark">làm lu mờ niềm vui</a>
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">2 days</div>
+                                            <div className="activite-label">2 ngày</div>
                                             <i className='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
                                             <div className="activity-content">
-                                                Est sit eum reiciendis exercitationem
+                                                Đó là một bài tập từ chối anh ta
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">4 weeks</div>
+                                            <div className="activite-label">4 tuần</div>
                                             <i className='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
                                             <div className="activity-content">
-                                                Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
+                                                Nói nỗi đau của những điều này không phải của mình. Vì vậy, đó thực sự là những gì
+
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}

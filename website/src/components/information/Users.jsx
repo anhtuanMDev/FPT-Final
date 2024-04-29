@@ -44,7 +44,8 @@ import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
 const Users = (prop) => {
-    const { host } = prop;
+    const { host, adminID, setID, adminDetail } = prop;
+
     document.title = 'Informations - Users';
     const chartRef = useRef(null);
 
@@ -53,6 +54,11 @@ const Users = (prop) => {
     const changePage = (link) => {
         navigate(link);
     };
+
+    const logOut = () => {
+        console.log("log out");
+        setID('');
+    }
 
     {/** declare user storage */ }
 
@@ -215,11 +221,11 @@ const Users = (prop) => {
             const response = await AxiosInstance().get('/get-all-users.php');
             if (response.status) {
                 const statistic = response.users.length;
-                dispatchStatistics({ type: 'USER_STATE', payload: 'All of the users' });
+                dispatchStatistics({ type: 'USER_STATE', payload: 'Tất cả người dùng' });
                 dispatchStatistics({ type: 'USER_GROWTH', payload: 100 });
                 dispatchStatistics({ type: 'USER_NUMBER', payload: statistic });
             } else {
-                dispatchStatistics({ type: 'USER_STATE', payload: 'No record' });
+                dispatchStatistics({ type: 'USER_STATE', payload: 'Không có hồ sơ' });
                 dispatchStatistics({ type: 'USER_GROWTH', payload: 0 });
                 dispatchStatistics({ type: 'USER_NUMBER', payload: 0 });
             }
@@ -231,19 +237,19 @@ const Users = (prop) => {
             switch (statistics.userTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchStatistics({ type: 'USER_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'USER_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'USER_GROWTH', payload: cal });
                     dispatchStatistics({ type: 'USER_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchStatistics({ type: 'USER_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'USER_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'USER_GROWTH', payload: cal1 });
                     dispatchStatistics({ type: 'USER_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchStatistics({ type: 'USER_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'USER_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'USER_GROWTH', payload: cal2 });
                     dispatchStatistics({ type: 'USER_NUMBER', payload: statistic.THIS_YEAR });
                     break;
@@ -258,7 +264,7 @@ const Users = (prop) => {
             }
         } else {
             console.log("error response")
-            dispatchStatistics({ type: 'USER_STATE', payload: 'No record' });
+            dispatchStatistics({ type: 'USER_STATE', payload: 'Không có hồ sơ' });
             dispatchStatistics({ type: 'USER_GROWTH', payload: 0 });
             dispatchStatistics({ type: 'USER_NUMBER', payload: 0 });
         }
@@ -280,25 +286,25 @@ const Users = (prop) => {
             switch (statistics.sellerTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchStatistics({ type: 'SELLER_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'SELLER_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'SELLER_GROWTH', payload: cal });
                     dispatchStatistics({ type: 'SELLER_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchStatistics({ type: 'SELLER_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'SELLER_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'SELLER_GROWTH', payload: cal1 });
                     dispatchStatistics({ type: 'SELLER_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchStatistics({ type: 'SELLER_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'SELLER_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'SELLER_GROWTH', payload: cal2 });
                     dispatchStatistics({ type: 'SELLER_NUMBER', payload: statistic.THIS_YEAR });
                     break;
             }
         } else {
-            dispatchStatistics({ type: 'SELLER_STATE', payload: 'No record' });
+            dispatchStatistics({ type: 'SELLER_STATE', payload: 'Không có hồ sơ' });
             dispatchStatistics({ type: 'SELLER_GROWTH', payload: 0 });
             dispatchStatistics({ type: 'SELLER_NUMBER', payload: 0 });
         }
@@ -319,11 +325,11 @@ const Users = (prop) => {
             console.log(response)
             if (response.status) {
                 const statistic = response.data.length;
-                dispatchStatistics({ type: 'BANNED_STATE', payload: 'All of the banned' });
+                dispatchStatistics({ type: 'BANNED_STATE', payload: 'Tất cả người dùng bị cấm' });
                 dispatchStatistics({ type: 'BANNED_GROWTH', payload: 0 });
                 dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic });
             } else {
-                dispatchStatistics({ type: 'BANNED_STATE', payload: 'No record' });
+                dispatchStatistics({ type: 'BANNED_STATE', payload: 'Không có hồ sơ' });
                 dispatchStatistics({ type: 'BANNED_GROWTH', payload: 0 });
                 dispatchStatistics({ type: 'BANNED_NUMBER', payload: 0 });
             }
@@ -336,29 +342,29 @@ const Users = (prop) => {
             switch (statistics.bannedTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: cal });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: cal1 });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: cal2 });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: statistic.THIS_YEAR });
                     break;
                 case 'Total':
-                    dispatchStatistics({ type: 'BANNED_STATE', payload: 'All of the banned' });
+                    dispatchStatistics({ type: 'BANNED_STATE', payload: 'Tất cả người dùng bị cấm' });
                     dispatchStatistics({ type: 'BANNED_GROWTH', payload: 0 });
                     dispatchStatistics({ type: 'BANNED_NUMBER', payload: Object.values(statistic).reduce((a, b) => a + b, 0) });
             }
         } else {
-            dispatchStatistics({ type: 'BANNED_STATE', payload: 'No record' });
+            dispatchStatistics({ type: 'BANNED_STATE', payload: 'Không có hồ sơ' });
             dispatchStatistics({ type: 'BANNED_GROWTH', payload: 0 });
             dispatchStatistics({ type: 'BANNED_NUMBER', payload: 0 });
         }
@@ -431,21 +437,21 @@ const Users = (prop) => {
     {/** Start of reply users */ }
     const replyUserReports = async (reportID, userName, adminID, targetID) => {
         Swal.fire({
-            title: `What do you want to send to ${userName}`,
-            text: "After sending message the target report user will be banned ",
+            title: `Bạn muốn gửi gì tới ${userName}`,
+            text: "Sau khi gửi tin nhắn, người dùng báo cáo mục tiêu sẽ bị cấm",
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Send',
             input: "textarea",
-            inputPlaceholder: "Type your message here...",
+            inputPlaceholder: "Gõ tin nhắn của bạn ở đây...",
             inputAttributes: {
-                "aria-label": "Type your message here"
+                "aria-label": "Gõ tin nhắn của bạn ở đây"
             },
             showLoaderOnConfirm: true,
             showCancelButton: true,
             inputValidator: (value) => {
                 if (!value) {
-                    return "Sorry your input was invalid!";
+                    return "Rất tiếc thông tin nhập của bạn không hợp lệ!";
                 }
             },
             preConfirm: async (resp) => {
@@ -462,7 +468,7 @@ const Users = (prop) => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -470,7 +476,7 @@ const Users = (prop) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    text: `Your message has been send to ${userName} and ${targetID} has been banned!`
+                    text: `Tin nhắn của bạn đã được gửi tới ${userName} và ${targetID} đã bị cấm!`
                 })
             }
         })
@@ -478,21 +484,21 @@ const Users = (prop) => {
 
     const repjectUserReports = async (reportID, userName, adminID, targetID) => {
         Swal.fire({
-            title: `What do you want to send to ${userName}`,
-            text: "After sending message the report status will be set to Done ",
+            title: `Bạn muốn gửi gì tới ${userName}`,
+            text: "Sau khi gửi tin nhắn, trạng thái báo cáo sẽ được đặt thành Xong (Hoàn thành)",
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Send',
             input: "textarea",
-            inputPlaceholder: "Type your message here...",
+            inputPlaceholder: "Gõ tin nhắn của bạn ở đây...",
             inputAttributes: {
-                "aria-label": "Type your message here"
+                "aria-label": "Gõ tin nhắn của bạn ở đây"
             },
             showLoaderOnConfirm: true,
             showCancelButton: true,
             inputValidator: (value) => {
                 if (!value) {
-                    return "Sorry your input was invalid!";
+                    return "Rất tiếc thông tin nhập của bạn không hợp lệ!";
                 }
             },
             preConfirm: async (resp) => {
@@ -508,7 +514,7 @@ const Users = (prop) => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -516,7 +522,7 @@ const Users = (prop) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    text: `Your message has been send to ${userName}!`
+                    text: `Tin nhắn của bạn đã được gửi tới ${userName}!`
                 })
             }
         })
@@ -527,11 +533,11 @@ const Users = (prop) => {
 
     const updateStatusUser = async (name, adminID, status, targetID) => {
         Swal.fire({
-            title: `Do you want to update user ${name}'s status to ${status}?`,
-            text: "Press confirm button to continue",
+            title: `Bạn có muốn cập nhật trạng thái của người dùng ${name} thành ${status} không?`,
+            text: "Nhấn nút xác nhận để tiếp tục",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Confirm',
+            confirmButtonText: 'Xác nhận',
             showLoaderOnConfirm: true,
             preConfirm: async (res) => {
                 try {
@@ -549,7 +555,7 @@ const Users = (prop) => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -557,7 +563,7 @@ const Users = (prop) => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    text: `User ${name}'s status has been updated to ${status}!`
+                    text: `Trạng thái của người dùng ${name} đã được cập nhật thành ${status}!`
                 })
             }
         });
@@ -643,13 +649,13 @@ const Users = (prop) => {
 
         ApexCharts.exec('dashboard', 'updateOptions', {
             series: [{
-                name: 'New Users',
+                name: 'Người dùng mới',
                 data: result.output.users,
             }, {
-                name: 'Partnership',
+                name: 'Đối tác',
                 data: result.output.revenues
             }, {
-                name: 'Banned',
+                name: 'Bị cấm',
                 data: result.output.banneds
             }],
         });
@@ -665,13 +671,13 @@ const Users = (prop) => {
         if (chartRef.current) {
             chart = new ApexCharts(document.getElementById("reportsChart"), {
                 series: [{
-                    name: 'New Users',
+                    name: 'Ngời dùng mới',
                     data: statistics.userSeries,
                 }, {
-                    name: 'Partnership',
+                    name: 'Đối tác',
                     data: statistics.revenueSeries
                 }, {
-                    name: 'Banned',
+                    name: 'Bị cấm',
                     data: statistics.bannedSeries
                 }],
                 chart: {
@@ -756,7 +762,7 @@ const Users = (prop) => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -782,8 +788,8 @@ const Users = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -793,8 +799,8 @@ const Users = (prop) => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -806,8 +812,8 @@ const Users = (prop) => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -819,8 +825,8 @@ const Users = (prop) => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -831,9 +837,9 @@ const Users = (prop) => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -841,7 +847,7 @@ const Users = (prop) => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a>Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -860,8 +866,8 @@ const Users = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -872,8 +878,8 @@ const Users = (prop) => {
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -886,8 +892,8 @@ const Users = (prop) => {
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -900,8 +906,8 @@ const Users = (prop) => {
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -910,7 +916,7 @@ const Users = (prop) => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a>Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -922,8 +928,10 @@ const Users = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span> } </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -939,7 +947,7 @@ const Users = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -949,7 +957,7 @@ const Users = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -959,7 +967,7 @@ const Users = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -967,9 +975,9 @@ const Users = (prop) => {
                                 </li>
 
                                 <li>
-                                    <a className="dropdown-item d-flex align-items-center">
+                                    <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -997,28 +1005,28 @@ const Users = (prop) => {
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
-                        <a className="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
+                        <a className="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" >
                             <ReactSVG
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
                             />
                         </a>
                         <ul id="components-nav" className="nav-content collapse show" data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a className='active'>
+                            <li >
+                                <a onClick={() => changePage('/informations/users')} className='active'>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -1027,7 +1035,7 @@ const Users = (prop) => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
@@ -1040,7 +1048,7 @@ const Users = (prop) => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
@@ -1053,7 +1061,7 @@ const Users = (prop) => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -1066,7 +1074,7 @@ const Users = (prop) => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -1079,7 +1087,7 @@ const Users = (prop) => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -1087,12 +1095,12 @@ const Users = (prop) => {
                     {/* <!-- End Information Nav --> */}
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse">
+                        <a className="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" aria-expanded="true">
                             <ReactSVG
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -1100,7 +1108,7 @@ const Users = (prop) => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a onClick={() => changePage('/incomes/discount')}>
+                                <a onClick={() => changePage('/incomes/discount')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -1109,7 +1117,7 @@ const Users = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
                             <li>
@@ -1122,7 +1130,7 @@ const Users = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -1135,7 +1143,7 @@ const Users = (prop) => {
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -1152,7 +1160,7 @@ const Users = (prop) => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
@@ -1165,7 +1173,7 @@ const Users = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -1178,7 +1186,7 @@ const Users = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -1191,14 +1199,14 @@ const Users = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
@@ -1206,7 +1214,7 @@ const Users = (prop) => {
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -1220,11 +1228,11 @@ const Users = (prop) => {
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Users Dashboard</h1>
+                    <h1>Thống kê người dùng</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a>Informations</a></li>
-                            <li className="breadcrumb-item active">Users</li>
+                            <li className="breadcrumb-item"><a>Thông tin</a></li>
+                            <li className="breadcrumb-item active">Người dùng</li>
                         </ol>
                     </nav>
                 </div>
@@ -1251,30 +1259,30 @@ const Users = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchStatistics({ type: 'USER_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchStatistics({ type: 'USER_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchStatistics({ type: 'USER_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchStatistics({ type: 'USER_TIME', payload: 'Total' })
-                                                }}>Total</a></li>
+                                                }}>Tổng</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">New Users | <span id='new-user-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Người dùng mới | <span id='new-user-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1309,7 +1317,7 @@ const Users = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item"
@@ -1317,24 +1325,24 @@ const Users = (prop) => {
                                                         changeFilter(event, 'partnership-card-title-span')
                                                         dispatchStatistics({ type: 'SELLER_TIME', payload: 'Today' })
                                                     }}
-                                                >Today</a></li>
+                                                >Hôm nay</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'partnership-card-title-span')
                                                         dispatchStatistics({ type: 'SELLER_TIME', payload: 'This Month' })
                                                     }}
-                                                >This Month</a></li>
+                                                >Tháng này</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'partnership-card-title-span')
                                                         dispatchStatistics({ type: 'SELLER_TIME', payload: 'This Year' })
                                                     }}
-                                                >Year</a></li>
+                                                >Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Partnership | <span id='partnership-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Đối tác | <span id='partnership-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1344,7 +1352,7 @@ const Users = (prop) => {
                                                     />
                                                 </div>
                                                 <div className="ps-3">
-                                                    <h6>${statistics.sellerNumber}</h6>
+                                                    <h6>{statistics.sellerNumber}đ</h6>
                                                     <span className={`text-success small pt-1 fw-bold ${statistics.sellerGrowth < 0 ? 'text-danger' : 'text-success'}`}>{statistics.sellerGrowth}%</span>
                                                     <span className="text-muted small pt-2 ps-1">{statistics.sellerState}</span>
                                                 </div>
@@ -1369,7 +1377,7 @@ const Users = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item"
@@ -1377,31 +1385,31 @@ const Users = (prop) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchStatistics({ type: 'BANNED_TIME', payload: 'Today' })
                                                     }}
-                                                >Today</a></li>
+                                                >Hôm nay</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchStatistics({ type: 'BANNED_TIME', payload: 'This Month' })
                                                     }}
-                                                >This Month</a></li>
+                                                >Tháng này</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchStatistics({ type: 'BANNED_TIME', payload: 'This Year' })
                                                     }}
-                                                >This Year</a></li>
+                                                >Năm này</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchStatistics({ type: 'BANNED_TIME', payload: 'Total' })
                                                     }}
-                                                >Total</a>
+                                                >Tổng</a>
                                                 </li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Banned | <span id='banned-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Bị cấm | <span id='banned-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1435,26 +1443,26 @@ const Users = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchStatistics({ type: 'DATA_BOARD_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchStatistics({ type: 'DATA_BOARD_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchStatistics({ type: 'DATA_BOARD_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Reports / <span id='reports-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Báo cáo / <span id='reports-card-title-span'>Hôm nay</span></h5>
 
                                             {/* <!-- Line Chart --> */}
                                             <div id="reportsChart" ref={chartRef}></div>
@@ -1482,7 +1490,7 @@ const Users = (prop) => {
                                                         if (!e.target.classList.contains('active')) {
                                                             loadUsers();
                                                         }
-                                                    }}>List</button>
+                                                    }}>Danh sách</button>
                                                 </li>
 
                                                 <li className="nav-item">
@@ -1490,14 +1498,14 @@ const Users = (prop) => {
                                                         if (e.target.classList.contains('active')) {
                                                             loadTopUsers()
                                                         }
-                                                    }} >Leader Board</button>
+                                                    }} >Bảng xếp hạng</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#user-comments" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >Comments</button>
+                                                    }} >Bình luận</button>
                                                 </li>
 
                                                 <li className="nav-item">
@@ -1505,7 +1513,7 @@ const Users = (prop) => {
                                                         if (e.target.classList.contains('active')) {
                                                             loadBannedUser();
                                                         }
-                                                    }} >Banned</button>
+                                                    }} >Bị cấm</button>
                                                 </li>
 
                                             </ul>
@@ -1514,9 +1522,9 @@ const Users = (prop) => {
                                                 <div className="tab-pane fade show active profile-overview" id="list-users-overview">
 
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Users List</h5>
+                                                        <h5 className="card-title">Danh sách người dùng</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1568,8 +1576,8 @@ const Users = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
                                                                 <th scope="col">Email</th>
                                                             </tr>
                                                         </thead>
@@ -1588,13 +1596,13 @@ const Users = (prop) => {
                                                 </div>
                                                 {/* <!-- End List Users Overview Tab --> */}
 
-                                                <div className="tab-pane fade profile-edit pt-3" id="users-leaderboard">
+                                                <div className="tab-pane fade profile-edit" id="users-leaderboard">
 
                                                     {/* <!-- Users LeaderBoard table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Leader Board</h5>
+                                                        <h5 className="card-title">Bản xếp hạng</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1648,10 +1656,10 @@ const Users = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
                                                                 <th scope="col">Email</th>
-                                                                <th scope="col">Rank</th>
+                                                                <th scope="col">Hạng</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -1676,7 +1684,7 @@ const Users = (prop) => {
                                                     {/* <!-- Comment Table --> */}
                                                     <div className="tab-title search nav">
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1703,7 +1711,7 @@ const Users = (prop) => {
                                                     </div>
                                                     {/* <!-- End Comment Table --> */}
 
-                                                    <h5 className="card-title">Nothing</h5>
+                                                    <h5 className="card-title">Không có gì</h5>
 
                                                 </div>
 
@@ -1711,9 +1719,9 @@ const Users = (prop) => {
 
                                                     {/* <!-- Users Banned List table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Banned Users</h5>
+                                                        <h5 className="card-title">Người dụng bị cấm</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1766,10 +1774,10 @@ const Users = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">Get Banned Since</th>
-                                                                <th scope="col">Action</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Bị cấm kể từ </th>
+                                                                <th scope="col">Hành động</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -1782,7 +1790,8 @@ const Users = (prop) => {
                                                                     <td>{item.Name}</td>
                                                                     <td>{item.UpdateAt}</td>
                                                                     <td>
-                                                                        <button type="button" className="btn btn-danger btn-sm" onClick={() => updateStatusUser(item.Name, "ADM7ANKA7YA7SVSNL5B6", "Active", item.Id)}>Enable User</button>
+                                                                        <button type="button" className="btn btn-danger btn-sm" 
+                                                                        onClick={() => updateStatusUser(item.Name, "ADM7ANKA7YA7SVSNL5B6", "Active", item.Id)}>Bỏ cấm</button>
                                                                     </td>
                                                                 </tr>
                                                             ))}
@@ -1809,17 +1818,17 @@ const Users = (prop) => {
 
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Recent New Users <span>| Today</span></h5>
+                                            <h5 className="card-title">Người dùng mới gần đây <span>| Hôm nay</span></h5>
 
                                             <table className="table table-borderless"
                                                 style={{ textAlign: 'start' }}
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                        <th scope="col">Name</th>
+                                                        <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                        <th scope="col">Tên</th>
                                                         <th scope="col">Email</th>
-                                                        <th scope="col">Create At</th>
+                                                        <th scope="col">Được tạo lúc</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1848,16 +1857,16 @@ const Users = (prop) => {
                                     <div className="card top-selling overflow-auto">
 
                                         <div className="card-body pb-0">
-                                            <h5 className="card-title">Black Users List</h5>
+                                            <h5 className="card-title">Danh sách đen của người dùng</h5>
 
                                             <table className="table table-borderless"
                                                 style={{ textAlign: 'start' }}
                                             >
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Reported's Name</th>
-                                                        <th scope="col" style={{ width: '50%' }}>Excuse</th>
-                                                        <th scope="col">Actions</th>
+                                                        <th scope="col">Tên người được báo cáo</th>
+                                                        <th scope="col" style={{ width: '50%' }}>Lý do</th>
+                                                        <th scope="col">Hành động</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1868,15 +1877,15 @@ const Users = (prop) => {
                                                                 <td >{item.Title}</td>
                                                                 <td className="fw-bold black-user-buttons-group">
                                                                     <button type="button" className="btn btn-danger btn-sm"
-                                                                        onClick={() => replyUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6", item.TargetID)}>Banned</button>
+                                                                        onClick={() => replyUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6", item.TargetID)}>Cấm</button>
                                                                     <button onClick={() => repjectUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6", item.TargetID)} 
-                                                                    type="button" className="btn btn-outline-warning btn-sm" >Deleted</button>
+                                                                    type="button" className="btn btn-outline-warning btn-sm" >Xóa</button>
                                                                 </td>
                                                             </tr>
                                                         ))
                                                     ) : (
                                                         <tr>
-                                                            <td colSpan="3">No black users found.</td>
+                                                            <td colSpan="3">Không tìm thấy người dùng trong danh sách đen.</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -1907,42 +1916,42 @@ const Users = (prop) => {
                                     </a>
                                     <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                         <li className="dropdown-header text-start">
-                                            <h6>Filter</h6>
+                                            <h6>Lọc</h6>
                                         </li>
 
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Waiting')
                                             getOrdersByStatus('Waiting')
-                                        }}>Waiting</a></li>
+                                        }}>Đang chờ</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'In Process')
                                             getOrdersByStatus('In Process')
-                                        }}>In Process</a></li>
+                                        }}>Đang xử lý</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Approve')
                                             getOrdersByStatus('Approve')
-                                        }}>Approve</a></li>
+                                        }}>Chấp thuận</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Denied')
                                             getOrdersByStatus('Denied')
-                                        }}>Denied</a></li>
+                                        }}>Từ chối</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Made')
                                             getOrdersByStatus('Made')
-                                        }}>Made</a></li>
+                                        }}>Đang làm</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'In Delivery')
                                             getOrdersByStatus('In Delivery')
-                                        }}>In Delivery</a></li>
+                                        }}>Đang giao</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Done')
                                             getOrdersByStatus('Done')
-                                        }}>Done</a></li>
+                                        }}>Hoàn thành</a></li>
                                     </ul>
                                 </div>
 
                                 <div className="card-body">
-                                    <h5 className="card-title">Recent Activity Orders | <span id='recent-activity-order-card-title-span'>Waiting</span></h5>
+                                    <h5 className="card-title">Đơn đặt hàng hoạt động gần đây | <span id='recent-activity-order-card-title-span'>Đang chờ</span></h5>
 
                                     <div className="activity">
 
@@ -1962,7 +1971,7 @@ const Users = (prop) => {
                                                     )
                                                 }) :
                                                 <div className="activity-item d-flex">
-                                                    <div className="activite-label">No record</div>
+                                                    <div className="activite-label">Không có hồ sơ!</div>
                                                 </div>
 
                                         }

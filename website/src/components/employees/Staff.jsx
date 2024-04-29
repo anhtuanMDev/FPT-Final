@@ -41,7 +41,8 @@ import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
 const Staffs = (prop) => {
-    const { host, setID, adminID } = prop;
+    const { host, adminID, setID, adminDetail } = prop;
+
     document.title = 'Informations - Staffs';
     const chartRef = useRef(null);
     const navigate = useNavigate();
@@ -71,7 +72,7 @@ const Staffs = (prop) => {
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
-        
+
         file && setFileImage(file);
 
         reader.onload = () => {
@@ -186,8 +187,8 @@ const Staffs = (prop) => {
     const sendOTP = async () => {
         let email = document.getElementById('yourUsername').value;
         Swal.fire({
-            title: 'Sending',
-            html: 'Please wait...',
+            title: 'Đang gửi',
+            html: 'Vui lòng chờ...',
             allowOutsideClick: false,
         });
         const response = await AxiosInstance().post('/post-send-register-email-admin.php', { email, token: generateRandomOTP(), type: 'Đăng ký tài khoản' });
@@ -196,7 +197,7 @@ const Staffs = (prop) => {
         if (response.status) {
             console.log("success");
             Swal.fire({
-                title: 'Success',
+                title: 'Thành công',
                 text: 'Mã xác thực đã được gửi',
                 icon: 'success',
                 confirmButtonText: 'OK'
@@ -204,7 +205,7 @@ const Staffs = (prop) => {
         } else {
             console.log("failed");
             Swal.fire({
-                title: 'Failed',
+                title: 'Thất bại',
                 text: response.statusText,
                 icon: 'error',
                 confirmButtonText: 'OK'
@@ -238,19 +239,19 @@ const Staffs = (prop) => {
         console.log(email, password);
 
 
-        const response = await AxiosInstance().post('/register-admin.php', { name, email, password, job,  token});
+        const response = await AxiosInstance().post('/register-admin.php', { name, email, password, job, token });
         console.log(response.statusText);
 
         if (response.status) {
             console.log("success");
             Swal.fire({
-                title: 'Success',
-                text: 'Account successfully created',
+                title: 'Thành công',
+                text: 'Tạo tài khoản thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
 
-            if(!fileImage) return;
+            if (!fileImage) return;
 
             const formData = new FormData();
             const id = generateID('IMG');
@@ -274,7 +275,7 @@ const Staffs = (prop) => {
         } else {
             console.log("failed");
             Swal.fire({
-                title: 'Failed',
+                title: 'Thât bại',
                 // text: 'Account creation failed',
                 text: response.statusText,
                 icon: 'error',
@@ -293,16 +294,16 @@ const Staffs = (prop) => {
             console.log("success");
             loadAllStaffsReqPassChange();
             Swal.fire({
-                title: 'Success',
-                text: 'Reset password successfully',
+                title: 'Thành công',
+                text: 'Đặt lại mật khẩu thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             })
         } else {
             console.log("failed");
             Swal.fire({
-                title: 'Failed',
-                text: 'Password reset failed',
+                title: 'Thất bại',
+                text: 'Đặt lại mật khẩu thất bại',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -325,7 +326,7 @@ const Staffs = (prop) => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -351,8 +352,8 @@ const Staffs = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -362,8 +363,8 @@ const Staffs = (prop) => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -375,8 +376,8 @@ const Staffs = (prop) => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -388,8 +389,8 @@ const Staffs = (prop) => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -400,9 +401,9 @@ const Staffs = (prop) => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -410,7 +411,7 @@ const Staffs = (prop) => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a>Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -429,8 +430,8 @@ const Staffs = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -441,8 +442,8 @@ const Staffs = (prop) => {
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -455,8 +456,8 @@ const Staffs = (prop) => {
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -469,8 +470,8 @@ const Staffs = (prop) => {
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -479,7 +480,7 @@ const Staffs = (prop) => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a>Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -491,8 +492,10 @@ const Staffs = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -508,7 +511,7 @@ const Staffs = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -518,7 +521,7 @@ const Staffs = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -528,7 +531,7 @@ const Staffs = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -538,7 +541,7 @@ const Staffs = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -566,12 +569,12 @@ const Staffs = (prop) => {
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
@@ -579,7 +582,7 @@ const Staffs = (prop) => {
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -596,7 +599,7 @@ const Staffs = (prop) => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
@@ -609,7 +612,7 @@ const Staffs = (prop) => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
@@ -622,7 +625,7 @@ const Staffs = (prop) => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -635,7 +638,7 @@ const Staffs = (prop) => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -648,7 +651,7 @@ const Staffs = (prop) => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -661,7 +664,7 @@ const Staffs = (prop) => {
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -669,7 +672,7 @@ const Staffs = (prop) => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a onClick={() => changePage('/incomes/discount')}>
+                                <a onClick={() => changePage('/incomes/discount')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -678,7 +681,7 @@ const Staffs = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
                             <li>
@@ -691,7 +694,7 @@ const Staffs = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -704,7 +707,7 @@ const Staffs = (prop) => {
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -721,7 +724,7 @@ const Staffs = (prop) => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
@@ -734,7 +737,7 @@ const Staffs = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -747,7 +750,7 @@ const Staffs = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -760,14 +763,14 @@ const Staffs = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
                         <a className="nav-link" onClick={() => changePage('/informations/staffs')}>
@@ -775,7 +778,7 @@ const Staffs = (prop) => {
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -789,11 +792,11 @@ const Staffs = (prop) => {
             <main id="main" className="main">
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Staffs</h1>
+                    <h1>Nhân viên</h1>
                     <nav>
                         <ol className="breadcrumb">
                             {/* <li className="breadcrumb-item"><a href="#">Informations</a></li> */}
-                            <li className="breadcrumb-item active">Employees</li>
+                            <li className="breadcrumb-item active">Nhân viên</li>
                         </ol>
                     </nav>
                 </div>
@@ -818,15 +821,15 @@ const Staffs = (prop) => {
                                             <ul className="nav nav-tabs nav-tabs-bordered">
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#staffs-list">List</button>
+                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#staffs-list">Danh sách</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#req-pass-change-list">Request Password Change</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#req-pass-change-list">Yêu cầu đổi mật khẩu</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#create-account">Create Account</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#create-account">Tạo tài khoản</button>
                                                 </li>
 
                                             </ul>
@@ -837,7 +840,7 @@ const Staffs = (prop) => {
                                                     <div className="tab-title search nav">
                                                         <h5 className="card-title">Staffs List</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -852,13 +855,26 @@ const Staffs = (prop) => {
                                                                 {
                                                                     Array.from({ length: data.allStaffTotalPage }, (_, index) => {
                                                                         if (data.allStaffTotalPage > 10) {
-                                                                            if ((index >= data.allStaffPage - 2 && index <= data.allStaffPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.allStaffTotalPage - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === data.allStaffTotalPage - 1 ||
+                                                                                (index >= data.allStaffPage - 2 && index <= data.allStaffPage) ||
+                                                                                (index === 1 && data.allStaffPage > 3) ||
+                                                                                (index >= data.allStaffTotalPage - 2 && data.allStaffPage <= data.allStaffTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.allStaffPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_STAFF_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_ALL_STAFF_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.allStaffPage >= 4) || (index >= data.allStaffTotalPage - 3 && data.allStaffPage <= data.allStaffTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -883,19 +899,19 @@ const Staffs = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
                                                                 <th scope="col">Email</th>
-                                                                <th scope='col'>Job</th>
+                                                                <th scope='col'>Công việc</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {
                                                                 data?.allStaffs?.map((item, index) => (
                                                                     <tr key={item.Id}>
-                                                                        <th scope="row" style={{ textAlign: 'center' }}>
-                                                                            <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                        </th>
+                                                                        <td scope="row" style={{ textAlign: 'center' }}>
+                                                                            <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar" className="avatar" /></a>
+                                                                        </td>
                                                                         <td style={{ justifyContent: 'center' }}>{item.Name}</td>
                                                                         <td className="fw-bold">{item.Email}</td>
                                                                         <td>{item.Job}</td>
@@ -911,9 +927,9 @@ const Staffs = (prop) => {
                                                 {/* <!-- Request Password Change List Table --> */}
                                                 <div className="tab-pane fade req-pass-change-list" id="req-pass-change-list">
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Staffs Request Password Change List</h5>
+                                                        <h5 className="card-title">Danh sách nhân viê yêu cầu đổi mật khẩu</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -928,13 +944,26 @@ const Staffs = (prop) => {
                                                                 {
                                                                     Array.from({ length: data.reqPassChangeTotalPage }, (_, index) => {
                                                                         if (data.reqPassChangeTotalPage > 10) {
-                                                                            if ((index >= data.reqPassChangePage - 2 && index <= data.reqPassChangePage + 1) || // 2 pages before and after current page
-                                                                                index >= data.reqPassChangeTotalPage - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === data.reqPassChangeTotalPage - 1 ||
+                                                                                (index >= data.reqPassChangePage - 2 && index <= data.reqPassChangePage) ||
+                                                                                (index === 1 && data.reqPassChangePage > 3) ||
+                                                                                (index >= data.reqPassChangeTotalPage - 2 && data.reqPassChangePage <= data.reqPassChangeTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.reqPassChangePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_REQ_PASS_CHANGE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_REQ_PASS_CHANGE_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.reqPassChangePage >= 4) || (index >= data.reqPassChangeTotalPage - 3 && data.reqPassChangePage <= data.reqPassChangeTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -959,20 +988,20 @@ const Staffs = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
                                                                 <th scope="col">Email</th>
-                                                                <th scope='col'>Job</th>
-                                                                <th scope='col'>Actions</th>
+                                                                <th scope='col'>Công việc</th>
+                                                                <th scope='col'>Hành động</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {
                                                                 data?.reqPassChange?.map((item, index) => (
                                                                     <tr key={item.Id}>
-                                                                        <th scope="row" style={{ textAlign: 'center' }}>
-                                                                            <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                        </th>
+                                                                        <td scope="row" style={{ textAlign: 'center' }}>
+                                                                            <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="" className="avatar" /></a>
+                                                                        </td>
                                                                         <td style={{ justifyContent: 'center' }}>{item.Name}</td>
                                                                         <td className="fw-bold">{item.Email}</td>
                                                                         <td>{item.Job}</td>
@@ -984,7 +1013,7 @@ const Staffs = (prop) => {
                                                                                 console.log("resetPass");
                                                                                 handleResetPass(adminID, item.Id);
                                                                             }}
-                                                                                type="button" className="btn btn-outline-warning btn-sm" >Reset Pass</button>
+                                                                                type="button" className="btn btn-outline-warning btn-sm" >Đặt lại mật khẩu</button>
                                                                         </td>
                                                                     </tr>
                                                                 ))
@@ -1019,8 +1048,8 @@ const Staffs = (prop) => {
 
                                                             <div className="col-8"> {/* Chia cột thành 6/12 phần (50%) */}
                                                                 <div className="pt-4 pb-2">
-                                                                    <h5 className="card-title text-center pb-0 fs-4">Create Account</h5>
-                                                                    <p className="text-center small">Enter your information to create</p>
+                                                                    <h5 className="card-title text-center pb-0 fs-4">Tạo tài khoản</h5>
+                                                                    <p className="text-center small">Nhập thông tin để tạo</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1029,20 +1058,20 @@ const Staffs = (prop) => {
                                                         <form className="row g-3 needs-validation">
 
                                                             <div className="col-12">
-                                                                <label htmlFor="yourName" className="form-label">Name</label>
+                                                                <label htmlFor="yourName" className="form-label">Tên</label>
                                                                 <div className="input-group has-validation">
                                                                     <input type="text" name="name" className="form-control" id="yourName" required defaultValue={'nguyen van teo'} />
                                                                 </div>
-                                                                <div className="invalid-feedback">Please enter your name.</div>
+                                                                <div className="invalid-feedback">Vui lòng nhập Tên.</div>
                                                             </div>
 
                                                             <div className="col-12" >
                                                                 <div className='row'>
-                                                                    <div className="col-6" >
+                                                                    <div className="col-12" >
                                                                         <label htmlFor="yourUsername" className="form-label">Email</label>
                                                                         <div className="input-group has-validation">
                                                                             <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'anhtt676@gmail.com'} />
-                                                                            <button type="button" id="toggleConfirm" className="btn btn-outline-secondary"
+                                                                            {/* <button type="button" id="toggleConfirm" className="btn btn-outline-secondary"
                                                                                 onClick={() => { sendOTP() }}>
                                                                                 {
                                                                                     <ReactSVG
@@ -1050,24 +1079,24 @@ const Staffs = (prop) => {
                                                                                         className='show-pass-icon'
                                                                                     />
                                                                                 }
-                                                                            </button>
-                                                                            <div className="invalid-feedback">Please enter your email.</div>
+                                                                            </button> */}
+                                                                            <div className="invalid-feedback">Vui lòng nhập Email.</div>
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="col-6" >
+                                                                    {/* <div className="col-6" >
                                                                         <label htmlFor="yourToken" className="form-label">OTP</label>
                                                                         <div className="input-group has-validation">
                                                                             <input type="text" name="token" className="form-control" id="yourToken" required />
                                                                         </div>
-                                                                        <div className="invalid-feedback">Please enter your OTP.</div>
+                                                                        <div className="invalid-feedback">Vui lòng nhập your OTP.</div>
 
-                                                                    </div>
+                                                                    </div> */}
                                                                 </div>
                                                             </div>
 
                                                             <div className="col-12">
-                                                                <label htmlFor="yourPassword" className="form-label">Password</label>
+                                                                <label htmlFor="yourPassword" className="form-label">Mật khẩu</label>
                                                                 <div className="input-group">
                                                                     <input type={showPassword ? 'text' : 'password'} name="password" className="form-control" id="yourPassword" required defaultValue={'123456'} />
                                                                     <button type="button" id="togglePassword" className="btn btn-outline-secondary" onClick={togglePasswordVisibility}>
@@ -1076,18 +1105,20 @@ const Staffs = (prop) => {
                                                                                 <ReactSVG
                                                                                     src={eye_open}
                                                                                     className='show-pass-icon'
+                                                                                    title='Hiển thị mật khẩu'
                                                                                 /> : <ReactSVG
                                                                                     src={eye_close}
                                                                                     className='show-pass-icon'
+                                                                                    title='Ẩn mật khẩu'
                                                                                 />
                                                                         }
                                                                     </button>
                                                                 </div>
-                                                                <div className="invalid-feedback">Please enter your password!</div>
+                                                                <div className="invalid-feedback">Vui lòng nhập Mật khẩu!</div>
                                                             </div>
 
                                                             <div className="col-12">
-                                                                <label htmlFor="yourJob" className="form-label">Job</label>
+                                                                <label htmlFor="yourJob" className="form-label">Công việc</label>
                                                                 <select className="form-select" id="yourJob" required>
                                                                     {
                                                                         jobList.map((item, index) => (
@@ -1103,7 +1134,7 @@ const Staffs = (prop) => {
                                                                         console.log("press create admin");
                                                                         handleCreateAccount(event);
 
-                                                                    }}>Create</button>
+                                                                    }}>Tạo</button>
                                                             </div>
                                                         </form>
 

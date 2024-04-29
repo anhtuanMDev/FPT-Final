@@ -12,7 +12,7 @@ try {
     $email = $data->email;
     $password = $data->password;
 
-    $query = "SELECT * FROM admin WHERE Email = '$email' AND Password = '$password'";
+    $query = "SELECT Id, Name FROM admin WHERE Email = '$email' AND Password = '$password'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);

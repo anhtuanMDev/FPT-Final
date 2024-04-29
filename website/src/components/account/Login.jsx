@@ -7,7 +7,7 @@ import { Navigate, useNavigate, useHref } from 'react-router-dom';
 import Swal from 'sweetalert2'
 
 const Login = (prop) => {
-    const { setID } = prop;
+    const { setID, setAdminDetail } = prop;
     async function handleLogin(event) {
         event.preventDefault(); // prevent form submission
         console.log("press in")
@@ -25,27 +25,35 @@ const Login = (prop) => {
         if (!signIn) return;
         let email = document.getElementById('yourUsername').value;
         let password = document.getElementById('yourPassword').value;
-            console.log(email, password);
+        // console.log(email, password);
         const response = await AxiosInstance().post('/sign-in-admin.php', { email, password });
+        // console.log(response?.data?.Id);
+
         if (response.status) {
-            setID(response.data.Id);
+            setID(response?.data?.Id);
             console.log("success")
             Swal.fire({
-                title: 'Success',
-                text: 'Login successfully',
+                title: 'Thnahf công',
+                text: 'Đăng nhập thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             })
+            const result = await AxiosInstance().get("get-admin-detail.php", { params: { id: response?.data?.Id } });
+            console.log(result);
+            setAdminDetail(result?.data);
         } else {
             console.log("failed");
             Swal.fire({
-                title: 'Failed',
-                text: 'Login failed',
+                title: 'Thất bại',
+                text: 'Đăng nhập thât bại',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
         }
     }
+
+
+
 
     const navigate = useNavigate();
     return (
@@ -72,25 +80,25 @@ const Login = (prop) => {
                                         <div className="card-body">
 
                                             <div className="pt-4 pb-2">
-                                                <h5 className="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                                                <p className="text-center small">Enter your ID & password to login</p>
+                                                <h5 className="card-title text-center pb-0 fs-4">Đăng nhập vào tài khoản của bạn</h5>
+                                                <p className="text-center small">Nhập Email và mật khẩu của bạn để đăng nhập</p>
                                             </div>
 
                                             <form className="row g-3 needs-validation">
 
                                                 <div className="col-12">
-                                                    <label htmlFor="yourUsername" className="form-label">Username's Email</label>
+                                                    <label htmlFor="yourUsername" className="form-label">Email</label>
                                                     <div className="input-group has-validation">
                                                         <span className="input-group-text" id="inputGroupPrepend">@</span>
-                                                        <input type="text" name="username" className="form-control" id="yourUsername" required  defaultValue={'anhtt676@gmail.com'}/>
-                                                        <div className="invalid-feedback">Please enter your username.</div>
+                                                        <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'anhtt676@gmail.com'} />
+                                                        <div className="invalid-feedback">Vui lòng nhập Email.</div>
                                                     </div>
                                                 </div>
 
                                                 <div className="col-12">
-                                                    <label htmlFor="yourPassword" className="form-label">Password</label>
-                                                    <input type="password" name="password" className="form-control" id="yourPassword" required defaultValue={'123456'}/>
-                                                    <div className="invalid-feedback">Please enter your password!</div>
+                                                    <label htmlFor="yourPassword" className="form-label">Mật khẩu</label>
+                                                    <input type="password" name="password" className="form-control" id="yourPassword" required defaultValue={'123456'} />
+                                                    <div className="invalid-feedback">Vui lòng nhập Mật khẩu!</div>
                                                 </div>
 
 
@@ -98,12 +106,13 @@ const Login = (prop) => {
                                                     <button className="btn btn-primary w-100" type="button" style={{ background: '#fd7e14', marginTop: 50, borderWidth: 0 }}
                                                         onClick={(event) => {
                                                             console.log("press")
-                                                            handleLogin(event)}}>Login</button>
+                                                            handleLogin(event)
+                                                        }}>Đăng nhập</button>
                                                 </div>
                                                 <div className="col-12">
-                                                    <p className="small mb-0 ">Forget your password? <a className='text-primary' onClick={()=>{
+                                                    <p className="small mb-0 ">Quên mật khẩu của bạn? <a className='text-primary' onClick={() => {
                                                         navigate('/login/forgot-password')
-                                                    }} style={{cursor: 'pointer'}}>Then let get it back</a></p>
+                                                    }} style={{ cursor: 'pointer' }}>Vậy thì hãy lấy lại nhé!</a></p>
                                                 </div>
                                             </form>
 
@@ -124,3 +133,5 @@ const Login = (prop) => {
 }
 
 export default Login
+
+

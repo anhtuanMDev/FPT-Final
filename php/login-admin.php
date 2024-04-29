@@ -11,7 +11,7 @@ try {
     $email = $data->email;
     $password = $data->password;
 
-    $sql = "SELECT * FROM admin WHERE Email='$email' AND Password='$password'";
+    $sql = "SELECT Id, Name FROM admin WHERE Email='$email' AND Password='$password'";
     $stmt = $dbConn->prepare($sql);
     $stmt->execute();
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);

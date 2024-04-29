@@ -64,7 +64,7 @@ try {
     }
 
     $query = "INSERT INTO coupons (Id, Code, Discount, Type, Amount, Start, End, CreateAt, UpdateAt, CreateBy, UpdateBy) 
-    VALUES('$idCpn', '$code', $discount, '$type', $amount, NOW(), '$start', '$end', null, '$adminID', null);";
+    VALUES('$idCpn', '$code', $discount, '$type', $amount, '$start', '$end', NOW(), null, '$adminID', null);";
     // error_log($query);
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

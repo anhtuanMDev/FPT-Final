@@ -40,12 +40,19 @@ import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
 const Discounts = (prop) => {
-    const { host } = prop
+    const { host, adminID, setID, adminDetail } = prop;
+
     document.title = 'Informations - Users';
     const navigate = useNavigate();
+
     const changePage = (link) => {
         navigate(link);
     };
+
+    const logOut = () => {
+        console.log("log out");
+        setID('');
+    }
 
     const initialState = {
         pendingPage: 1,
@@ -263,7 +270,7 @@ const Discounts = (prop) => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -289,8 +296,8 @@ const Discounts = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -300,8 +307,8 @@ const Discounts = (prop) => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -313,8 +320,8 @@ const Discounts = (prop) => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -326,8 +333,8 @@ const Discounts = (prop) => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -338,9 +345,9 @@ const Discounts = (prop) => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -348,7 +355,7 @@ const Discounts = (prop) => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a>Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -367,8 +374,8 @@ const Discounts = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -379,8 +386,8 @@ const Discounts = (prop) => {
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -393,8 +400,8 @@ const Discounts = (prop) => {
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -407,8 +414,8 @@ const Discounts = (prop) => {
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -417,7 +424,7 @@ const Discounts = (prop) => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a>Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -429,8 +436,10 @@ const Discounts = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -446,7 +455,7 @@ const Discounts = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -456,7 +465,7 @@ const Discounts = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -466,7 +475,7 @@ const Discounts = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -474,9 +483,9 @@ const Discounts = (prop) => {
                                 </li>
 
                                 <li>
-                                    <a className="dropdown-item d-flex align-items-center">
+                                    <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -504,12 +513,12 @@ const Discounts = (prop) => {
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
@@ -517,7 +526,7 @@ const Discounts = (prop) => {
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -534,7 +543,7 @@ const Discounts = (prop) => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
@@ -547,7 +556,7 @@ const Discounts = (prop) => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
@@ -560,7 +569,7 @@ const Discounts = (prop) => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -573,7 +582,7 @@ const Discounts = (prop) => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -586,7 +595,7 @@ const Discounts = (prop) => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -599,7 +608,7 @@ const Discounts = (prop) => {
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -616,11 +625,11 @@ const Discounts = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
-                            <li>
-                                <a className='active'>
+                            <li >
+                                <a onClick={() => changePage('/incomes/orders')} className='active'>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -629,7 +638,7 @@ const Discounts = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -642,7 +651,7 @@ const Discounts = (prop) => {
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -659,7 +668,7 @@ const Discounts = (prop) => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
@@ -672,7 +681,7 @@ const Discounts = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -685,7 +694,7 @@ const Discounts = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -698,14 +707,14 @@ const Discounts = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
@@ -713,7 +722,7 @@ const Discounts = (prop) => {
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -727,11 +736,11 @@ const Discounts = (prop) => {
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Orders Dashboard</h1>
+                    <h1>Thống kê đơn hàng</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a>Income</a></li>
-                            <li className="breadcrumb-item active">Orders</li>
+                            <li className="breadcrumb-item"><a>Thu nhập</a></li>
+                            <li className="breadcrumb-item active">Đơn hàng</li>
                         </ol>
                     </nav>
                 </div>
@@ -761,49 +770,49 @@ const Discounts = (prop) => {
                                                     <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#waiting-order" onMouseDown={(e) => {
                                                         if (!e.target.classList.contains('active')) {
                                                         }
-                                                    }}>Waiting</button>
+                                                    }}>Đang chờ</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#approved-order" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >Approved</button>
+                                                    }} >Chấp thuận</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#cancled-order" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >Cancled</button>
+                                                    }} >Đã hủy</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#denied-order" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >Denied</button>
+                                                    }} > Bị từ chối</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#made-order" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >Made</button>
+                                                    }} >Đang làm</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#indelivery-order" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >In Delivery</button>
+                                                    }} >Đang giao</button>
                                                 </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#done-order" onMouseDown={(e) => {
                                                         if (e.target.classList.contains('active')) {
                                                         }
-                                                    }} >Done</button>
+                                                    }} >Hoàn tất</button>
                                                 </li>
 
                                             </ul>
@@ -812,9 +821,9 @@ const Discounts = (prop) => {
                                                 <div className="tab-pane fade show active profile-overview" id="waiting-order">
 
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Waiting Orders</h5>
+                                                        <h5 className="card-title">Đơn hàng đang chờ</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -867,11 +876,11 @@ const Discounts = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">User's Order</th>
-                                                                <th scope="col">Quantity</th>
-                                                                <th scope="col">Value</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Đơn hàng của người dùng</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Giá trị</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -894,9 +903,9 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Users LeaderBoard table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Approve Order</h5>
+                                                        <h5 className="card-title">Phê duyệt đơn hàng</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -950,11 +959,11 @@ const Discounts = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">User's Order</th>
-                                                                <th scope="col">Quantity</th>
-                                                                <th scope="col">Value</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Đơn hàng của người dùng</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Giá trị</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -979,10 +988,10 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Comment Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Cancled Order</h5>
+                                                        <h5 className="card-title">Đơn hàng đã hủy</h5>
 
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1035,11 +1044,11 @@ const Discounts = (prop) => {
                                                         >
                                                             <thead>
                                                                 <tr>
-                                                                    <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                    <th scope="col">Name</th>
-                                                                    <th scope="col">User's Order</th>
-                                                                    <th scope="col">Quantity</th>
-                                                                    <th scope="col">Value</th>
+                                                                    <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                    <th scope="col">Tên</th>
+                                                                    <th scope="col">Đơn hàng của người dùng</th>
+                                                                    <th scope="col">Số lượng</th>
+                                                                    <th scope="col">Giá trị</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -1065,9 +1074,9 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Users Banned List table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Denied Orders</h5>
+                                                        <h5 className="card-title">Đon hàng bị từ chối</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1118,11 +1127,11 @@ const Discounts = (prop) => {
                                                     <table className="table table-borderless"
                                                         style={{ textAlign: 'start' }}>
                                                         <thead>
-                                                            <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                            <th scope="col">Name</th>
-                                                            <th scope="col">User's Order</th>
-                                                            <th scope="col">Quantity</th>
-                                                            <th scope="col">Value</th>
+                                                            <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                            <th scope="col">Tên</th>
+                                                            <th scope="col">Đơn hàng của người dùng</th>
+                                                            <th scope="col">Số lượng</th>
+                                                            <th scope="col">Giá trị</th>
                                                         </thead>
                                                         {data.denied.map((item, index) => (
                                                             <tr key={item.Id}>
@@ -1144,10 +1153,10 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Comment Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Made Order</h5>
+                                                        <h5 className="card-title">Đơn hàng đang làm</h5>
 
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1197,11 +1206,11 @@ const Discounts = (prop) => {
                                                         <table className="table table-borderless"
                                                             style={{ textAlign: 'start' }}>
                                                             <thead>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">User's Order</th>
-                                                                <th scope="col">Quantity</th>
-                                                                <th scope="col">Value</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Đơn hàng của người dùng</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Giá trị</th>
                                                             </thead>
                                                             {data.made.map((item, index) => (
                                                                 <tr key={item.Id}>
@@ -1224,9 +1233,9 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Users Banned List table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Banned Users</h5>
+                                                        <h5 className="card-title">Người dùng bị cấm</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1276,11 +1285,11 @@ const Discounts = (prop) => {
                                                         <table className="table table-borderless"
                                                             style={{ textAlign: 'start' }}>
                                                             <thead>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">User's Order</th>
-                                                                <th scope="col">Quantity</th>
-                                                                <th scope="col">Value</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Đơn hàng của người dùng</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Giá trị</th>
                                                             </thead>
                                                             {data.inDelivery.map((item, index) => (
                                                                 <tr key={item.Id}>
@@ -1304,9 +1313,9 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Comment Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Done Order</h5>
+                                                        <h5 className="card-title">Đơn hàng đã hoàn tất</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -1357,11 +1366,11 @@ const Discounts = (prop) => {
                                                             style={{ textAlign: 'start' }}
                                                         >
                                                             <thead>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
-                                                                <th scope="col">User's Order</th>
-                                                                <th scope="col">Quantity</th>
-                                                                <th scope="col">Value</th>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Đơn hàng của người dùng</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Giá trị</th>
                                                             </thead>
                                                             {data.done.map((item, index) => (
                                                                 <tr key={item.Id}>
@@ -1410,64 +1419,71 @@ const Discounts = (prop) => {
                                     </a>
                                     <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                         <li className="dropdown-header text-start">
-                                            <h6>Filter</h6>
+                                            <h6>Lọc</h6>
                                         </li>
 
-                                        <li><a className="dropdown-item">Today</a></li>
-                                        <li><a className="dropdown-item">This Month</a></li>
-                                        <li><a className="dropdown-item">This Year</a></li>
+                                        <li><a className="dropdown-item">Hôm nay</a></li>
+                                        <li><a className="dropdown-item">Tháng này</a></li>
+                                        <li><a className="dropdown-item">Năm này</a></li>
                                     </ul>
                                 </div>
 
                                 <div className="card-body">
-                                    <h5 className="card-title">Recent Activity <span>| Today</span></h5>
+                                    <h5 className="card-title">Hoạt động gần đây <span>| Hôm nay</span></h5>
 
                                     <div className="activity">
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">32 min</div>
+                                            <div className="activite-label">32 phút</div>
+                                            <i className='bi bi-circle-fill activity-badge text-success align-self-start'></i>
                                             <div className="activity-content">
-                                                Quia quae rerum <a className="fw-bold text-dark">explicabo officiis</a> beatae
+                                                Bởi vì tôi sẽ giải thích những điều <a className="fw-bold text-dark">may mắn</a>
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">56 min</div>
+                                            <div className="activite-label">56 phút</div>
+                                            <i className='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
                                             <div className="activity-content">
-                                                Voluptatem blanditiis blanditiis eveniet
+                                                Niềm vui được nịnh nọt sẽ đến
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">2 hrs</div>
+                                            <div className="activite-label">2 giờ</div>
+                                            <i className='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
                                             <div className="activity-content">
-                                                Voluptates corrupti molestias voluptatem
+                                                Niềm vui bị hủy hoại bởi niềm vui
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">1 day</div>
+                                            <div className="activite-label">1 ngày</div>
+                                            <i className='bi bi-circle-fill activity-badge text-info align-self-start'></i>
                                             <div className="activity-content">
-                                                Tempore autem saepe <a className="fw-bold text-dark">occaecati voluptatem</a> tempore
+                                                Và theo thời gian, họ thường <a className="fw-bold text-dark">làm lu mờ niềm vui</a>
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">2 days</div>
+                                            <div className="activite-label">2 ngày</div>
+                                            <i className='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
                                             <div className="activity-content">
-                                                Est sit eum reiciendis exercitationem
+                                                Đó là một bài tập từ chối anh ta
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}
 
                                         <div className="activity-item d-flex">
-                                            <div className="activite-label">4 weeks</div>
+                                            <div className="activite-label">4 tuần</div>
+                                            <i className='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
                                             <div className="activity-content">
-                                                Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
+                                                Nói nỗi đau của những điều này không phải của mình. Vì vậy, đó thực sự là những gì
+
                                             </div>
                                         </div>
                                         {/* <!-- End activity item--> */}

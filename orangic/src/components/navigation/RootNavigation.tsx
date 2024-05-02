@@ -12,6 +12,7 @@ import {
   isLogin,
   selectUserID,
   setHost,
+  setImage,
   setName,
   setPoint,
   setUserID,
@@ -118,6 +119,7 @@ const RootNavigation = () => {
     console.log('get user infor', response.data);
     dispatch(setName(response.data.Name));
     dispatch(setPoint(response.data.Rank));
+    dispatch(setImage(response.data.Image));
   };
 
   useEffect(() => {

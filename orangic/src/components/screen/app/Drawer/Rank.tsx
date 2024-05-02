@@ -60,7 +60,6 @@ const Rank = () => {
       console.log('user index', userIndex)
       setNumberOne(data.shift() as Infor);
       setList(data.slice(0,19));
-      // console.log(userIndex);
     }
   };
 

@@ -361,7 +361,6 @@ const US_Restaurant = (props: Props) => {
           data={state.FeatureList}
           horizontal
           contentContainerStyle={{flex: 0}}
-          pagingEnabled
           ListEmptyComponent={
             <View
               style={{
@@ -414,7 +413,6 @@ const US_Restaurant = (props: Props) => {
           data={state.OtherList}
           contentContainerStyle={{flex: 0}}
           horizontal
-          pagingEnabled
           ListEmptyComponent={
             <View
               style={{

@@ -64,9 +64,10 @@ try {
         $stmtDetail->bindParam(':id', $food['Id']);
         $stmtDetail->execute();
         $images = $stmtDetail->fetchAll(PDO::FETCH_ASSOC);
+        
         $food['Images'] = array_map(function($image) {
             return $image['Id'];
-        }, $images);
+        }, [...$images]);
 
         // Get images of restaurant
         $queryRes = "SELECT Id from images WHERE OwnerID = :id";
@@ -133,7 +134,9 @@ try {
             $stmtFeatureImg->bindParam(':id', $value['Id']);
             $stmtFeatureImg->execute();
             $images = $stmtFeatureImg->fetchAll(PDO::FETCH_ASSOC);
-            $food['FeatureList'][$key]['Images'] = $images;
+            $food['FeatureList'][$key]['Images'] = array_map(function($image) {
+                return $image['Id'];
+            }, $images);
         }
 
         foreach ($other as $key => $value) {
@@ -142,7 +145,9 @@ try {
             $stmtFeatureImg->bindParam(':id', $value['Id']);
             $stmtFeatureImg->execute();
             $images = $stmtFeatureImg->fetchAll(PDO::FETCH_ASSOC);
-            $food['OtherList'][$key]['Images'] = $images;
+            $food['OtherList'][$key]['Images'] = array_map(function($image) {
+                return $image['Id'];
+            }, $images);
         }
 
 

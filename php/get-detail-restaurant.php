@@ -99,7 +99,9 @@ try {
             $stmtFeatureImg->bindParam(':id', $value['Id']);
             $stmtFeatureImg->execute();
             $images = $stmtFeatureImg->fetchAll(PDO::FETCH_ASSOC);
-            $restaurant['FeatureList'][$key]['Images'] = $images;
+            $restaurant['FeatureList'][$key]['Images'] = array_map(function($image) {
+        return $image['Id'];
+    }, $images);
         }
 
         foreach ($other as $key => $value) {
@@ -108,7 +110,9 @@ try {
             $stmtFeatureImg->bindParam(':id', $value['Id']);
             $stmtFeatureImg->execute();
             $images = $stmtFeatureImg->fetchAll(PDO::FETCH_ASSOC);
-            $restaurant['OtherList'][$key]['Images'] = $images;
+            $restaurant['OtherList'][$key]['Images'] = array_map(function($image) {
+        return $image['Id'];
+    }, $images);
         }
 
 

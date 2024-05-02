@@ -239,11 +239,11 @@ const US_FoodDetail = (props: Props) => {
     };
     try {
       const response = await AxiosInstance().post('/get-detail-food.php', data);
+      console.log(response.data.OtherList[0].Images)
       if (response.status) {
         let data: FoodDetailType = response.data;
         data.TimeMade = converTime(data.TimeMade);
         setState(data);
-        console.log(response);
         if (data.Opinion != false) {
           setComment(data.Opinion as UserComment);
         }
@@ -562,7 +562,7 @@ const US_FoodDetail = (props: Props) => {
                     rateCount={item.ReviewCount}
                     time={converTime(item.TimeMade)}
                     key={item.Id}
-                    image={`${host}${item.Images[0]}.jpg`}
+                    image={`${host}/uploads/${item.Images[0]}.jpg`}
                     style={{
                       width: 300,
                       marginHorizontal: 20,
@@ -611,7 +611,7 @@ const US_FoodDetail = (props: Props) => {
                       rateCount={item.ReviewCount}
                       time={converTime(item.TimeMade)}
                       key={item.Id}
-                      image={`${host}${item.Images[0]}.jpg`}
+                      image={`${host}/uploads/${item.Images[0]}.jpg`}
                       style={{
                         width: 300,
                         marginHorizontal: 20,

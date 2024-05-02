@@ -1,4 +1,4 @@
-import {View, Text, StatusBar} from 'react-native';
+import {View, Text, StatusBar, Image} from 'react-native';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ParamList} from './RootNavigation';
@@ -31,7 +31,7 @@ import CreateFood from '../screen/app/Store/CreateFood';
 import AddressInfor from '../screen/app/Address/AddressInfor';
 import Notifications from '../screen/app/Drawer/Notifications';
 import {useDispatch, useSelector} from 'react-redux';
-import {selectName, selectPoint} from '../../helpers/state/Global/globalSlice';
+import {selectHost, selectImage, selectName, selectPoint} from '../../helpers/state/Global/globalSlice';
 import ChangeInformation from '../screen/app/Drawer/ChangeInformation';
 import NotificationDetails from '../screen/app/Drawer/NotificationDetails';
 import RestaurantOrders from '../screen/app/Store/RestaurantOrders';
@@ -64,12 +64,15 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   const {state} = props;
   const point = useSelector(selectPoint);
   const name = useSelector(selectName);
+  const host = useSelector(selectHost);
+  const image = useSelector(selectImage);
 
   const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
   return (
     <View style={{padding: 20}}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Avatar width={70} height={70} />
+        {/* <Avatar width={70} height={70} /> */}
+        <Image source={{uri: `${host}/uploads/${image}.jpg`}} style={{width: 35, height: 35, borderRadius: 15, marginRight: 15}}/>
         <View style={{alignItems: 'flex-start'}}>
           <Text style={[fonts.captionBold]}>{name}</Text>
           <Text style={[fonts.sublineBold]}>Rank: {convertPoint(point)}</Text>

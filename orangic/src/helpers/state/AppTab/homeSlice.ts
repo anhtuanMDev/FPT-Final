@@ -70,6 +70,7 @@ const homeSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(fetchHomeItem.fulfilled, (state, action: PayloadAction<HomeState>) => {
+      console.log(action)
       if(action.payload) {
         state.featureArray = action.payload.featureArray as FoodDisplayType[];
         state.newItemsArray = action.payload.newItemsArray as FoodDisplayType[];
@@ -92,6 +93,7 @@ export const fetchHomeItem = createAsyncThunk(
     const response = await AxiosInstance().post('/get-home-20-items.php', {
       id: userID,
     });
+    console.log('data in redux home', response.data.length);
     return response.data;
   },
 );

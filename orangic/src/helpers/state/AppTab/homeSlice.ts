@@ -1,5 +1,6 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import AxiosInstance from '../../AxiosInstance';
+import { set } from 'mongoose';
 
 export type FoodDisplayType = {
   Id: string;
@@ -26,7 +27,13 @@ export type RestaurantDisplayType = {
   UserFavorite: number;
 };
 
+export type EventState = {
+  Id: string,
+  Title:string
+}
+
 interface HomeState {
+  eventArray: EventState[];
   featureArray: FoodDisplayType[];
   newItemsArray: FoodDisplayType[];
   popularItemsArray: FoodDisplayType[];
@@ -35,6 +42,7 @@ interface HomeState {
 }
 
 const initialState: HomeState = {
+  eventArray: [],
   featureArray: [],
   newItemsArray: [],
   popularItemsArray: [],
@@ -55,6 +63,9 @@ const homeSlice = createSlice({
     setPopularItemsArray: (state, action: PayloadAction<FoodDisplayType[]>) => {
       state.popularItemsArray = action.payload;
     },
+    setEventArray: (state, action: PayloadAction<EventState[]>) => {
+      state.eventArray = action.payload;
+    },
     setRecommendedItemsArray: (
       state,
       action: PayloadAction<FoodDisplayType[]>,
@@ -70,8 +81,9 @@ const homeSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(fetchHomeItem.fulfilled, (state, action: PayloadAction<HomeState>) => {
-      console.log(action)
       if(action.payload) {
+        state.eventArray = action.payload.eventArray as EventState[];
+        state.recommendedItemsArray = action.payload.recommendedItemsArray as FoodDisplayType[];
         state.featureArray = action.payload.featureArray as FoodDisplayType[];
         state.newItemsArray = action.payload.newItemsArray as FoodDisplayType[];
         state.popularItemsArray = action.payload.popularItemsArray as FoodDisplayType[];
@@ -99,6 +111,7 @@ export const fetchHomeItem = createAsyncThunk(
 );
 
 export const {
+  setEventArray,
   setFeatureArray,
   setNewItemsArray,
   setPopularItemsArray,
@@ -106,6 +119,7 @@ export const {
   setRestaurantsArray,
 } = homeSlice.actions;
 
+export const selectEventArray = (state: {home: HomeState}) => state.home.eventArray;
 export const selectFeatureArray = (state: {home: HomeState}) => state.home.featureArray;
 export const selectNewItemsArray = (state: {home: HomeState}) => state.home.newItemsArray;
 export const selectPopularItemsArray = (state: {home: HomeState}) => state.home.popularItemsArray;

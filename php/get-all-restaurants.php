@@ -8,24 +8,6 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
-    // $query = "SELECT 
-    // restaurants.Id
-    // ,restaurants.Name
-    // ,restaurants.Introduction
-    // ,restaurants.Address
-    // ,restaurants.City
-    // ,restaurants.Ward
-    // ,restaurants.District
-    // ,restaurants.Phone
-    // ,restaurants.Email
-    // ,restaurants.Status
-    // ,restaurants.ownerID,
-    //  SUM(orderitems.Quantity) as Sold FROM restaurants 
-    // INNER JOIN foods ON restaurants.Id = foods.RestaurantId
-    // INNER JOIN orderitems ON foods.Id = orderitems.FoodId
-    // WHERE foods.Status != 'Banned' AND foods.Status != 'Removed' AND restaurants.Status != 'Banned' 
-    // AND restaurants.Status != 'Removed' GROUP BY restaurants.Id";
-
     $query = "SELECT 
                     restaurants.Id,
                     restaurants.Name,

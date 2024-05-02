@@ -58,6 +58,7 @@ export type ParamList = {
   RestaurantStatistic: undefined;
   CreateRestaurant: undefined;
   ChangeFoodInfor: undefined;
+  AllRestaurants: undefined;
   AllFood: undefined;
   Report: undefined | { id: string, title: string, };
   SS_FoodDetail: undefined | { id: string };

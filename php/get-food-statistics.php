@@ -29,11 +29,14 @@ try {
     $result['Infor']['Image'] = $imageIds;
 
     $query = "SELECT COUNT(orderitems.Id) AS TotalOrders, 
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Canceled' 
-    OR orderitems.Status = 'Denied') AS CancelOrders,
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Done') 
+    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.FoodID = '$id'
+    AND ( orderitems.Status = 'Canceled' 
+    OR orderitems.Status = 'Denied')) AS CancelOrders,
+    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.FoodID = '$id'
+    AND orderitems.Status = 'Done') 
     AS CompletedOrders,
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status != 'Canceled' 
+    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.FoodID = '$id'
+    AND orderitems.Status != 'Canceled' 
     AND orderitems.Status != 'Denied' AND orderitems.Status != 'Done') AS
     PendingOrders 
     FROM orderitems 

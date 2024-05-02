@@ -35,6 +35,10 @@ import Swal from 'sweetalert2'
 
 import AxiosInstance from '../helpers/AxiosInstance.js';
 
+const dataBase = {
+    title: 'Thông báo',
+    content: 'Sắp có chương trình khuyến mãi lớn, hãy chờ đón',
+}
 
 const Notification = (prop) => {
     const { host, adminID, setID, adminDetail } = prop;
@@ -1044,12 +1048,12 @@ const Notification = (prop) => {
                                                                     <label for="user-addGift" style={{ cursor: 'pointer' }}>Thêm quà tặng</label>
                                                                 </div>
                                                             </div>
-                                                            <input type="text" className="form-control" id="user-notification-title" maxLength={50} minLength={10} />
+                                                            <input type="text" className="form-control" id="user-notification-title" maxLength={50} minLength={10} defaultValue={dataBase.title} />
                                                             <div className="invalid-feedback">Vui lòng kiểm tra bối cảnh đầu vào này.</div>
                                                         </div>
                                                         <div className="mb-3">
                                                             <label htmlFor="user-notification-content" className="form-label">Nội dung</label>
-                                                            <textarea className="form-control" id="user-notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
+                                                            <textarea className="form-control" id="user-notification-content" rows="3" maxLength={300} minLength={10} defaultValue={dataBase.content} ></textarea>
                                                             <div className="invalid-feedback">Vui lòng kiểm tra xem bối cảnh đầu vào này có đúng không?</div>
                                                         </div>
 
@@ -1099,12 +1103,12 @@ const Notification = (prop) => {
                                                     <form className='need-validation'>
                                                         <div className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
                                                             <label htmlFor="restaurant-notification-title" className="form-label">Tiêu đề</label>
-                                                            <input type="text" className="form-control" id="restaurant-notification-title" maxLength={50} minLength={10} />
+                                                            <input type="text" className="form-control" id="restaurant-notification-title" maxLength={50} minLength={10} defaultValue={dataBase.title}/>
                                                             <div className="invalid-feedback">Vui lòng kiểm tra bối cảnh đầu vào này.</div>
                                                         </div>
                                                         <div className="mb-3">
                                                             <label htmlFor="restaurant-notification-content" className="form-label">Nội dung</label>
-                                                            <textarea className="form-control" id="restaurant-notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
+                                                            <textarea className="form-control" id="restaurant-notification-content" rows="3" maxLength={300} minLength={10} defaultValue={dataBase.content}></textarea>
                                                             <div className="invalid-feedback">Vui lòng kiểm tra bối cảnh đầu vào này.</div>
                                                         </div>
 

@@ -78,14 +78,14 @@ const ForgotPass = (prop) => {
                                                     <label htmlFor="yourUsername" className="form-label">Email</label>
                                                     <div className="input-group has-validation">
                                                         <span className="input-group-text" id="inputGroupPrepend">@</span>
-                                                        <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={''} />
+                                                        <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'trank9626@gmail.com'} />
                                                         <div className="invalid-feedback">Vui lòng nhập Email.</div>
                                                     </div>
                                                 </div>
 
                                                 <div className="col-12">
                                                     <label htmlFor="yourPassword" className="form-label">Lý do</label>
-                                                    <textarea type="text" name="password" className="form-control" id="yourPassword" required maxLength={200} minLength={5} style={{ height: 200, width: "100%" }} />
+                                                    <textarea type="text" name="password" className="form-control" id="yourPassword" required maxLength={200} minLength={5} style={{ height: 200, width: "100%" }} defaultValue={"Quên mật khẩu"} />
                                                     <div className="invalid-feedback">Vui lòng nhập Lý do!</div>
                                                 </div>
 

@@ -1060,7 +1060,7 @@ const Staffs = (prop) => {
                                                             <div className="col-12">
                                                                 <label htmlFor="yourName" className="form-label">Tên</label>
                                                                 <div className="input-group has-validation">
-                                                                    <input type="text" name="name" className="form-control" id="yourName" required defaultValue={'nguyen van teo'} />
+                                                                    <input type="text" name="name" className="form-control" id="yourName" required defaultValue={'Nguyễn Đình Anh Tuấn'} />
                                                                 </div>
                                                                 <div className="invalid-feedback">Vui lòng nhập Tên.</div>
                                                             </div>

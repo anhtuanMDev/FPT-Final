@@ -175,7 +175,7 @@ const CreateFood = (props: Prop) => {
     status: 'Sale',
     discount: 30,
   };
-  const naviagtion = useNavigation<NavigationProp<ParamList, 'CreateFood'>>();
+  const navigation = useNavigation<NavigationProp<ParamList, 'CreateFood'>>();
   const [infor, setInfor] = useReducer(handleReducer, initialState);
   const [img, setImg] = React.useState<string[]>([]);
 

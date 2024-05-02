@@ -25,7 +25,7 @@ CREATE TABLE Restaurants (
     Phone VARCHAR(20), 
     Email VARCHAR(60), 
     Status VARCHAR(20), 
-    ownerID VARCHAR(20) NOT NULL,
+    OwnerID VARCHAR(20) NOT NULL,
     CreateAt DATETIME,
     UpdateAt DATETIME,
     FOREIGN KEY (ownerID) REFERENCES Users (Id)
@@ -36,11 +36,11 @@ CREATE TABLE Foods (
     Name VARCHAR(30) NOT NULL, 
     Description VARCHAR(300), 
     TimeMade TIME,
-    CreateAt DATETIME TimeMade TIME, 
-    UpdateAt DATETIME,
     FeatureItem BOOLEAN, 
     Price DECIMAL(10, 2), 
     Status VARCHAR(20), 
+    CreateAt DATETIME, 
+    UpdateAt DATETIME,
     Discount INTEGER CHECK (
         Discount >= 0
         AND Discount <= 100
@@ -70,14 +70,14 @@ CREATE TABLE FavList (
 
 CREATE TABLE Address (
     Id VARCHAR(20) PRIMARY KEY, 
-    Status VARCHAR(20),
-    OwnerID VARCHAR(20) NOT NULL, 
-    Phone VARCHAR(15), 
     Address VARCHAR(50), 
     City VARCHAR(30), 
     District VARCHAR(30), 
     Ward VARCHAR(40), 
+    Phone VARCHAR(15), 
     Priority TINYINT,
+    Status VARCHAR(20),
+    OwnerID VARCHAR(20) NOT NULL, 
 );
 
 
@@ -92,7 +92,7 @@ CREATE TABLE Coupons (
     CreateAt DATETIME, 
     UpdateAt DATETIME, 
     CreateBy VARCHAR(20) NOT NULL, 
-    UpdateBy VARCHAR(20) NOT NULL, 
+    UpdateBy VARCHAR(20) DEFAULT NULL, 
     FOREIGN KEY (CreateBy) REFERENCES Admin (Id), 
     FOREIGN KEY (UpdateBy) REFERENCES Admin (Id)
 );

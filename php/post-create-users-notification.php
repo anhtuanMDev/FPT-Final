@@ -9,26 +9,26 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 function generateID($prefix)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = $prefix;
-        for ($i = 0; $i < 17; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
+{
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = $prefix;
+    for ($i = 0; $i < 17; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
+    return $randomString;
+}
 
-    function generateCode()
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < 6; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
+function generateCode()
+{
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < 6; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
+    return $randomString;
+}
 
 try {
 
@@ -37,12 +37,16 @@ try {
     $adminID = $data->id;
     $title = $data->title;
     $content = $data->content;
-    $userID = array();
-    $userID[] = $data->userID;
+    $userID = $data->userID;
     $gift = $data->gift;
     $amount = count($userID);
     $code = generateCode();
     $repeat = true;
+
+
+
+    // Begin transaction
+    // $dbConn->beginTransaction();
 
     if ($gift == 'true') {
         $couponID = generateID('CPN');
@@ -53,7 +57,7 @@ try {
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetch();
-            if($result == null){
+            if ($result == null) {
                 $repeat = false;
             } else {
                 $code = generateCode();
@@ -70,12 +74,12 @@ try {
         $stmt->execute();
         $foods = $stmt->fetchAll();
 
-        $query = "INSERT INTO coupons (Id, Code, Start, End, Discount, Type, CreateAt, Creator) VALUES 
-        ('$couponID', '$code', '$start', '$end', 30, 'Times', NOW(), '$adminID')";
+        $query = "INSERT INTO coupons (Id, Code, Start, End, Discount, Type, CreateAt, CreateBy, UpdateBy) VALUES 
+        ('$couponID', '$code', '$start', '$end', 30, 'Times', NOW(), '$adminID', '$adminID')";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
-        
-        foreach($foods as $food){
+
+        foreach ($foods as $food) {
             $query = "INSERT INTO couponitems (CouponID, FoodID) VALUES ('$couponID', '$food->Id')";
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
@@ -83,7 +87,7 @@ try {
 
         foreach ($userID as $user) {
             $copID = generateID('CPU');
-            $query = "INSERT INTO usercoupons (Id,UserID, CouponID, Status) VALUES ('$copID','$user', '$couponID', 'Available')";
+            $query = "INSERT INTO couponuser (Id,UserID, CouponID, Status) VALUES ('$copID','$user', '$couponID', 'Available')";
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
 
@@ -91,31 +95,61 @@ try {
             ('$id', '$title', '$content',0, NOW(), '$couponID', '$user', '$adminID')";
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
+            $id = generateID('NOT');
+
         }
 
-        echo json_encode(array(
-            "statusText" => "Success!",
-            "status" => true
-        ));
+        // echo json_encode(
+        //     array(
+        //         "statusText" => "Success!",
+        //         "status" => true
+        //     )
+        // );
     } else {
         foreach ($userID as $user) {
+            // error_log($user);
             $query = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, GiftID, TargetID, Creator) VALUES 
             ('$id', '$title', '$content',0, NOW(), NULL, '$user', '$adminID')";
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
-        };
+            $id = generateID('NOT');
+
+        }
+
+        // $values = "";
+        // foreach ($userID as $user) {
+        //     $values .= "('$id', '$title', '$content', 0, NOW(), NULL, '$user', '$adminID'),";
+        // }
+        // // Loại bỏ dấu phẩy cuối cùng
+        // $values = rtrim($values, ",");
+
+        // $query = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, GiftID, TargetID, Creator) VALUES $values";
+        // error_log($query);
+        // $stmt = $dbConn->prepare($query);
+        // $stmt->execute();
+
+
+
     }
 
 
+    // Commit the transaction
+    // $dbConn->commit();
 
-
-    echo json_encode(array(
-        "statusText" => "Success!",
-        "status" => true
-    ));
+    echo json_encode(
+        array(
+            "statusText" => "Success!",
+            "status" => true
+        )
+    );
 } catch (Exception $e) {
-    echo json_encode(array(
-        "statusText" => $e,
-        "status" => false
-    ));
+    // Rollback the transaction if an exception occurs
+    // $dbConn->rollback();
+
+    echo json_encode(
+        array(
+            "statusText" => "lối ".$e,
+            "status" => false
+        )
+    );
 }

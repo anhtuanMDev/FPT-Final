@@ -46,15 +46,15 @@ const Drawer = createDrawerNavigator<ParamList>();
 
 export function convertPoint(point: number) {
   if (point < 1000) {
-    return 'Bronze';
+    return 'Đồng';
   } else if (point < 2000) {
-    return 'Silver';
+    return 'Bạc';
   } else if (point < 3000) {
-    return 'Gold';
+    return 'Vàng';
   } else if (point < 6000) {
-    return 'Platinum';
+    return 'Bạc kim';
   } else if (point < 10000) {
-    return 'Diamond';
+    return 'Kim cương';
   } else {
     return 'Vip';
   }
@@ -161,6 +161,7 @@ const AppTabNavigation = () => {
       initialRouteName="Home"
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, color}) => {
+          let label;
           let iconName;
           switch (route.name) {
             case 'HomeDrawer':
@@ -169,6 +170,7 @@ const AppTabNavigation = () => {
               ) : (
                 <Icons name={IconName.home} color={color} />
               );
+              label='Trang chủ';
               break;
             case 'Store':
               iconName = focused ? (
@@ -219,11 +221,26 @@ const AppTabNavigation = () => {
             navigation.navigate('HomeDrawer', {screen: 'Home'});
           },
         })}
+        options={{
+          tabBarLabel: 'Trang chủ',
+        }}
       />
-      <Tab.Screen name="Favorite" component={Favorite} />
-      <Tab.Screen name="Address" component={Address} />
-      <Tab.Screen name="Store" component={Store} />
-      <Tab.Screen name="Cart" component={Cart} />
+      <Tab.Screen name="Favorite" component={Favorite} options={{
+        tabBarLabel: 'Yêu thích'
+      }} />
+      <Tab.Screen name="Address" component={Address} options={{
+        tabBarLabel: 'Địa chỉ'
+      }} />
+      <Tab.Screen name="Store" component={Store} 
+      options={{
+        tabBarLabel: 'Cửa hàng'
+      }}
+      />
+      <Tab.Screen name="Cart" component={Cart} 
+      options={{
+        tabBarLabel: 'Giỏ hàng'
+      }}
+      />
 
       <Tab.Screen
         name="US_Restaurant"

@@ -70,11 +70,12 @@ const homeSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(fetchHomeItem.fulfilled, (state, action: PayloadAction<HomeState>) => {
-      state.featureArray = action.payload.featureArray as FoodDisplayType[];
-      state.newItemsArray = action.payload.newItemsArray as FoodDisplayType[];
-      state.popularItemsArray = action.payload.popularItemsArray as FoodDisplayType[];
-      // state.recommendedItemsArray = action.payload as FoodDisplayType[];
-      state.restaurantsArray = action.payload.restaurantsArray as RestaurantDisplayType[];
+      if(action.payload) {
+        state.featureArray = action.payload.featureArray as FoodDisplayType[];
+        state.newItemsArray = action.payload.newItemsArray as FoodDisplayType[];
+        state.popularItemsArray = action.payload.popularItemsArray as FoodDisplayType[];
+        state.restaurantsArray = action.payload.restaurantsArray as RestaurantDisplayType[];
+      }
     });
     builder.addCase(fetchHomeItem.rejected, (state, action) => {
       state.featureArray = [];

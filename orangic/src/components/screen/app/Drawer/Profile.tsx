@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   isLogin,
   selectHost,
+  selectIsLogin,
   selectUserID,
   setUserID,
 } from '../../../../helpers/state/Global/globalSlice';
@@ -74,6 +75,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const userID = useSelector(selectUserID);
   const host = useSelector(selectHost);
+  const checkLogin = useSelector(selectIsLogin);
   const [information, setInformation] =
     React.useState<Information>(initialState);
   const isFocused = useIsFocused();
@@ -83,9 +85,14 @@ const Profile = () => {
   const logOut = async () => {
     try {
       dispatch(isLogin(false));
-      AsyncStorage.removeItem('token', err => console.log('userID', err));
+      // await AsyncStorage.removeItem('userID', err => console.log('userID', err));
+      await AsyncStorage.setItem('userID', '');
+      // const temp = await AsyncStorage.getItem('userID');
+
       dispatch(setUserID(''));
-      // console.log('log out');
+      console.log('log out');
+      // console.log(checkLogin);
+      // console.log("useerid",temp);
     } catch (error) {
       console.error('Failed to remove the item', error);
     }

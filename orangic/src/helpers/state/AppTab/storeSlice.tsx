@@ -33,7 +33,6 @@ const storeSlice = createSlice({
 export const fetchRestaurantID = createAsyncThunk('store/fetchRestaurantID',
     async (id: string) => {
         const response = await AxiosInstance().post('get-user-restaurant.php',{id});
-        console.log("user res thunk:",response);
         return response.data.Id;
     });
 

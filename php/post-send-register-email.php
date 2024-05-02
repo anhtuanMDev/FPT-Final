@@ -61,6 +61,61 @@ try {
         return;
     }
 
+    $layout = "
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Confirmation</title>
+    <style>
+        body {
+            background-color: #FFA500;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin: 0 auto;
+            width: 80%;
+            padding: 20px;
+            background-color: #ffffff;
+            color: #FFA500;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+            padding-bottom: 10px;
+            background-color: #ee4d2d;
+        }
+        .content {
+            margin-bottom: 20px;
+            color: #000000;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1 style='color: #ffffff'>Mã xác thực email của bạn đã tới!</h1>
+        </div>
+        <div class='content'>
+            <p>Mã bảo vệ của bạn là $token</p>
+            <p>Lưu ý mã này chỉ tồn tại trong 5 phút. Nếu không phải bạn yêu cầu, vui lòng bỏ qua email này.</p>
+        </div>
+        <div class='footer'>
+            <p>Nếu bạn có thắc mắc có thể liên hệ chúng tôi qua <a href='mailto:info@example.com' style='color: #ffffff;'>info@example.com</a></p>
+        </div>
+    </div>
+</body>
+</html>
+";
+
 
     $dbConn->query("INSERT INTO confirmations (Email, Token, Type, CreateAt, ExpireAt, Status) 
         VALUES ('$email', '$token', '$type', NOW(), NOW() + INTERVAL 5 MINUTE, 1)");
@@ -82,21 +137,21 @@ try {
     $mail->AddAddress($email, "Hello");
     $mail->Subject = "$type";
     $mail->isHTML(true);
-    $mail->Body = "Mã bảo vệ của bạn đã tới. " . $link . "";
+    $mail->Body = $layout;
 
     $res = $mail->Send();
 
     if ($res) {
         echo json_encode(
             array(
-                "message" => "Email has been sent",
+                "statusText" => "Email has been sent",
                 "status" => true
             )
         );
     } else {
         echo json_encode(
             array(
-                "message" => "Error email",
+                "statusText" => "Error email $res",
                 "status" => false,
             )
         );
@@ -104,7 +159,7 @@ try {
 } catch (Exception $e) {
     echo json_encode(
         array(
-            "message" => "Error: " . $e->getMessage(),
+            "message" => "Error: $e",
             "status" => false
         )
     );

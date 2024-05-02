@@ -7,25 +7,29 @@ import {useSelector} from 'react-redux';
 import {selectUserID} from '../../../../helpers/state/Global/globalSlice';
 import Empty from '../../../../assets/images/EmptyFoodFav.svg';
 import WaitingModal from '../../../custom/ui/WaitingModal';
+import OrderCard from '../../../custom/cards/OrderCard';
+
+export type Items = {
+  ArriveAt: string;
+  FoodName: string;
+  Id: string;
+  Image: string;
+  Quantity: number;
+  Status: string;
+  Value: number;
+};
 
 type OrderItems = {
+  Address: string;
+  City: string;
+  CreateAt: string;
+  Delivery: number;
+  District: string;
   Id: string;
-  OrderID: string;
-  FoodID: string;
-  Quantity: 79;
-  Pick: 0;
-  Status: string | null;
-  Value: number;
-  UserID: string;
+  Items: Items[];
+  Phone: string;
   TotalValue: number;
-  PaymentMethod: string;
-  FoodName: string;
-  RestaurantName: string;
-  RestaurantID: string;
-  ResImage: string;
-  ResRating: number;
-  FoodImage: string | null;
-  FoodRating: number;
+  Ward: string;
 };
 
 const {width, height} = Dimensions.get('window');
@@ -36,17 +40,16 @@ const OrderHistory = () => {
 
   const ModalLoad = () => {
     return (
-      <Modal animationType='fade' transparent visible={resfresh}>
-        <WaitingModal/>
+      <Modal animationType="fade" transparent visible={resfresh}>
+        <WaitingModal />
       </Modal>
-    )
-  }
+    );
+  };
 
   const getOrders = async () => {
     const response = await AxiosInstance().post('/get-user-order-history.php', {
       id: userID,
     });
-    // console.log(response.data);
     setOrder(response.data);
   };
   useEffect(() => {
@@ -54,7 +57,7 @@ const OrderHistory = () => {
   }, []);
   return (
     <View style={[screenStyles.container, {flexGrow: 1}]}>
-      <ModalLoad/>
+      <ModalLoad />
       <FlatList
         data={order}
         nestedScrollEnabled={true}
@@ -79,26 +82,18 @@ const OrderHistory = () => {
             <Empty width={width} height={width} />
             <Text style={{fontSize: 20, fontWeight: 'bold', color: 'gray'}}>
               Bạn chưa có đơn hàng nào
-              </Text>
+            </Text>
           </View>
         }
         showsVerticalScrollIndicator={false}
         renderItem={({item}: {item: OrderItems}) => {
           return (
-            <OrderItems
-              padding={60}
-              foodName={
-                item.FoodName.length > 20
-                  ? item.FoodName.slice(0, 20) + '...'
-                  : item.FoodName
-              }
-              restaurantName={item.RestaurantName}
-              foodRate={item.FoodRating}
-              price={item.Value}
-              quantity={item.Quantity}
-              restaurantRate={item.ResRating}
-              status={item.Status ? item.Status : 'Không thấy'}
-              style={{marginTop: 15, marginHorizontal: 10}}
+            <OrderCard
+              id={item.Id}
+              totalValue={item.TotalValue}
+              padding={20}
+              orderDate={item.CreateAt.slice(0, 10)}
+              items={item.Items}
             />
           );
         }}

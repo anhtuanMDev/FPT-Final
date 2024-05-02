@@ -33,8 +33,8 @@ try {
     OR orderitems.Status = 'Denied') AS CancelOrders,
     (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Done') 
     AS CompletedOrders,
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Canceled' 
-    AND orderitems.Status = 'Denied' AND orderitems.Status != 'Done') AS
+    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status != 'Canceled' 
+    AND orderitems.Status != 'Denied' AND orderitems.Status != 'Done') AS
     PendingOrders 
     FROM orderitems 
     INNER JOIN foods ON orderitems.FoodID = foods.Id

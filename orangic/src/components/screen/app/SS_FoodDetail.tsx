@@ -119,6 +119,7 @@ const SS_FoodDetail = () => {
     const response = await AxiosInstance().post('/get-food-statistics.php', {
       id: route.params?.id,
     });
+    console.log('get food statistics', response.data);
     setStatistics(response.data);
   };
 
@@ -619,9 +620,9 @@ const SS_FoodDetail = () => {
           <PieChart
             data={[
               {
-                name: 'Đã bán',
+                name: 'Đã hủy',
                 population: statistics.OrderStatistic.CancelOrders,
-                color: Colors.blue,
+                color: Colors.orange,
                 legendFontColor: Colors.black,
                 legendFontSize: 13,
               },

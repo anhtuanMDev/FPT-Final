@@ -5,20 +5,28 @@ import {
   Image,
   Touchable,
   TouchableOpacity,
+  Text,
 } from 'react-native';
-import React, {useReducer, useState} from 'react';
+import React, {useCallback, useMemo, useReducer, useRef, useState} from 'react';
 import Avatar from '../../../assets/images/avatar.svg';
 import FastFood from '../../../assets/images/fast-food.svg';
 import {Colors} from '../../custom/styles/ScreenStyle';
 import Input from '../../custom/textinput/Input';
 import Fluid_btn from '../../custom/buttons/Fluid_btn';
-import {launchCamera} from 'react-native-image-picker';
-import {IconName} from '../../../assets/icons/Icons';
+import {
+  ImageLibraryOptions,
+  ImagePickerResponse,
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
+import Icons, {IconName} from '../../../assets/icons/Icons';
 import {showMessage} from 'react-native-flash-message';
 import AxiosInstance from '../../../helpers/AxiosInstance';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {ParamList} from '../../navigation/RootNavigation';
 import {generateID} from '../app/Store/CreateRestaurant';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height * 0.4;
@@ -55,6 +63,8 @@ const reducer = (state: RegisterState, action: RegisterAction) => {
 const Register = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigation = useNavigation<NavigationProp<ParamList>>();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['20%', '30%'], []);
 
   const openCamera = async () => {
     const granted = await PermissionsAndroid.request(
@@ -74,6 +84,35 @@ const Register = () => {
       if (result && result.assets && result.assets.length > 0) {
         dispatch({type: 'image', payload: result.assets[0].uri});
       }
+    }
+  };
+
+  const openLibrary = async () => {
+    const options: ImageLibraryOptions = {
+      mediaType: 'photo',
+      selectionLimit: 1,
+    };
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        const result: any = launchImageLibrary(
+          options,
+          (response: ImagePickerResponse) => {
+            if (response.didCancel || response.errorCode) {
+              return;
+            }
+            // Process the selected images
+            if (response && response.assets && response.assets.length > 0) {
+              const uris: any[] = response.assets.map(asset => asset.uri);
+              dispatch({type: 'image', payload: uris[0]});
+            }
+          },
+        );
+      }
+    } catch (err) {
+      console.warn(err);
     }
   };
 
@@ -210,100 +249,154 @@ const Register = () => {
     }
   };
 
-  return (
-    <View style={{flex: 1, backgroundColor: Colors.white}}>
-      <FastFood width={width} height={height} />
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
 
-      {state.image.length > 0 ? (
-        <TouchableOpacity
-          onPress={openCamera}
-          style={{
-            width: avatarSize,
-            height: avatarSize,
-            position: 'absolute',
-            top: height - avatarSize / 1.5,
-            left: width / 2 - avatarSize / 2,
-            borderRadius: avatarSize / 2,
-            borderWidth: 5,
-            borderColor: Colors.ember,
-            overflow: 'hidden',
-          }}>
-          <Image
-            source={{uri: state.image}}
+  const handleCloseModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.close();
+  }, []);
+
+  return (
+    <GestureHandlerRootView style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: Colors.white}}>
+        <FastFood width={width} height={height} />
+
+        {state.image.length > 0 ? (
+          <TouchableOpacity
+            onPress={() => {
+              handlePresentModalPress();
+            }}
             style={{
               width: avatarSize,
               height: avatarSize,
+              position: 'absolute',
+              top: height - avatarSize / 1.5,
+              left: width / 2 - avatarSize / 2,
+              borderRadius: avatarSize / 2,
+              borderWidth: 5,
+              borderColor: Colors.ember,
+              overflow: 'hidden',
+            }}>
+            <Image
+              source={{uri: state.image}}
+              style={{
+                width: avatarSize,
+                height: avatarSize,
+              }}
+            />
+          </TouchableOpacity>
+        ) : (
+          <Avatar
+            width={avatarSize}
+            height={avatarSize}
+            style={{
+              position: 'absolute',
+              top: height - avatarSize / 1.5,
+              left: width / 2 - avatarSize / 2,
+              borderRadius: avatarSize / 2,
+              borderWidth: 5,
+              borderColor: Colors.ember,
+            }}
+            onPress={() => {
+              handlePresentModalPress();
             }}
           />
-        </TouchableOpacity>
-      ) : (
-        <Avatar
-          width={avatarSize}
-          height={avatarSize}
+        )}
+
+        <View
           style={{
-            position: 'absolute',
-            top: height - avatarSize / 1.5,
-            left: width / 2 - avatarSize / 2,
-            borderRadius: avatarSize / 2,
-            borderWidth: 5,
-            borderColor: Colors.ember,
-          }}
-          onPress={() => {
-            console.log('press');
-            openCamera();
-          }}
-        />
-      )}
+            flex: 1,
+            marginTop: 30,
+            paddingTop: 20,
+            paddingHorizontal: 20,
+          }}>
+          <Input
+            placeholder="Tên của bạn"
+            onChange={text => {
+              dispatch({type: 'name', payload: text});
+            }}
+            value={state.name}
+          />
+          <Input
+            placeholder="Email"
+            onChange={text => {
+              dispatch({type: 'email', payload: text});
+            }}
+            value={state.email}
+            showButton
+            SVG={IconName.send}
+            onPress={() => {
+              createOTP();
+            }}
+          />
+          <Input
+            placeholder="Mật khẩu"
+            onChange={text => {
+              dispatch({type: 'password', payload: text});
+            }}
+            value={state.password}
+          />
+          <Input
+            placeholder="Mã xác thực"
+            onChange={text => {
+              dispatch({type: 'confirm', payload: text});
+            }}
+            value={state.confirm}
+          />
 
-      <View
-        style={{
-          flex: 1,
-          marginTop: 30,
-          paddingTop: 20,
-          paddingHorizontal: 20,
-        }}>
-        <Input
-          placeholder="Tên của bạn"
-          onChange={text => {
-            dispatch({type: 'name', payload: text});
-          }}
-          value={state.name}
-        />
-        <Input
-          placeholder="Email"
-          onChange={text => {
-            dispatch({type: 'email', payload: text});
-          }}
-          value={state.email}
-          showButton
-          SVG={IconName.send}
-          onPress={() => {
-            createOTP();
-          }}
-        />
-        <Input
-          placeholder="Mật khẩu"
-          onChange={text => {
-            dispatch({type: 'password', payload: text});
-          }}
-          value={state.password}
-        />
-        <Input
-          placeholder="Mã xác thực"
-          onChange={text => {
-            dispatch({type: 'confirm', payload: text});
-          }}
-          value={state.confirm}
-        />
+          <Fluid_btn
+            title="Đăng ký"
+            onPress={() => {
+              registerAccount();
+            }}
+          />
+        </View>
 
-        <Fluid_btn
-          title="Đăng ký"
-          onPress={() => {
-            registerAccount();
-          }}
-        />
+        <BottomSheetModalProvider>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            style={{
+              backgroundColor: Colors.white,
+              elevation: 5,
+              paddingHorizontal: 20,
+            }}
+            snapPoints={snapPoints}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingTop: 30,
+                paddingHorizontal: 20,
+              }}>
+              <TouchableOpacity
+                style={{alignItems: 'center'}}
+                onPress={() => {
+                  handleCloseModalPress();
+                  openCamera();
+                }}>
+                <Icons name={IconName.camera} size={30} color={Colors.ember} />
+                <Text style={{fontSize: 20, color: Colors.ember}}>
+                  Chụp ảnh
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{alignItems: 'center'}}
+                onPress={() => {
+                  handleCloseModalPress();
+                  openLibrary();
+                }}>
+                <Icons name={IconName.library} size={30} color={Colors.ember} />
+                <Text style={{fontSize: 20, color: Colors.ember}}>
+                  Chọn ảnh
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </BottomSheetModal>
+        </BottomSheetModalProvider>
       </View>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

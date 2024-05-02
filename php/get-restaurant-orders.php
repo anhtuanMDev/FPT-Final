@@ -18,7 +18,7 @@ try {
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN orders ON orderitems.OrderID = orders.Id
     INNER JOIN users ON orders.UserID = users.Id
-    WHERE foods.RestaurantID ='$resID'";
+    WHERE foods.RestaurantID ='$resID' AND orders.Status != 'Waiting'";
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

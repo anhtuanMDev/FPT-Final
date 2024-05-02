@@ -11,64 +11,27 @@ try {
     $data = json_decode(file_get_contents('php://input'));
     $id = $data->id;
 
-    $query = "SELECT orderitems.*, orders.UserID, orders.TotalValue, orders.PaymentMethod,
-    foods.Name AS FoodName, restaurants.Name AS RestaurantName, restaurants.Id AS RestaurantID
-    FROM orderitems 
-    INNER JOIN orders ON orderitems.OrderID = orders.Id
-    INNER JOIN foods ON orderitems.FoodID = foods.Id
-    INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
-    WHERE orders.UserID = '$id' AND orders.Status = 'Done'
-    AND orderitems.Status = 'Canceled' OR orderitems.Status = 'Done' 
-    OR orderitems.Status = 'Denied'
-    ORDER BY orders.CreateAt DESC";
+    $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt,
+    address.Address, address.Phone, address.City, address.District, address.Ward
+    FROM orders
+    INNER JOIN address ON orders.AddressID = address.Id
+    WHERE orders.UserID = '$id'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($orders as $key => $value) {
-        $query = "SELECT Id from images WHERE OwnerID = :id";
-        $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['RestaurantID']);
-        $stmt->execute();
-        $image = $stmt->fetchColumn();
+    $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Value,
+    orderitems.ArriveAt, orderitems.Status, 
+    (SELECT Name FROM foods WHERE orderitems.FoodID = foods.Id) AS FoodName,
+    (SELECT Id FROM images WHERE orderitems.FoodID = images.OwnerID) AS Image
+    FROM orderitems";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($image !== false) {
-            $orders[$key]['ResImage'] = $image;
-        } else {
-            $orders[$key]['ResImage'] = null; // or some default value
-        }
-
-        $query = "SELECT COALESCE(CAST(AVG(Point) AS DECIMAL(3,1)), 0) AS Rating FROM reviews WHERE TargetID = :id";
-        $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['RestaurantID']);
-        $stmt->execute();
-        $point = $stmt->fetchColumn();
-
-
-        $orders[$key]['ResRating'] = $point;
+    foreach ($orders as $key => $order) {
+        $orders[$key]['Items'] = $orderItems;
     }
-
-    foreach ($orders as $key => $value) {
-        $query = "SELECT Id from images WHERE OwnerID = :id";
-        $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['FoodID']);
-        $stmt->execute();
-        $image = $stmt->fetchColumn();
-
-        if ($image !== false) {
-            $orders[$key]['FoodImage'] = $image;
-        } else {
-            $orders[$key]['FoodImage'] = null; // or some default value
-        }
-
-        $query = "SELECT COALESCE(CAST(AVG(Point) AS DECIMAL(3,1)), 0) AS Rating FROM reviews WHERE TargetID = :id";
-        $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['FoodID']);
-        $stmt->execute();
-        $point = $stmt->fetchColumn();
-        $orders[$key]['FoodRating'] = $point;
-    }
-
 
     echo json_encode(
         array(
@@ -82,8 +45,7 @@ try {
         array(
             'id' => null,
             'status' => false,
-            'statusText' => "Lấy lịch sử đơn hàng không thành công cho người dùng $id!",
-            'error' => $e->getMessage(),
+            'statusText' => "Lấy lịch sử đơn hàng không thành công cho người dùng $id! $e",
         )
     );
 } catch (\Throwable $th) {

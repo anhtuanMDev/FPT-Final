@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useReducer, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -27,10 +28,14 @@ import Fluid_btn from '../../../custom/buttons/Fluid_btn';
 import TextArea from '../../../custom/textinput/TextArea';
 import Icons, {IconName} from '../../../../assets/icons/Icons';
 import Shop from '../../../../assets/images/Shop.svg';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { ParamList } from '../../../navigation/RootNavigation';
-import { AppDispatch } from '../../../../helpers/state/store';
-import { fetchRestaurantID, setRestaurantID } from '../../../../helpers/state/AppTab/storeSlice';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {ParamList} from '../../../navigation/RootNavigation';
+import {AppDispatch} from '../../../../helpers/state/store';
+import {
+  fetchRestaurantID,
+  setRestaurantID,
+} from '../../../../helpers/state/AppTab/storeSlice';
+import Icons2, { Icon2Name } from '../../../../assets/icons/Icons2';
 
 /** Start of declare reducer option */
 
@@ -72,7 +77,8 @@ const CreateRestaurant = () => {
   const size = Dimensions.get('window').width;
   const [img, setImg] = useState<any[]>([]);
   const userID = useSelector(selectUserID);
-  const navigation = useNavigation<NavigationProp<ParamList, 'CreateRestaurant'>>();
+  const navigation =
+    useNavigation<NavigationProp<ParamList, 'CreateRestaurant'>>();
 
   const [infor, setInfor] = useReducer(inforReducer, initialState);
   const flashRef = useRef<FlashMessage | null>(null);
@@ -215,13 +221,16 @@ const CreateRestaurant = () => {
       email: infor.email,
     };
 
+    console.log(body);
+
     const response = await AxiosInstance().post(
       'post-create-restaurant-for-user.php',
       body,
     );
 
+    console.log(response);
+
     if (response.status) {
-      // console.log('response data 196', response.data);
       await dispatch(fetchRestaurantID(userID));
       showMessage({
         message: 'Thành công',
@@ -244,11 +253,21 @@ const CreateRestaurant = () => {
         );
         const data = {
           id: id,
-          ownerID: response.data 
-        }
-        const upload: any = await AxiosInstance().post('/insert-image.php', data);
-    });
+          ownerID: response.data,
+        };
+        const upload: any = await AxiosInstance().post(
+          '/insert-image.php',
+          data,
+        );
+      });
       navigation.navigate('Store');
+    } else {
+      showMessage({
+        message: 'Lỗi',
+        description: 'Có lỗi xảy ra, vui lòng thử lại',
+        type: 'danger',
+        icon: 'danger',
+      });
     }
   };
 
@@ -269,19 +288,42 @@ const CreateRestaurant = () => {
           ListEmptyComponent={<Shop width={size} height={size - 100} />}
           renderItem={({item}) => {
             return (
-              <Image
-                source={{uri: item}}
-                style={{
-                  width: size,
-                  height: 'auto',
-                  resizeMode: 'contain',
-                }}
-              />
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    setImg(img.filter(i => i !== item));
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: 30,
+                    right: 30,
+                    width: 30,
+                    height: 30,
+                    backgroundColor: Colors.white,
+                    borderRadius: 15,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Icons2
+                    name={Icon2Name.close}
+                    color={Colors.orange}
+                    size={20}
+                  />
+                </TouchableOpacity>
+                <Image
+                  source={{uri: item}}
+                  style={{
+                    width: size,
+                    height: 'auto',
+                    resizeMode: 'contain',
+                  }}
+                />
+              </View>
             );
           }}
         />
       </View>
-      
+
       <View
         style={{
           justifyContent: 'space-around',

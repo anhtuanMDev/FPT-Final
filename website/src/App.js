@@ -15,10 +15,11 @@ import Login from './components/account/Login';
 import Orders from './components/incomes/Orders';
 import { useState } from 'react';
 import ForgotPass from './components/account/ForgotPass';
+import Staffs from './components/employees/Staff';
 
 
 function App() {
-  const host = 'http://172.16.83.162:8686';
+  const host = 'http://192.168.1.6:8686';
   const getIdFromLocalStorage = () => {
     const id = localStorage.getItem('id')
     if (id) return JSON.parse(id)
@@ -65,6 +66,7 @@ function App() {
           <Route path="/reports/report-foods" element={<ReportFoods host={host} adminID={id} />} />
           <Route path="/reports/report-restaurants" element={<ReportRestaurants host={host} adminID={id} />} />
           <Route path="/reports/report-errors" element={<ReportApp host={host} adminID={id} />} />
+          <Route path="/informations/staffs" element={<Staffs host={host} adminID={id} setID={setIdToLocalStorage} />} />
         </Route>
       </Routes>
     </Router>

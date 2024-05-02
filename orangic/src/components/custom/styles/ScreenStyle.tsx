@@ -12,6 +12,8 @@ export enum Colors {
     navy = '#395998',
     nox = '#263238',
     yellow = '#FFC529',
+    selected = "#EE4D2D82",
+    unselected = "#ECECEC"
   }
 
 export const screenStyles = StyleSheet.create({

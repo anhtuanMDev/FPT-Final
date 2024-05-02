@@ -53,7 +53,7 @@ try {
     if (!$eventDetail) {
         echo json_encode(
             array(
-                "eventDetail" => null,
+                "data" => null,
                 "status" => false,
                 "message" => "Event is not in the database!",
             )
@@ -62,7 +62,7 @@ try {
 
     echo json_encode(
         array(
-            "eventDetail" => $eventDetail,
+            "data" => $eventDetail,
             "status" => false,
             "message" => "Success to get event detail!",
         )
@@ -71,7 +71,7 @@ try {
 } catch (Exception $e) {
     echo json_encode(
         array(
-            "eventDetail" => null,
+            "data" => null,
             "status" => false,
             "message" => "Fail to get event detail because of $e!",
         )

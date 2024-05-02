@@ -8,23 +8,65 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
-    $id = $_GET['id'];
+    $resId = $_GET['id'];
 
-    $query = "SELECT Id, Title
+    // lấy tất cả món ăn của nhà hàng
+    $query = "SELECT Id FROM foods WHERE RestaurantID = $resId";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $foodsId = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // lấy tất cả các sự kiện mà nhà hàng đã tham gia : có ngày kết thúc nhỏ hơn ngày hiện tại và có ít nhất 1 món ăn của nhà hàng đó xuất hiện trong couponItems
+    $query = "SELECT DISTINCT events.Id, events.Title
                     FROM events 
-                    WHERE `End` < NOW()";
+                    INNER JOIN couponitems ON events.CouponID = couponitems.CouponID
+                    WHERE events.End < NOW() AND couponitems.FoodID IN (";
+
+    foreach ($foodsId as $key => $food) {
+        $query .= $food['Id'];
+        if ($key < count($foodsId) - 1) {
+            $query .= ', ';
+        }
+    }
+    $query .= ")";
+
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $eventsParticipated = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // lấy tất cả các sự kiện mà nhà hàng đang tham gia : có ngày kết thúc lớn hơn ngày hiện tại và có ít nhất 1 món ăn của nhà hàng đó xuất hiện trong couponItems
+    $query = "SELECT DISTINCT events.Id, events.Title
+                    FROM events 
+                    INNER JOIN couponitems ON events.CouponID = couponitems.CouponID
+                    WHERE events.End > NOW() AND couponitems.FoodID IN (";
 
+    foreach ($foodsId as $key => $food) {
+        $query .= $food['Id'];
+        if ($key < count($foodsId) - 1) {
+            $query .= ', ';
+        }
+    }
+    $query .= ")";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $eventsParticipating = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-
-
+    // lấy tất cả các sự kiện mà nhà hàng chưa tham gia : có ngày kết thúc lớn hơn ngày hiện tại và không có món ăn của nhà hàng đó xuất hiện trong couponItems
     $query = "SELECT Id, Title
                     FROM events 
-                    WHERE `End` > NOW()";
+                    WHERE `End` > NOW() AND Id NOT IN (SELECT DISTINCT events.Id
+                    FROM events 
+                    INNER JOIN couponitems ON events.CouponID = couponitems.CouponID
+                    WHERE events.End > NOW() AND couponitems.FoodID IN (";
+
+    foreach ($foodsId as $key => $food) {
+        $query .= $food['Id'];
+        if ($key < count($foodsId) - 1) {
+            $query .= ', ';
+        }
+    }
+    $query .= "))";
+
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $eventsNotParticipated = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -33,7 +75,7 @@ try {
     // Participated NotParticipated Participating
 
     $data["EventsParticipated"] = $eventsParticipated;
-    $data["EventsNotParticipated"] = [];
+    $data["EventsParticipating"] = $eventsParticipating;
     $data["EventsNotParticipated"] = $eventsNotParticipated;
 
     echo json_encode(

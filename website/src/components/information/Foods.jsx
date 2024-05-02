@@ -39,6 +39,34 @@ import AxiosInstance from '../helpers/AxiosInstance.js';
 import Swal from 'sweetalert2';
 
 
+const convertStt = (stt) => {
+    switch (stt) {
+        case 'Waiting':
+            return 'Chờ xác nhận';
+        case 'Approve':
+            return 'Đã xác nhận';
+        case 'Made':
+            return 'Đã làm xong';
+        case 'In Delivery':
+            return 'Đang giao hàng';
+        case 'Done':
+            return 'Hoàn thành';
+        case 'Cancled':
+            return 'Đã hủy';
+        case 'Sale':
+            return 'Còn bán';
+        case 'Banned':
+            return 'Đã cấm';
+        case 'InActive':
+            return 'Ngừng bán';
+        case 'Denied':
+            return 'Bị Từ chối';
+        default:
+            return 'Không xác định';
+    }
+}
+
+
 const Foods = (prop) => {
     const { host, adminID, setID, adminDetail } = prop;
     document.title = 'Informations - Foods';
@@ -420,7 +448,7 @@ const Foods = (prop) => {
 
     useEffect(() => {
         loadFailOrders()
-    }, [data.recentSalesPage])
+    }, [data.failOrdersPage])
 
     {/** End of getting FAIL sales */ }
 
@@ -1392,15 +1420,15 @@ const Foods = (prop) => {
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Leader Board</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Bảng xếp hạng</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Comment</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Bình luận</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Banned</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Món ăn bị cấm</button>
                                                 </li>
 
                                             </ul>
@@ -1410,7 +1438,7 @@ const Foods = (prop) => {
 
                                                 <div className="tab-pane fade show active profile-overview" id="profile-overview">
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Foods List</h5>
+                                                        <h5 className="card-title">Danh sách món ăn</h5>
                                                         <div className="datatable-search">
                                                             <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
@@ -1472,14 +1500,14 @@ const Foods = (prop) => {
                                                                         <tr>
                                                                             <th scope="row" style={{ textAlign: 'center' }}>
                                                                                 <a>
-                                                                                    <img src={res.Imgae ? `${host}/uploads/${res.image[0].Id}.jpg` : avatar}
+                                                                                    <img src={`${host}/uploads/${res.Image}.jpg`}
                                                                                         style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" />
                                                                                 </a>
                                                                             </th>
                                                                             <td>{res.Name}</td>
                                                                             <td className="fw-bold">{res.Price}</td>
                                                                             <td>{res.ResName}</td>
-                                                                            <td><a className="text-primary fw-bold">{res.Status}</a></td>
+                                                                            <td><a className="text-primary fw-bold">{convertStt(res.Status)}</a></td>
                                                                         </tr>
                                                                     )
                                                                 })
@@ -1777,7 +1805,7 @@ const Foods = (prop) => {
                                                                     <td>{res.FoodName}</td>
                                                                     <td className="fw-bold">{res.Quantity}</td>
                                                                     <td className="fw-bold">{res.Price || '0'}</td>
-                                                                    <td className="fw-bold">{res.Status}</td>
+                                                                    <td className="fw-bold">{convertStt(res.Status)}</td>
                                                                 </tr>
                                                             );
                                                         })
@@ -1852,7 +1880,7 @@ const Foods = (prop) => {
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Declined/Cancelled Orders <span>| Today</span></h5>
+                                            <h5 className="card-title">Đơn hàngị từ chối/hủy <span>| Today</span></h5>
 
                                             <table className="table table-borderless"
                                                 style={{ textAlign: 'start' }}
@@ -1875,7 +1903,7 @@ const Foods = (prop) => {
                                                                     <td>{res.FoodName}</td>
                                                                     <td className="fw-bold">{res.Quantity}</td>
                                                                     <td className="fw-bold">{res.Price || '0'}</td>
-                                                                    <td className="fw-bold">{res.Status}</td>
+                                                                    <td className="fw-bold">{convertStt(res.Status)}</td>
                                                                 </tr>
                                                             );
                                                         })

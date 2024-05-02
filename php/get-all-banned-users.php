@@ -8,13 +8,15 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'connection.php';
 
 try {
-    $query = "SELECT * FROM users WHERE Status = 'Banned'";
+    $query = "SELECT users.*, images.id as Image FROM users
+    INNER JOIN images ON users.Id = images.OwnerID
+    WHERE Status = 'Banned'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if ($users == null) {
-        if (count($users) == 0) {
+
             echo json_encode(
                 array(
                     "data" => [],
@@ -23,7 +25,6 @@ try {
                 )
             );
             return;
-        }
     } else {
         echo json_encode(
             array(

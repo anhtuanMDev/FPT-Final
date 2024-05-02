@@ -6,20 +6,19 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 include_once 'connection.php';
-/*
-SELECT foods.*, restaurants.Name as ResName
-    FROM foods INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
-    WHERE foods.Status != 'Remove' AND foods.Status != 'Banned' 
-    AND restaurants.Status != 'Remove' AND restaurants.Status != 'Banned'
-*/
+
 
 try {
-    $query = "SELECT foods.*, restaurants.Name as ResName
+    $query = "SELECT foods.*, restaurants.Name as ResName, images.Id as Image,
+    COUNT(reviews.Id) as TotalReview, 
+    COALESCE(AVG(Point), 0) as Point
     FROM foods
     INNER JOIN restaurants
     ON foods.RestaurantID = restaurants.Id AND restaurants.Status != 'Removed' AND restaurants.Status != 'Banned'
+    INNER JOIN images ON foods.Id = images.OwnerID
+    LEFT JOIN reviews ON foods.Id = reviews.TargetID
     WHERE foods.FeatureItem = 1 AND foods.Status != 'Banned' AND restaurants.Status != 'Removed'
-    GROUP BY foods.Id limit 20";
+    GROUP BY foods.Id, images.Id limit 20";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);

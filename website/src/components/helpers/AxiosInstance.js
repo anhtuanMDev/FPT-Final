@@ -5,7 +5,7 @@ const AxiosInstance = (contentType = 'application/json') => {
         // baseURL: 'http://172.16.71.65:8686/'
         // baseURL: 'http://192.168.1.4:8686/'
         // baseURL: 'http://10.0.2.2:8686/'
-        baseURL: 'http://127.0.0.1:8686/'
+        baseURL: 'http://192.168.1.4:8686/'
 
     });
 

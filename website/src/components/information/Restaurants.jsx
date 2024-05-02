@@ -37,6 +37,25 @@ import { Navigate, useNavigate, useHref } from 'react-router-dom';
 import Swal from 'sweetalert2'
 import AxiosInstance from '../helpers/AxiosInstance.js';
 
+export const convertStt = (stt) => {
+    switch (stt) {
+        case 'Waiting':
+            return 'Chờ xác nhận';
+        case 'Approve':
+            return 'Đã xác nhận';
+        case 'Made':
+            return 'Đã làm xong';
+        case 'In Delivery':
+            return 'Đang giao hàng';
+        case 'Done':
+            return 'Hoàn thành';
+        case 'Cancled':
+            return 'Đã hủy';
+        default:
+            return 'Không xác định';
+    }
+}
+
 const Restaurants = (prop) => {
     const { host, adminID, setID, adminDetail } = prop;
 
@@ -1676,7 +1695,7 @@ const Restaurants = (prop) => {
                                                         data.topSaleItems.map((res) => {
                                                             return (
                                                                 <tr key={res.Id}>
-                                                                    <th scope="row"><a href="#"><img src={res.Image ? `${host}/uploads/${res.Image}.jpg` : avatar} style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                    <th scope="row"><a href="#"><img src={`${host}/uploads/${res.Image}.jpg`} style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" /></a></th>
                                                                     <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.FoodName}</a></td>
                                                                     <td>{res.RestaurantName}</td>
                                                                     <td className="fw-bold" style={{ textAlign: 'center' }}>{res.Price}</td>
@@ -1779,7 +1798,7 @@ const Restaurants = (prop) => {
                                                                     <td>{res.RestaurantName}</td>
                                                                     <td className="fw-bold">{res.Quantity}</td>
                                                                     <td className="fw-bold">{res.TotalValue || 0}</td>
-                                                                    <td className="fw-bold">{res.Status}</td>
+                                                                    <td className="fw-bold">{convertStt(res.Status)}</td>
                                                                 </tr>
                                                             )
                                                         })

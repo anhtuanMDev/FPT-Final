@@ -12,17 +12,19 @@ try {
     foods.Id,
     foods.Name as FoodName,
     foods.Price,
+    images.Id AS Image,
     restaurants.Name as RestaurantName,
     SUM(orderitems.Quantity) as Sold,
     COUNT(orderitems.Id) as Orders,
     SUM(orders.TotalValue) as Revenue
-FROM foods
-INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
-INNER JOIN orderitems ON foods.Id = orderitems.FoodID
-INNER JOIN orders ON orders.Id = orderitems.OrderID
-WHERE orders.Status != 'Cancel' AND orders.Status != 'Denied'
-GROUP BY foods.Id,restaurants.Name
-ORDER BY Sold DESC ";
+    FROM foods
+    INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
+    INNER JOIN orderitems ON foods.Id = orderitems.FoodID
+    INNER JOIN images ON foods. Id = images.OwnerID
+    INNER JOIN orders ON orders.Id = orderitems.OrderID
+    WHERE orders.Status != 'Cancel' AND orders.Status != 'Denied'
+    GROUP BY foods.Id,restaurants.Name, images.Id
+    ORDER BY Sold DESC ";
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

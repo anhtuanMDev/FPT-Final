@@ -13,7 +13,7 @@ try {
     INNER JOIN orderitems 
     ON foods.Id = orderitems.FoodID WHERE orderitems.OrderID = orders.Id) AS FoodName, 
     (SELECT SUM(orderitems.Quantity) FROM orderitems WHERE orderitems.OrderID = orders.Id) 
-    AS Quantity, orders.CreateAt, orders.UpdateAt, orders.Price FROM orders INNER JOIN users ON 
+    AS Quantity, orders.CreateAt, orders.UpdateAt, orders.TotalValue FROM orders INNER JOIN users ON 
     orders.UserID = users.Id WHERE orders.Status != 'Cancel' AND orders.Status != 'Denied' ORDER BY 
     orders.CreateAt ASC, orders.UpdateAt ASC";
 

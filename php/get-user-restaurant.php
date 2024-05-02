@@ -13,7 +13,7 @@ try {
     $data = json_decode(file_get_contents("php://input"));
     $id = $data->id;
 
-    $query = "SELECT Id from restaurants WHERE restaurants.ownerID = '$id' AND `Status` = 'Open' LIMIT 1";
+    $query = "SELECT Id, Status, Name, UpdateAt from restaurants WHERE restaurants.ownerID = '$id'  LIMIT 1";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $rest = $stmt->fetch(PDO::FETCH_ASSOC);

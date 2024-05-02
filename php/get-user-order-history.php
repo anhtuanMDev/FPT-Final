@@ -15,21 +15,22 @@ try {
     address.Address, address.Phone, address.City, address.District, address.Ward
     FROM orders
     INNER JOIN address ON orders.AddressID = address.Id
-    WHERE orders.UserID = '$id'";
+    WHERE orders.UserID = '$id' AND orders.Status = 'Done'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    foreach ($orders as $key => $order) {
+    $ordID = $order["Id"];
     $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Value,
     orderitems.ArriveAt, orderitems.Status, 
     (SELECT Name FROM foods WHERE orderitems.FoodID = foods.Id) AS FoodName,
     (SELECT Id FROM images WHERE orderitems.FoodID = images.OwnerID) AS Image
-    FROM orderitems";
+    FROM orderitems WHERE orderitems.OrderID = '$ordID'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach ($orders as $key => $order) {
         $orders[$key]['Items'] = $orderItems;
     }
 

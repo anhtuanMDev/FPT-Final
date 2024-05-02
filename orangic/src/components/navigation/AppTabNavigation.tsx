@@ -1,7 +1,7 @@
-import { View, Text, StatusBar } from 'react-native';
+import {View, Text, StatusBar, Image} from 'react-native';
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ParamList } from './RootNavigation';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {ParamList} from './RootNavigation';
 import Home from '../screen/app/Home';
 import Store from '../screen/app/Store';
 import Favorite from '../screen/app/Favorite';
@@ -11,8 +11,8 @@ import US_Restaurant from '../screen/app/US_Restaurant';
 import US_FoodDetail from '../screen/app/US_FoodDetail';
 import Profile from '../screen/app/Drawer/Profile';
 import SS_FoodDetail from '../screen/app/SS_FoodDetail';
-import Icons, { IconName } from '../../assets/icons/Icons';
-import { Colors } from '../custom/styles/ScreenStyle';
+import Icons, {IconName} from '../../assets/icons/Icons';
+import {Colors} from '../custom/styles/ScreenStyle';
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
@@ -21,8 +21,8 @@ import {
 import OrderManagement from '../screen/app/Drawer/OrderManagement';
 import Schedules from '../screen/app/Drawer/Schedules';
 import Avatar from '../../assets/images/avatar.svg';
-import { fonts } from '../custom/styles/ComponentStyle';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import {fonts} from '../custom/styles/ComponentStyle';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import Rank from '../screen/app/Drawer/Rank';
 import Animated from 'react-native-reanimated';
 import CreateRestaurant from '../screen/app/Store/CreateRestaurant';
@@ -30,8 +30,15 @@ import ChangeRestaurantInfor from '../screen/app/Store/ChangeRestaurantInfor';
 import CreateFood from '../screen/app/Store/CreateFood';
 import AddressInfor from '../screen/app/Address/AddressInfor';
 import Notifications from '../screen/app/Drawer/Notifications';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectName, selectPoint } from '../../helpers/state/Global/globalSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  isLogin,
+  selectHost,
+  selectImage,
+  selectName,
+  selectPoint,
+  setHost,
+} from '../../helpers/state/Global/globalSlice';
 import ChangeInformation from '../screen/app/Drawer/ChangeInformation';
 import NotificationDetails from '../screen/app/Drawer/NotificationDetails';
 import RestaurantOrders from '../screen/app/Store/RestaurantOrders';
@@ -41,6 +48,7 @@ import AllFood from '../screen/app/Store/AllFood';
 import RestaurantStatistic from '../screen/app/Store/RestaurantStatistic';
 import Report from '../screen/app/Report';
 import JoinEvent from '../screen/app/Store/JoinEvent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Drawer = createDrawerNavigator<ParamList>();
@@ -62,18 +70,42 @@ export function convertPoint(point: number) {
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const { state } = props;
+  const {state} = props;
   const point = useSelector(selectPoint);
   const name = useSelector(selectName);
+  const host = useSelector(selectHost);
+  const image = useSelector(selectImage);
+  const dispatch = useDispatch();
+
+  const logOut = async () => {
+    try {
+      // dispatch(isLogin(false));
+      await AsyncStorage.removeItem('userID', err =>
+        console.log('userID', err),
+      );
+      // dispatch(setUserID(''));
+      dispatch(isLogin(false));
+
+      console.log('log out');
+    } catch (error) {
+      console.error('Failed to remove the item', error);
+    }
+    // dispatch(isLogin(false));
+    // dispatch(setUserID(''));
+  };
 
   const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
   return (
-    <View style={{ padding: 20 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Avatar width={70} height={70} />
-        <View style={{ alignItems: 'flex-start' }}>
+    <View style={{padding: 20, flex: 1}}>
+      <View
+        style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
+        <Image
+          source={{uri: `${host}/uploads/${image}.jpg`}}
+          style={{width: 35, height: 35, borderRadius: 35, marginRight: 15}}
+        />
+        <View style={{alignItems: 'flex-start'}}>
           <Text style={[fonts.captionBold]}>{name}</Text>
-          <Text style={[fonts.sublineBold]}>Rank: {convertPoint(point)}</Text>
+          <Text style={[fonts.textBold]}>Hạng: {convertPoint(point)}</Text>
         </View>
       </View>
       <DrawerItem
@@ -124,6 +156,20 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         inactiveTintColor={Colors.slate}
         activeTintColor={Colors.orange}
       />
+      <View style={{flex: 1}} />
+
+      <DrawerItem
+        label="Đăng xuất"
+        focused={state.routeNames[state.index] === 'Shecdules'}
+        onPress={async () => {
+          await logOut();
+        }}
+        icon={({color}) => {
+          return <Icons name={IconName.door} color={color} />;
+        }}
+        inactiveTintColor={Colors.slate}
+        activeTintColor={Colors.orange}
+      />
     </View>
   );
 }
@@ -160,8 +206,8 @@ const AppTabNavigation = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color }) => {
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color}) => {
           let iconName;
           switch (route.name) {
             case 'HomeDrawer':
@@ -224,26 +270,47 @@ const AppTabNavigation = () => {
           tabBarLabel: 'Trang chủ',
         }}
       />
-      <Tab.Screen name="Favorite" component={Favorite} options={{
-        tabBarLabel: 'Yêu thích'
-      }} />
-      <Tab.Screen name="Address" component={Address} options={{
-        tabBarLabel: 'Địa chỉ'
-      }} />
-      <Tab.Screen name="Store" component={Store} 
-      options={{
-        tabBarLabel: 'Cửa hàng'
-      }}
+      <Tab.Screen
+        name="Favorite"
+        component={Favorite}
+        options={{
+          tabBarLabel: 'Yêu thích',
+        }}
       />
-      <Tab.Screen name="Cart" component={Cart} 
-      options={{
-        tabBarLabel: 'Giỏ hàng'
-      }}
+      <Tab.Screen
+        name="Address"
+        component={Address}
+        options={{
+          tabBarLabel: 'Địa chỉ',
+        }}
+      />
+      <Tab.Screen
+        name="Store"
+        component={Store}
+        options={{
+          tabBarLabel: 'Cửa hàng',
+        }}
+      />
+      <Tab.Screen
+        name="Cart"
+        component={Cart}
+        options={{
+          tabBarLabel: 'Giỏ hàng',
+        }}
       />
 
       <Tab.Screen
         name="US_Restaurant"
         component={US_Restaurant}
+        options={{
+          tabBarIconStyle: {display: 'none'},
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="JoinEvent"
+        component={JoinEvent}
         options={{
           tabBarIconStyle: {display: 'none'},
           tabBarButton: () => null,

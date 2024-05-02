@@ -23,6 +23,7 @@ import SmallCart from '../../../custom/cards/SmallCart';
 import {fonts} from '../../../custom/styles/ComponentStyle';
 import BigCard from '../../../custom/cards/BigCard';
 import WaitingModal from '../../../custom/ui/WaitingModal';
+import { converTime } from '../Home';
 
 type Foods = {
   CreateAt: string;
@@ -157,6 +158,7 @@ const Search = () => {
             name={item.Name}
             price={item.Price}
             onPress={() => navigation.navigate('US_FoodDetail', {id: item.Id})}
+            time={converTime(item.TimeMade)}
             style={{marginRight: 15}}
             favorite={item.IsFav == 1}
             image={item.Image ? `${host}/uploads/${item.Image}.jpg` : undefined}

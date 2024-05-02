@@ -12,6 +12,7 @@ import {
   isLogin,
   selectUserID,
   setHost,
+  setImage,
   setName,
   setPoint,
   setUserID,
@@ -109,7 +110,7 @@ const RootNavigation = () => {
   const id = useSelector(selectUserID);
 
   useEffect(() => {
-    dispatch(setHost('http://172.16.71.64:8686'));
+    dispatch(setHost('http://192.168.1.4:8686'));
   }, []);
 
   const getInfor = async () => {
@@ -119,6 +120,7 @@ const RootNavigation = () => {
     console.log('get user infor', response.data);
     dispatch(setName(response.data.Name));
     dispatch(setPoint(response.data.Rank));
+    dispatch(setImage(response.data.Image));
   };
 
   useEffect(() => {

@@ -51,9 +51,11 @@ try {
         ));
         return;
     }
+
+    $delivery = $order * 0.1;
     
 
-    $query = "UPDATE `orders` SET TotalValue = $order WHERE `Id` = '$orderID'";
+    $query = "UPDATE `orders` SET TotalValue = $order, Delivery = $delivery, CreateAt = NOW() WHERE `Id` = '$orderID'";
     $stmt = $dbConn -> prepare($query);
     $stmt -> execute();
 

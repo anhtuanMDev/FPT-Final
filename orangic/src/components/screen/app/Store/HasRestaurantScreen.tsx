@@ -9,32 +9,40 @@ import {
   Image,
   Modal,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectHost } from '../../../../helpers/state/Global/globalSlice';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectHost} from '../../../../helpers/state/Global/globalSlice';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
-import { selectRestaurantID, setRestaurantID } from '../../../../helpers/state/AppTab/storeSlice';
-import { showMessage } from 'react-native-flash-message';
+import {
+  selectRestaurantID,
+  setRestaurantID,
+} from '../../../../helpers/state/AppTab/storeSlice';
+import {showMessage} from 'react-native-flash-message';
 import {
   NavigationProp,
   useNavigation,
   useIsFocused,
 } from '@react-navigation/native';
-import { ParamList } from '../../../navigation/RootNavigation';
-import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
-import { fonts } from '../../../custom/styles/ComponentStyle';
-import Icons, { IconName } from '../../../../assets/icons/Icons';
+import {ParamList} from '../../../navigation/RootNavigation';
+import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
+import {fonts} from '../../../custom/styles/ComponentStyle';
+import Icons, {IconName} from '../../../../assets/icons/Icons';
 import Shop from '../../../../assets/images/Shop.svg';
 import SectionBar from '../../../custom/topbars/SectionBar';
 import Empty from '../../../../assets/images/Food.svg';
 import RestaurantSmallCart from '../../../custom/cards/RestaurantSmallCart';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetFlatList, BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {
+  BottomSheetFlatList,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
 import TextArea from '../../../custom/textinput/TextArea';
 import CustomRating from '../../../custom/ui/CustomRating';
 import ReviewCard from '../../../custom/cards/ReviewCard';
-import { convertPoint } from '../../../navigation/AppTabNavigation';
+import {convertPoint} from '../../../navigation/AppTabNavigation';
 import EmptyReviews from '../../../../assets/images/EmptyRestaurantFav.svg';
+import { converTime } from '../Home';
 
 /** Declaring reducer state */
 
@@ -43,9 +51,11 @@ type Item = {
   Name: string;
   Price: string;
   TimeMade: string;
+  RateCount: number;
+  Rate: number;
   Discount: number;
   FeatureItem: boolean;
-  Image: { Id: string };
+  Image: {Id: string};
 };
 
 type Comment = {
@@ -74,7 +84,7 @@ export type InforState = {
   Orders: number;
   Foods: Item[];
   Reviews: Comment[];
-  Images: { Id: string }[];
+  Images: {Id: string}[];
   SpecialFood: Item[];
   Introduction: string;
 };
@@ -115,7 +125,7 @@ const HasRestaurantScreen = () => {
       // console.log(resID);
       const response = await AxiosInstance().post(
         'get-user-restaurant-details.php',
-        { id: resID },
+        {id: resID},
       );
 
       // console.log("res detail",response)
@@ -181,71 +191,90 @@ const HasRestaurantScreen = () => {
     } catch (error) {
       console.log('remove restaurant error: ', error);
     }
-  }
+  };
 
   const handleRemoveRestaurant = () => {
     setModalVisible(!modalVisible);
-  }
+  };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{flex: 1}}>
       <View style={[screenStyles.parent_container]}>
         {modalVisible && (
-          <View style={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <Modal
               animationType="slide"
               transparent={true}
               visible={modalVisible}
               onRequestClose={() => {
                 setModalVisible(!modalVisible);
-              }}
-            >
-
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <View style={{
-                  backgroundColor: Colors.white,
-                  width: '80%',
-                  padding: 20,
-                  borderRadius: 10,
-                  elevation: 5
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
-                  <Text style={[fonts.captionBold, { textAlign: 'center' }]}>Xác nhận xóa</Text>
-                  <Text style={[fonts.text, { marginTop: 10, textAlign: 'center' }]}>Bạn có chắc chắn muốn đóng cửa cửa hàng không?</Text>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 }}>
+                <View
+                  style={{
+                    backgroundColor: Colors.white,
+                    width: '80%',
+                    padding: 20,
+                    borderRadius: 10,
+                    elevation: 5,
+                  }}>
+                  <Text style={[fonts.captionBold, {textAlign: 'center'}]}>
+                    Xác nhận xóa
+                  </Text>
+                  <Text
+                    style={[fonts.text, {marginTop: 10, textAlign: 'center'}]}>
+                    Bạn có chắc chắn muốn đóng cửa cửa hàng không?
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                      marginTop: 20,
+                    }}>
                     <TouchableOpacity
                       style={{
                         backgroundColor: Colors.white,
                         borderColor: Colors.ember,
                         borderWidth: 1,
                         padding: 10,
-                        borderRadius: 10
+                        borderRadius: 10,
                       }}
                       onPress={() => {
                         removeRestaurant();
                         setModalVisible(!modalVisible);
                       }}>
-                      <Text style={[fonts.text, { color: Colors.ember }]}>Xác nhận</Text>
+                      <Text style={[fonts.text, {color: Colors.ember}]}>
+                        Xác nhận
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={{
                         backgroundColor: Colors.ember,
                         padding: 10,
-                        borderRadius: 10
+                        borderRadius: 10,
                       }}
                       onPress={() => {
                         setModalVisible(!modalVisible);
                       }}>
-                      <Text style={[fonts.text, { color: Colors.white }]}>Hủy</Text>
+                      <Text style={[fonts.text, {color: Colors.white}]}>
+                        Hủy
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -255,10 +284,10 @@ const HasRestaurantScreen = () => {
         )}
 
         <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
-        <View style={{ height: size - 150 }}>
+        <View style={{height: size - 150}}>
           <FlatList
             data={infor.Images}
-            contentContainerStyle={{ flexGrow: 0, justifyContent: 'center' }}
+            contentContainerStyle={{flexGrow: 0, justifyContent: 'center'}}
             horizontal
             snapToAlignment="center"
             decelerationRate={'fast'}
@@ -267,11 +296,11 @@ const HasRestaurantScreen = () => {
             disableIntervalMomentum={true}
             showsHorizontalScrollIndicator={false}
             ListEmptyComponent={<Shop width={size} height={size - 150} />}
-            renderItem={({ item, index }) => {
+            renderItem={({item, index}) => {
               return (
                 <Image
                   key={index}
-                  source={{ uri: `${host}/uploads/${item.Id}.jpg` }}
+                  source={{uri: `${host}/uploads/${item.Id}.jpg`}}
                   style={{
                     width: size,
                     height: 'auto',
@@ -301,7 +330,7 @@ const HasRestaurantScreen = () => {
               }}>
               {infor.Rating || 0}
             </Text>
-            <Text style={[fonts.captionBold, { color: Colors.blue }]}>
+            <Text style={[fonts.captionBold, {color: Colors.blue}]}>
               Đánh giá
             </Text>
           </View>
@@ -318,7 +347,7 @@ const HasRestaurantScreen = () => {
               }}>
               {infor.Foods.length || 0}
             </Text>
-            <Text style={[fonts.captionBold, { color: Colors.orange }]}>
+            <Text style={[fonts.captionBold, {color: Colors.orange}]}>
               Món ăn
             </Text>
           </View>
@@ -335,12 +364,12 @@ const HasRestaurantScreen = () => {
               }}>
               {infor.Orders || 0}
             </Text>
-            <Text style={[fonts.captionBold, { color: Colors.green }]}>
+            <Text style={[fonts.captionBold, {color: Colors.green}]}>
               Đơn hàng
             </Text>
           </View>
         </View>
-        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <View>
             <SectionBar
               name="Món ăn đặc sản"
@@ -349,21 +378,21 @@ const HasRestaurantScreen = () => {
                 marginRight: 10,
               }}
               showAction={infor.SpecialFood.length > 10}
-              actionStyle={{ color: Colors.green }}
-              onPress={() => { }}
+              actionStyle={{color: Colors.green}}
+              onPress={() => {}}
             />
             <FlatList
               data={infor.SpecialFood}
-              style={{ marginVertical: 10, paddingLeft: 20 }}
-              contentContainerStyle={{ flexGrow: 0, justifyContent: 'center' }}
+              style={{marginVertical: 10, paddingLeft: 20}}
+              contentContainerStyle={{flexGrow: 0, justifyContent: 'center'}}
               horizontal
               ListEmptyComponent={
-                <View style={{ marginLeft: -15, marginVertical: 50 }}>
+                <View style={{marginLeft: -15, marginVertical: 50}}>
                   <Empty width={size} height={150} />
                 </View>
               }
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => {
+              renderItem={({item}) => {
                 return (
                   <RestaurantSmallCart
                     key={item.Id}
@@ -375,9 +404,12 @@ const HasRestaurantScreen = () => {
                         ? item.Name.slice(0, 11) + '...'
                         : item.Name
                     }
-                    style={{ marginRight: 10, marginVertical: 10 }}
+                    rate={item.Rate}
+                    rateCount={item.RateCount}
+                    time={converTime(item.TimeMade)}
+                    style={{marginRight: 10, marginVertical: 10}}
                     onPress={() => {
-                      naviagtion.navigate('SS_FoodDetail', { id: item.Id });
+                      naviagtion.navigate('SS_FoodDetail', {id: item.Id});
                     }}
                   />
                 );
@@ -394,21 +426,21 @@ const HasRestaurantScreen = () => {
                 marginRight: 10,
                 marginBottom: 5,
               }}
-              actionStyle={{ color: Colors.green }}
-              onPress={() => { }}
+              actionStyle={{color: Colors.green}}
+              onPress={() => {}}
             />
             <FlatList
               data={infor.Foods}
-              style={{ marginVertical: 10, paddingLeft: 20 }}
+              style={{marginVertical: 10, paddingLeft: 20}}
               ListEmptyComponent={
-                <View style={{ marginLeft: -15, marginVertical: 50 }}>
+                <View style={{marginLeft: -15, marginVertical: 50}}>
                   <Empty width={size} height={150} />
                 </View>
               }
-              contentContainerStyle={{ flexGrow: 0, justifyContent: 'center' }}
+              contentContainerStyle={{flexGrow: 0, justifyContent: 'center'}}
               horizontal
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => {
+              renderItem={({item}) => {
                 return (
                   <RestaurantSmallCart
                     key={item.Id}
@@ -420,9 +452,12 @@ const HasRestaurantScreen = () => {
                         ? item.Name.slice(0, 11) + '...'
                         : item.Name
                     }
-                    style={{ marginRight: 10, marginVertical: 10 }}
+                    rate={item.Rate}
+                    rateCount={item.RateCount}
+                    time={converTime(item.TimeMade)}
+                    style={{marginRight: 10, marginVertical: 10}}
                     onPress={() => {
-                      naviagtion.navigate('SS_FoodDetail', { id: item.Id });
+                      naviagtion.navigate('SS_FoodDetail', {id: item.Id});
                     }}
                   />
                 );
@@ -430,7 +465,7 @@ const HasRestaurantScreen = () => {
             />
           </View>
 
-          <View style={{ height: 150 }} />
+          <View style={{height: 150}} />
         </ScrollView>
         <View
           style={{
@@ -488,7 +523,7 @@ const HasRestaurantScreen = () => {
 
           <TouchableOpacity
             onPress={() => {
-              naviagtion.navigate('ChangeRestaurantInfor', { infor });
+              naviagtion.navigate('ChangeRestaurantInfor', {infor});
             }}
             style={{
               borderWidth: 1,
@@ -514,7 +549,7 @@ const HasRestaurantScreen = () => {
 
           <TouchableOpacity
             onPress={() => {
-              checkAddress() && naviagtion.navigate('CreateFood', { id: resID });
+              checkAddress() && naviagtion.navigate('CreateFood', {id: resID});
             }}
             style={{
               borderWidth: 1,
@@ -538,21 +573,10 @@ const HasRestaurantScreen = () => {
             <Icons name={IconName.calendar} size={20} color={Colors.white} />
           </TouchableOpacity>
 
-
           <TouchableOpacity
             onPress={() => {
               handleRemoveRestaurant();
             }}
-            style={{
-              borderWidth: 1,
-              borderRadius: 20,
-              borderColor: Colors.white,
-              padding: 5,
-            }}>
-            <Icons name={IconName.lock} size={20} color={Colors.white} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
             style={{
               borderWidth: 1,
               borderRadius: 10,
@@ -562,6 +586,7 @@ const HasRestaurantScreen = () => {
             }}>
             <Icons name={IconName.warning} size={20} color={Colors.orange} />
           </TouchableOpacity>
+
         </View>
         <BottomSheetModalProvider>
           <BottomSheetModal
@@ -575,19 +600,20 @@ const HasRestaurantScreen = () => {
             snapPoints={snapPoints}>
             <BottomSheetFlatList
               data={infor.Reviews}
-              ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+              ItemSeparatorComponent={() => <View style={{height: 15}} />}
               ListEmptyComponent={() => {
                 return (
-                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <View
+                    style={{alignItems: 'center', justifyContent: 'center'}}>
                     <EmptyReviews width={size} height={150} />
-                    <Text style={[fonts.caption, { color: Colors.orange }]}>
+                    <Text style={[fonts.caption, {color: Colors.orange}]}>
                       Chưa có đánh giá nào
                     </Text>
                   </View>
                 );
               }}
-              contentContainerStyle={{ paddingVertical: 20 }}
-              renderItem={({ item }) => (
+              contentContainerStyle={{paddingVertical: 20}}
+              renderItem={({item}) => (
                 <ReviewCard
                   name={item.UserName}
                   point={item.Point}

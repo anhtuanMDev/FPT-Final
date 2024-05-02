@@ -48,7 +48,7 @@ const Store = () => {
   ) : (
     <View style={[screenStyles.parent_container]}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      { !(resID && resStatus === 'Active')
+      { !(resID && (resStatus === 'Open' || resStatus === 'Active'))
       ? <NoRestaurantScreen /> : <HasRestaurantScreen />}
     </View>
   );

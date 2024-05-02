@@ -4,6 +4,7 @@ import {fonts} from '../styles/ComponentStyle';
 import Icons, {IconName} from '../../../assets/icons/Icons';
 import {Colors} from '../styles/ScreenStyle';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import Icons2, {Icon2Name} from '../../../assets/icons/Icons2';
 
 type Prop = {
   foodName: string;
@@ -60,7 +61,7 @@ const OrderItems = (props: Prop) => {
             borderRadius: 20,
           }}>
           <Image
-            source={require('../../../assets/images/baseImage.png')}
+            source={{uri: foodImg}}
             style={{width: '100%', height: '100%', resizeMode: 'cover'}}
           />
         </View>
@@ -77,7 +78,9 @@ const OrderItems = (props: Prop) => {
                 flex: 1,
               }}>
               <Text style={[fonts.caption]}>{foodName}</Text>
-              <Text style={[fonts.captionBold]}>{'SL: '+quantity.toString()}</Text>
+              <Text style={[fonts.captionBold]}>
+                {'SL: ' + quantity.toString()}
+              </Text>
             </View>
           </View>
           <View
@@ -96,7 +99,7 @@ const OrderItems = (props: Prop) => {
                 alignItems: 'center',
                 paddingLeft: 10,
               }}>
-              <Icons name={IconName.star} size={20} color={Colors.yellow} />
+              <Icons2 name={Icon2Name.star} size={20} color={Colors.yellow} />
               <Text
                 style={[
                   fonts.caption,
@@ -110,7 +113,9 @@ const OrderItems = (props: Prop) => {
                 {foodRate.toString()}
               </Text>
             </View>
-            <Text style={[fonts.captionBold, {marginLeft: 10}]}>{price} k VNĐ</Text>
+            <Text style={[fonts.captionBold, {marginLeft: 10}]}>
+              {price} k VNĐ
+            </Text>
           </View>
         </View>
       </View>
@@ -138,7 +143,7 @@ const OrderItems = (props: Prop) => {
               borderRadius: 20,
             }}>
             <Image
-              source={require('../../../assets/images/baseImage.png')}
+              source={{uri: resImg}}
               style={{width: '100%', height: '100%', resizeMode: 'cover'}}
             />
           </View>
@@ -149,7 +154,8 @@ const OrderItems = (props: Prop) => {
                 alignItems: 'center',
                 paddingLeft: 10,
               }}>
-              <Icons name={IconName.star} size={10} color={Colors.blue} />
+              <Icons2 name={Icon2Name.star} size={10} color={Colors.blue} />
+
               <Text style={[fonts.text, {marginLeft: 5}]}>
                 {restaurantRate.toString()}
               </Text>

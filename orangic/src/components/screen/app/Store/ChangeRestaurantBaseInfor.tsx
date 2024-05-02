@@ -53,6 +53,7 @@ const ChangeRestaurantBaseInfor = (props: Prop) => {
       console.log(error);
       showMessage({
         message: 'Lỗi cập nhật thông tin',
+        description: (error as Error).message,
         type: 'danger',
       });
     }

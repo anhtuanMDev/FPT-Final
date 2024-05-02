@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import OrderItems from '../../../custom/cards/OrderItems';
 import {screenStyles} from '../../../custom/styles/ScreenStyle';
 import {useSelector} from 'react-redux';
-import {selectUserID} from '../../../../helpers/state/Global/globalSlice';
+import {selectHost, selectUserID} from '../../../../helpers/state/Global/globalSlice';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import Empty from '../../../../assets/images/EmptyFoodFav.svg';
 import {Modal} from 'react-native';
@@ -34,6 +34,7 @@ const {width, height} = Dimensions.get('window');
 
 const OrderInProcess = () => {
   const userID = useSelector(selectUserID);
+  const host = useSelector(selectHost);
   const [order, setOrder] = useState<OrderItems[]>([]);
   const [resfresh, setRefresh] = useState(false);
 
@@ -50,7 +51,7 @@ const OrderInProcess = () => {
       '/post-update-orderitems-status.php',
       {
         id,
-        status: 'Canceled',
+        status: 'Cancled',
       },
     );
     if (response.status) {
@@ -68,7 +69,6 @@ const OrderInProcess = () => {
     const response = await AxiosInstance().post('/get-user-order-now.php', {
       id: userID,
     });
-    // console.log(response.data);
     setOrder(response.data);
   };
   useEffect(() => {
@@ -124,6 +124,8 @@ const OrderInProcess = () => {
                 await CancelItem(item.Id);
                 setRefresh(false);
               }}
+              foodImg={`${host}/uploads/${item.FoodImage}.jpg`}
+              resImg={`${host}/uploads/${item.ResImage}.jpg`}
               showButton={item.Status === 'Waiting' ? true : false}
               restaurantName={item.RestaurantName}
               foodRate={item.FoodRating}

@@ -32,6 +32,8 @@ type OrderItems = {
   Ward: string;
 };
 
+
+
 const {width, height} = Dimensions.get('window');
 const OrderHistory = () => {
   const userID = useSelector(selectUserID);
@@ -50,6 +52,7 @@ const OrderHistory = () => {
     const response = await AxiosInstance().post('/get-user-order-history.php', {
       id: userID,
     });
+    console.log(response)
     setOrder(response.data);
   };
   useEffect(() => {
@@ -92,6 +95,7 @@ const OrderHistory = () => {
               id={item.Id}
               totalValue={item.TotalValue}
               padding={20}
+              style={{marginVertical: 10}}
               orderDate={item.CreateAt.slice(0, 10)}
               items={item.Items}
             />

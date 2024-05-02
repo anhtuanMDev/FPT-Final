@@ -1039,7 +1039,7 @@ const Dashboards = (prop) => {
                                                     />
                                                 </div>
                                                 <div className="ps-3">
-                                                    <h6>${growth.revenueNumber}</h6>
+                                                    <h6>{growth.revenueNumber}</h6>
                                                     <span className={`text-success small pt-1 fw-bold ${growth.revenueGrowth < 0 ? 'text-danger' : 'text-success'}`}>{growth.revenueGrowth}%</span>
                                                     <span className="text-muted small pt-2 ps-1">{growth.revenueState}</span>
 

@@ -54,6 +54,8 @@ const Discounts = (prop) => {
         setID('');
     }
 
+    const [idItemSelected, setIdItemSelected] = useState();
+
     const initialState = {
         pendingPage: 1,
         approvedPage: 1,
@@ -62,6 +64,8 @@ const Discounts = (prop) => {
         donePage: 1,
         inDeliveryPage: 1,
         madePage: 1,
+        orderDetailItemsPage: 1,
+
 
         pendingTotalPage: 1,
         approvedTotalPage: 1,
@@ -70,6 +74,7 @@ const Discounts = (prop) => {
         doneTotalPage: 1,
         inDeliveryTotalPage: 1,
         madeTotalPage: 1,
+        orderDetailItemsTotalPage: 1,
 
         pending: [],
         approved: [],
@@ -78,6 +83,8 @@ const Discounts = (prop) => {
         done: [],
         inDelivery: [],
         made: [],
+        orderDetail: {},
+        orderDetailItems: [],
 
     }
 
@@ -97,6 +104,8 @@ const Discounts = (prop) => {
                 return { ...state, inDeliveryPage: action.payload };
             case 'SET_MADE_PAGE':
                 return { ...state, madePage: action.payload };
+            case 'SET_ORDER_DETAIL_ITEMS_PAGE':
+                return { ...state, orderDetailItemsPage: action.payload };
 
             case 'SET_PENDING_TOTAL_PAGE':
                 return { ...state, pendingTotalPage: action.payload };
@@ -112,6 +121,8 @@ const Discounts = (prop) => {
                 return { ...state, inDeliveryTotalPage: action.payload };
             case 'SET_MADE_TOTAL_PAGE':
                 return { ...state, madeTotalPage: action.payload };
+            case 'SET_ORDER_DETAIL_ITEMS_TOTAL_PAGE':
+                return { ...state, orderDetailItemsTotalPage: action.payload };
 
 
             case 'SET_PENDING':
@@ -128,6 +139,10 @@ const Discounts = (prop) => {
                 return { ...state, inDelivery: action.payload };
             case 'SET_MADE':
                 return { ...state, made: action.payload };
+            case 'SET_ORDER_DETAIL':
+                return { ...state, orderDetail: action.payload };
+            case 'SET_ORDER_DETAIL_ITEMS':
+                return { ...state, orderDetailItems: action.payload };
 
             case 'RESET':
                 return initialState;
@@ -252,6 +267,44 @@ const Discounts = (prop) => {
     useEffect(() => {
         getMadeOrders()
     }, [data.madePage])
+
+
+    const getOrderDetail = async (id) => {
+        // console.log(id)
+        const response = await AxiosInstance().post('/get-order-with-id.php', { orderId: id });
+        if (response.status) {
+            dispatchData({ type: 'SET_ORDER_DETAIL', payload: response.data });
+            dispatchData({ type: 'SET_ORDER_DETAIL_ITEMS_PAGE', payload: 1 });
+
+            const length = response.data.Items.length;
+            let list = response.data.Items.slice(data.orderDetailItemsPage * 2 - 2, data.orderDetailItemsPage * 2);
+
+            dispatchData({ type: 'SET_ORDER_DETAIL_ITEMS', payload: list });
+            dispatchData({ type: 'SET_ORDER_DETAIL_ITEMS_TOTAL_PAGE', payload: (Math.ceil(length / 2)) });
+        } else {
+            console.log(response)
+        }
+    }
+
+    const getOrderItems = (page) => {
+        if (data?.orderDetail?.Items?.length === 0) return;
+        console.log("data.orderDetail.Items", data.orderDetail.Items)
+        dispatchData({ type: 'SET_ORDER_DETAIL_ITEMS_PAGE', payload: page })
+
+        let length = data.orderDetail.Items.length;
+        let list = data.orderDetail.Items.slice(page * 2 - 2, page * 2);
+
+        dispatchData({ type: 'SET_ORDER_DETAIL_ITEMS', payload: list });
+        dispatchData({ type: 'SET_ORDER_DETAIL_ITEMS_TOTAL_PAGE', payload: (Math.ceil(length / 2)) });
+        console.log(data.orderDetailItems)
+    }
+
+    const handleOrderDetail = (itemId, orderId) => {
+        setIdItemSelected(itemId);
+        getOrderDetail(orderId);
+
+    }
+
 
     return (
         <div className=''>
@@ -842,17 +895,30 @@ const Discounts = (prop) => {
                                                                 {
                                                                     Array.from({ length: data.pendingTotalPage }, (_, index) => {
                                                                         if (data.pendingTotalPage > 10) {
-                                                                            if ((index >= data.pendingPage - 3 && index <= data.pendingPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.pendingTotalPage - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === data.pendingTotalPage - 1 ||
+                                                                                (index >= data.pendingPage - 2 && index <= data.pendingPage) ||
+                                                                                (index === 1 && data.pendingPage > 3) ||
+                                                                                (index >= data.pendingTotalPage - 2 && data.pendingPage <= data.pendingTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.pendingPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_PENDING_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_PENDING_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.pendingPage >= 4) || (index >= data.pendingTotalPage - 3 && data.pendingPage <= data.pendingTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
-                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                <li className={`page-item ${data.pendingPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
                                                                                     <a className="page-link" onClick={() => dispatchData({ type: 'SET_PENDING_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                 </li>
                                                                             );
@@ -873,10 +939,10 @@ const Discounts = (prop) => {
                                                         </nav>
                                                     </div>
 
-                                                    <table className="table table-borderless"
+                                                    <table className="table table-hover table-vcenter table-borderless"
                                                     >
                                                         <thead>
-                                                            <tr>
+                                                            <tr key={'thead'}>
                                                                 <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
                                                                 <th scope="col">Tên</th>
                                                                 <th scope="col">Đơn hàng của người dùng</th>
@@ -886,14 +952,17 @@ const Discounts = (prop) => {
                                                         </thead>
                                                         <tbody>
                                                             {data.pending.map((item, index) => (
-                                                                <tr key={item.Id}>
+                                                                <tr key={item.Id}
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() => { handleOrderDetail(item.Id, item.OrderID)  }}
+                                                                >
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
                                                                         <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
                                                                     </th>
                                                                     <td>{item.FoodName}</td>
                                                                     <td className="fw-bold">{item.UserName}</td>
                                                                     <td className="fw-bold">{item.Quantity}</td>
-                                                                    <td className="fw-bold">{item.Value}$</td>
+                                                                    <td className="fw-bold">{item.Value} K VNĐ</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -924,17 +993,30 @@ const Discounts = (prop) => {
                                                                 {
                                                                     Array.from({ length: data.approvedTotalPage }, (_, index) => {
                                                                         if (data.approvedTotalPage > 10) {
-                                                                            if ((index >= data.approvedPage - 3 && index <= data.approvedPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.approvedTotalPage - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === data.approvedTotalPage - 1 ||
+                                                                                (index >= data.approvedPage - 2 && index <= data.approvedPage) ||
+                                                                                (index === 1 && data.approvedPage > 3) ||
+                                                                                (index >= data.approvedTotalPage - 2 && data.approvedPage <= data.approvedTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.approvedPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_APPROVED_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_APPROVED_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.approvedPage >= 4) || (index >= data.approvedTotalPage - 3 && data.approvedPage <= data.approvedTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
-                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                <li className={`page-item ${data.approvedPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
                                                                                     <a className="page-link" onClick={() => dispatchData({ type: 'SET_APPROVED_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                 </li>
                                                                             );
@@ -955,11 +1037,11 @@ const Discounts = (prop) => {
                                                         </nav>
                                                     </div>
 
-                                                    <table className="table table-borderless"
+                                                    <table className="table table-hover table-vcenter table-borderless"
                                                         style={{ textAlign: 'start' }}
                                                     >
                                                         <thead>
-                                                            <tr>
+                                                            <tr key={'thead'}>
                                                                 <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
                                                                 <th scope="col">Tên</th>
                                                                 <th scope="col">Đơn hàng của người dùng</th>
@@ -969,14 +1051,17 @@ const Discounts = (prop) => {
                                                         </thead>
                                                         <tbody>
                                                             {data.approved.map((item, index) => (
-                                                                <tr key={item.Id}>
+                                                                <tr key={item.Id}
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() => { handleOrderDetail(item.Id, item.OrderID)  }}
+                                                                >
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
                                                                         <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
                                                                     </th>
                                                                     <td>{item.FoodName}</td>
                                                                     <td className="fw-bold">{item.UserName}</td>
                                                                     <td className="fw-bold">{item.Quantity}</td>
-                                                                    <td className="fw-bold">{item.Value}$</td>
+                                                                    <td className="fw-bold">{item.Value} K VNĐ</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -1010,17 +1095,30 @@ const Discounts = (prop) => {
                                                                 {
                                                                     Array.from({ length: data.cancleTotalPage }, (_, index) => {
                                                                         if (data.cancleTotalPage > 10) {
-                                                                            if ((index >= data.canclePage - 3 && index <= data.canclePage + 1) || // 2 pages before and after current page
-                                                                                index >= data.cancleTotalPage - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === data.cancleTotalPage - 1 ||
+                                                                                (index >= data.canclePage - 2 && index <= data.canclePage) ||
+                                                                                (index === 1 && data.canclePage > 3) ||
+                                                                                (index >= data.cancleTotalPage - 2 && data.canclePage <= data.cancleTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.canclePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_CANCLED_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_CANCLED_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.canclePage >= 4) || (index >= data.cancleTotalPage - 3 && data.canclePage <= data.cancleTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
-                                                                                <li className={`page-item ${data.userPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                <li className={`page-item ${data.canclePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
                                                                                     <a className="page-link" onClick={() => dispatchData({ type: 'SET_CANCLED_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                 </li>
                                                                             );
@@ -1040,11 +1138,11 @@ const Discounts = (prop) => {
                                                             </ul>
                                                         </nav>
 
-                                                        <table className="table table-borderless"
+                                                        <table className="table table-hover table-vcenter table-borderless"
                                                             style={{ textAlign: 'start' }}
                                                         >
                                                             <thead>
-                                                                <tr>
+                                                                <tr key={'thead'}>
                                                                     <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
                                                                     <th scope="col">Tên</th>
                                                                     <th scope="col">Đơn hàng của người dùng</th>
@@ -1054,14 +1152,17 @@ const Discounts = (prop) => {
                                                             </thead>
                                                             <tbody>
                                                                 {data.cancle.map((item, index) => (
-                                                                    <tr key={item.Id}>
+                                                                    <tr key={item.Id}
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() => { handleOrderDetail(item.Id, item.OrderID)  }}
+                                                                    >
                                                                         <th scope="row" style={{ textAlign: 'center' }}>
                                                                             <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
                                                                         </th>
                                                                         <td>{item.FoodName}</td>
                                                                         <td className="fw-bold">{item.UserName}</td>
                                                                         <td className="fw-bold">{item.Quantity}</td>
-                                                                        <td className="fw-bold">{item.Value}$</td>
+                                                                        <td className="fw-bold">{item.Value} K VNĐ</td>
                                                                     </tr>
                                                                 ))}
                                                             </tbody>
@@ -1075,7 +1176,7 @@ const Discounts = (prop) => {
 
                                                     {/* <!-- Users Banned List table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Đon hàng bị từ chối</h5>
+                                                        <h5 className="card-title">Đơn hàng bị từ chối</h5>
                                                         <div className="datatable-search">
                                                             <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
@@ -1094,14 +1195,27 @@ const Discounts = (prop) => {
 
                                                                 {
                                                                     Array.from({ length: data.deniedTotalPage }, (_, index) => {
-                                                                        if (data.userTotalPage > 10) {
-                                                                            if ((index >= data.deniedPage - 2 && index <= data.deniedPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.deniedTotalPage - 3) { // last 2 pages
+                                                                        if (data.deniedTotalPage > 10) {
+                                                                            if (index === 0 ||
+                                                                                index === data.deniedTotalPage - 1 ||
+                                                                                (index >= data.deniedPage - 2 && index <= data.deniedPage) ||
+                                                                                (index === 1 && data.deniedPage > 3) ||
+                                                                                (index >= data.deniedTotalPage - 2 && data.deniedPage <= data.deniedTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.deniedPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_DENIED_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_DENIED_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.deniedPage >= 4) || (index >= data.deniedTotalPage - 3 && data.deniedPage <= data.deniedTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -1125,26 +1239,33 @@ const Discounts = (prop) => {
                                                         </nav>
                                                     </div>
 
-                                                    <table className="table table-borderless"
+                                                    <table className="table table-hover table-vcenter table-borderless"
                                                         style={{ textAlign: 'start' }}>
                                                         <thead>
-                                                            <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
-                                                            <th scope="col">Tên</th>
-                                                            <th scope="col">Đơn hàng của người dùng</th>
-                                                            <th scope="col">Số lượng</th>
-                                                            <th scope="col">Giá trị</th>
-                                                        </thead>
-                                                        {data.denied.map((item, index) => (
-                                                            <tr key={item.Id}>
-                                                                <th scope="row" style={{ textAlign: 'center' }}>
-                                                                    <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                </th>
-                                                                <td>{item.FoodName}</td>
-                                                                <td className="fw-bold">{item.UserName}</td>
-                                                                <td className="fw-bold">{item.Quantity}</td>
-                                                                <td className="fw-bold">{item.Value}$</td>
+                                                            <tr key={'thead'}>
+                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                <th scope="col">Tên</th>
+                                                                <th scope="col">Đơn hàng của người dùng</th>
+                                                                <th scope="col">Số lượng</th>
+                                                                <th scope="col">Giá trị</th>
                                                             </tr>
-                                                        ))}
+                                                        </thead>
+                                                        <tbody>
+                                                            {data.denied.map((item, index) => (
+                                                                <tr key={item.Id}
+                                                                    style={{ cursor: "pointer" }}
+                                                                    onClick={() => { handleOrderDetail(item.Id, item.OrderID)  }}
+                                                                >
+                                                                    <th scope="row" style={{ textAlign: 'center' }}>
+                                                                        <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
+                                                                    </th>
+                                                                    <td>{item.FoodName}</td>
+                                                                    <td className="fw-bold">{item.UserName}</td>
+                                                                    <td className="fw-bold">{item.Quantity}</td>
+                                                                    <td className="fw-bold">{item.Value} K VNĐ</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
                                                     </table>
                                                     {/* <!-- Users Banned List table --> */}
 
@@ -1174,14 +1295,27 @@ const Discounts = (prop) => {
 
                                                                 {
                                                                     Array.from({ length: data.madeTotalPage }, (_, index) => {
-                                                                        if (data.userTotalPage > 10) {
-                                                                            if ((index >= data.madePage - 2 && index <= data.madePage + 1) || // 2 pages before and after current page
-                                                                                index >= data.madeTotalPage - 3) { // last 2 pages
+                                                                        if (data.madeTotalPage > 10) {
+                                                                            if (index === 0 ||
+                                                                                index === data.madeTotalPage - 1 ||
+                                                                                (index >= data.madePage - 2 && index <= data.madePage) ||
+                                                                                (index === 1 && data.madePage > 3) ||
+                                                                                (index >= data.madeTotalPage - 2 && data.madePage <= data.madeTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.madePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET-SET_MADE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET-SET_MADE_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.madePage >= 4) || (index >= data.madeTotalPage - 3 && data.madePage <= data.madeTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -1195,7 +1329,7 @@ const Discounts = (prop) => {
                                                                 <li className="page-item">
                                                                     <a className="page-link" style={{ cursor: 'pointer' }} aria-label="Next" onClick={() => {
                                                                         if (data.madePage !== 1) {
-                                                                            dispatchData({ type: 'SET-SET_MADE_PAGE', payload: data.madePage })
+                                                                            dispatchData({ type: 'SET-SET_MADE_PAGE', payload: data.madeTotalPage })
                                                                         }
                                                                     }}>
                                                                         <span aria-hidden="true">»</span>
@@ -1204,26 +1338,33 @@ const Discounts = (prop) => {
                                                             </ul>
                                                         </nav>
 
-                                                        <table className="table table-borderless"
+                                                        <table className="table table-hover table-vcenter table-borderless"
                                                             style={{ textAlign: 'start' }}>
                                                             <thead>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
-                                                                <th scope="col">Tên</th>
-                                                                <th scope="col">Đơn hàng của người dùng</th>
-                                                                <th scope="col">Số lượng</th>
-                                                                <th scope="col">Giá trị</th>
-                                                            </thead>
-                                                            {data.made.map((item, index) => (
-                                                                <tr key={item.Id}>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                    </th>
-                                                                    <td>{item.FoodName}</td>
-                                                                    <td className="fw-bold">{item.UserName}</td>
-                                                                    <td className="fw-bold">{item.Quantity}</td>
-                                                                    <td className="fw-bold">{item.Value}$</td>
+                                                                <tr key={'thead'}>
+                                                                    <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                    <th scope="col">Tên</th>
+                                                                    <th scope="col">Đơn hàng của người dùng</th>
+                                                                    <th scope="col">Số lượng</th>
+                                                                    <th scope="col">Giá trị</th>
                                                                 </tr>
-                                                            ))}
+                                                            </thead>
+                                                            <tbody>
+                                                                {data.made.map((item, index) => (
+                                                                    <tr key={item.Id}
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() => { handleOrderDetail(item.Id, item.OrderID)  }}
+                                                                    >
+                                                                        <th scope="row" style={{ textAlign: 'center' }}>
+                                                                            <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
+                                                                        </th>
+                                                                        <td>{item.FoodName}</td>
+                                                                        <td className="fw-bold">{item.UserName}</td>
+                                                                        <td className="fw-bold">{item.Quantity}</td>
+                                                                        <td className="fw-bold">{item.Value} K VNĐ</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
                                                         </table>
                                                     </div>
                                                     {/* <!-- End Comment Table --> */}
@@ -1253,14 +1394,27 @@ const Discounts = (prop) => {
 
                                                                 {
                                                                     Array.from({ length: data.inDeliveryTotalPage }, (_, index) => {
-                                                                        if (data.userTotalPage > 10) {
-                                                                            if ((index >= data.inDeliveryPage - 2 && index <= data.inDeliveryPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.inDeliveryTotalPage - 3) { // last 2 pages
+                                                                        if (data.inDeliveryTotalPage > 10) {
+                                                                            if (index === 0 ||
+                                                                                index === data.inDeliveryTotalPage - 1 ||
+                                                                                (index >= data.inDeliveryPage - 2 && index <= data.inDeliveryPage) ||
+                                                                                (index === 1 && data.inDeliveryPage > 3) ||
+                                                                                (index >= data.inDeliveryTotalPage - 2 && data.inDeliveryPage <= data.inDeliveryTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.inDeliveryPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_IN_DELIVERY_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_IN_DELIVERY_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.inDeliveryPage >= 4) || (index >= data.inDeliveryTotalPage - 3 && data.inDeliveryPage <= data.inDeliveryTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -1274,7 +1428,7 @@ const Discounts = (prop) => {
                                                                 <li className="page-item">
                                                                     <a className="page-link" style={{ cursor: 'pointer' }} aria-label="Next" onClick={() => {
                                                                         if (data.inDeliveryPage !== 1) {
-                                                                            dispatchData({ type: 'SET_IN_DELIVERY_PAGE', payload: data.inDeliveryPage })
+                                                                            dispatchData({ type: 'SET_IN_DELIVERY_PAGE', payload: data.inDeliveryTotalPage })
                                                                         }
                                                                     }}>
                                                                         <span aria-hidden="true">»</span>
@@ -1283,26 +1437,33 @@ const Discounts = (prop) => {
                                                             </ul>
                                                         </nav>
 
-                                                        <table className="table table-borderless"
+                                                        <table className="table table-hover table-vcenter table-borderless"
                                                             style={{ textAlign: 'start' }}>
                                                             <thead>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
-                                                                <th scope="col">Tên</th>
-                                                                <th scope="col">Đơn hàng của người dùng</th>
-                                                                <th scope="col">Số lượng</th>
-                                                                <th scope="col">Giá trị</th>
-                                                            </thead>
-                                                            {data.inDelivery.map((item, index) => (
-                                                                <tr key={item.Id}>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                    </th>
-                                                                    <td>{item.FoodName}</td>
-                                                                    <td className="fw-bold">{item.UserName}</td>
-                                                                    <td className="fw-bold">{item.Quantity}</td>
-                                                                    <td className="fw-bold">{item.Value}$</td>
+                                                                <tr key={'thead'}>
+                                                                    <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                    <th scope="col">Tên</th>
+                                                                    <th scope="col">Đơn hàng của người dùng</th>
+                                                                    <th scope="col">Số lượng</th>
+                                                                    <th scope="col">Giá trị</th>
                                                                 </tr>
-                                                            ))}
+                                                            </thead>
+                                                            <tbody>
+                                                                {data.inDelivery.map((item, index) => (
+                                                                    <tr key={item.Id}
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() => { handleOrderDetail(item.Id, item.OrderID)  }}
+                                                                    >
+                                                                        <th scope="row" style={{ textAlign: 'center' }}>
+                                                                            <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
+                                                                        </th>
+                                                                        <td>{item.FoodName}</td>
+                                                                        <td className="fw-bold">{item.UserName}</td>
+                                                                        <td className="fw-bold">{item.Quantity}</td>
+                                                                        <td className="fw-bold">{item.Value} K VNĐ</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
                                                         </table>
                                                     </div>
 
@@ -1333,14 +1494,27 @@ const Discounts = (prop) => {
 
                                                                 {
                                                                     Array.from({ length: data.doneTotalPage }, (_, index) => {
-                                                                        if (data.userTotalPage > 10) {
-                                                                            if ((index >= data.donePage - 2 && index <= data.donePage + 1) || // 2 pages before and after current page
-                                                                                index >= data.doneTotalPage - 3) { // last 2 pages
+                                                                        if (data.doneTotalPage > 10) {
+                                                                            if (index === 0 ||
+                                                                                index === data.doneTotalPage - 1 ||
+                                                                                (index >= data.donePage - 2 && index <= data.donePage) ||
+                                                                                (index === 1 && data.donePage > 3) ||
+                                                                                (index >= data.doneTotalPage - 2 && data.donePage <= data.doneTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.donePage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_DONE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_DONE_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.donePage >= 4) || (index >= data.doneTotalPage - 3 && data.donePage <= data.doneTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -1363,27 +1537,35 @@ const Discounts = (prop) => {
                                                             </ul>
                                                         </nav>
 
-                                                        <table className="table table-borderless"
+                                                        <table className="table table-hover table-vcenter table-borderless"
                                                             style={{ textAlign: 'start' }}
                                                         >
                                                             <thead>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
-                                                                <th scope="col">Tên</th>
-                                                                <th scope="col">Đơn hàng của người dùng</th>
-                                                                <th scope="col">Số lượng</th>
-                                                                <th scope="col">Giá trị</th>
-                                                            </thead>
-                                                            {data.done.map((item, index) => (
-                                                                <tr key={item.Id}>
-                                                                    <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
-                                                                    </th>
-                                                                    <td>{item.FoodName}</td>
-                                                                    <td className="fw-bold">{item.UserName}</td>
-                                                                    <td className="fw-bold">{item.Quantity}</td>
-                                                                    <td className="fw-bold">{item.Value}$</td>
+                                                                <tr key={'thead'}>
+                                                                    <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
+                                                                    <th scope="col">Tên</th>
+                                                                    <th scope="col">Đơn hàng của người dùng</th>
+                                                                    <th scope="col">Số lượng</th>
+                                                                    <th scope="col">Giá trị</th>
                                                                 </tr>
-                                                            ))}
+                                                            </thead>
+
+                                                            <tbody>
+                                                                {data.done.map((item, index) => (
+                                                                    <tr key={item.Id}
+                                                                        style={{ cursor: "pointer" }}
+                                                                        onClick={() => { handleOrderDetail(item.Id, item.OrderID) }}
+                                                                    >
+                                                                        <th scope="row" style={{ textAlign: 'center' }}>
+                                                                            <a><img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar} alt="" className="avatar" /></a>
+                                                                        </th>
+                                                                        <td>{item.FoodName}</td>
+                                                                        <td className="fw-bold">{item.UserName}</td>
+                                                                        <td className="fw-bold">{item.Quantity}</td>
+                                                                        <td className="fw-bold">{item.Value} K VNĐ</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
                                                         </table>
                                                     </div>
                                                     {/* <!-- End Comment Table --> */}
@@ -1412,7 +1594,7 @@ const Discounts = (prop) => {
 
                             {/* <!-- Recent Activity --> */}
                             <div className="card">
-                                <div className="filter">
+                                {/* <div className="filter">
                                     <a className="icon" data-bs-toggle="dropdown">
                                         <ReactSVG
                                             src={more}
@@ -1427,69 +1609,171 @@ const Discounts = (prop) => {
                                         <li><a className="dropdown-item">Tháng này</a></li>
                                         <li><a className="dropdown-item">Năm này</a></li>
                                     </ul>
-                                </div>
+                                </div> */}
 
                                 <div className="card-body">
-                                    <h5 className="card-title">Hoạt động gần đây <span>| Hôm nay</span></h5>
 
-                                    <div className="activity">
+                                    <h5 className="card-title">Chi tiết đơn hàng</h5>
 
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">32 phút</div>
-                                            <i className='bi bi-circle-fill activity-badge text-success align-self-start'></i>
-                                            <div className="activity-content">
-                                                Bởi vì tôi sẽ giải thích những điều <a className="fw-bold text-dark">may mắn</a>
+                                    {
+                                        data?.orderDetail?.Id &&
+                                        <div className="detail">
+
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 p-2 pb-1">Mã đơn hàng</dt>
+                                                <dd className="ms-4 p-1 ">
+                                                    {data?.orderDetail?.Id || " "}
+                                                </dd>
                                             </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
 
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">56 phút</div>
-                                            <i className='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
-                                            <div className="activity-content">
-                                                Niềm vui được nịnh nọt sẽ đến
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 p-2 pb-1">Tổng giá tiền</dt>
+                                                <dd className="ms-4 p-1 ">
+                                                    {data?.orderDetail?.TotalValue + " K VNĐ" || " "}
+                                                </dd>
                                             </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
 
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">2 giờ</div>
-                                            <i className='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
-                                            <div className="activity-content">
-                                                Niềm vui bị hủy hoại bởi niềm vui
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 p-2 pb-1">Ngày đặt</dt>
+                                                <dd className="ms-4 p-1 ">
+                                                    {data?.orderDetail?.CreateAt || " "}
+                                                </dd>
                                             </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
 
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">1 ngày</div>
-                                            <i className='bi bi-circle-fill activity-badge text-info align-self-start'></i>
-                                            <div className="activity-content">
-                                                Và theo thời gian, họ thường <a className="fw-bold text-dark">làm lu mờ niềm vui</a>
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 p-2 pb-1">Người đặt</dt>
+                                                <dd className="d-flex align-items-center ms-4 p-1 ">
+                                                    <img src={data?.orderDetail?.UserImage ? `${host}/uploads/${data?.orderDetail?.UserImage}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar"
+                                                        className="me-2" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+                                                    <div>
+                                                        <span>{data?.orderDetail?.UserName || " "}</span>
+                                                        <span className="ms-2">|</span>
+                                                        <span className="ms-2">{data?.orderDetail?.UserEmail}</span>
+                                                    </div>
+                                                </dd>
                                             </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
 
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">2 ngày</div>
-                                            <i className='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
-                                            <div className="activity-content">
-                                                Đó là một bài tập từ chối anh ta
+                                            <div className="my-3 bg-light">
+                                                <dt className="my-2 p-2 pb-1">Món</dt>
+                                                <nav aria-label="Page navigation example">
+                                                    <ul className="pagination">
+                                                        <li className="page-item">
+                                                            <a className="page-link" style={{ cursor: 'pointer' }} aria-label="Previous" onClick={() => {
+                                                                if (data.orderDetailItemsPage !== 1) {
+                                                                    getOrderItems(1);
+
+                                                                }
+                                                            }}>
+                                                                <span aria-hidden="true">«</span>
+                                                            </a>
+                                                        </li>
+
+                                                        {
+                                                            Array.from({ length: data.orderDetailItemsTotalPage }, (_, index) => {
+                                                                if (data.orderDetailItemsTotalPage > 10) {
+                                                                    if (index === 0 ||
+                                                                        index === data.orderDetailItemsTotalPage - 1 ||
+                                                                        (index >= data.orderDetailItemsPage - 2 && index <= data.orderDetailItemsPage) ||
+                                                                        (index === 1 && data.orderDetailItemsPage > 3) ||
+                                                                        (index >= data.orderDetailItemsTotalPage - 2 && data.orderDetailItemsPage <= data.orderDetailItemsTotalPage - 2)
+                                                                    ) {
+
+                                                                        return (
+                                                                            <li className={`page-item ${data.orderDetailItemsPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                <a className="page-link" onClick={() => {
+                                                                                    getOrderItems(index + 1);
+
+                                                                                }}>{index + 1}</a>
+                                                                            </li>
+                                                                        );
+                                                                    } else if ((index === 2 && data.orderDetailItemsPage >= 4) || (index >= data.orderDetailItemsTotalPage - 3 && data.orderDetailItemsPage <= data.orderDetailItemsTotalPage - 3)) {
+
+                                                                        return (
+                                                                            <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                        )
+                                                                    }
+                                                                } else {
+                                                                    return (
+                                                                        <li className={`page-item ${data.orderDetailItemsPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                            <a className="page-link" onClick={() => {
+                                                                                getOrderItems(index + 1);
+                                                                            }}>{index + 1}</a>
+                                                                        </li>
+                                                                    );
+                                                                }
+                                                            })
+                                                        }
+                                                        <li className="page-item">
+                                                            <a className="page-link" style={{ cursor: 'pointer' }} aria-label="Next" onClick={() => {
+                                                                if (data.orderDetailItemsPage !== data.orderDetailItemsTotalPage) {
+                                                                    getOrderItems(data.orderDetailItemsTotalPage);
+                                                                }
+                                                            }}>
+                                                                <span aria-hidden="true">»</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                                <dd className="ms-4 d-flex align-items-center justify-content-center flex-column">
+                                                    {
+                                                        // data?.orderDetail?.Items &&
+                                                        data?.orderDetailItems?.map((item, index) => (
+                                                            <div className={`my-3 row rounded  ${item.Id === idItemSelected ? " bg-secondary text-white" : " bg-white"}`}
+                                                                key={item.Id}
+                                                                style={{ width: "95%" }}>
+
+                                                                <div className="col-3 d-flex align-items-center justify-content-center">
+                                                                    <img src={item.FoodImage ? `${host}/uploads/${item.FoodImage}.jpg` : avatar}
+                                                                        onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                                                        style={{ width: 60, height: 60, borderRadius: '50%' }}
+                                                                        alt="foodImage" className="avatar" />
+                                                                </div>
+
+                                                                <div className='col-9'>
+                                                                    <div className="col-12">
+                                                                        <dt className='p-1 m-0'>
+                                                                            Tên
+                                                                        </dt>
+                                                                        <dd className='ms-3'>
+                                                                            {item.FoodName}
+                                                                        </dd>
+                                                                    </div>
+
+                                                                    <div className='col-12' >
+                                                                        <div className='row'>
+                                                                            <div className='col-6 '>
+                                                                                <dt className='p-1 m-0'>
+                                                                                    Số lượng
+                                                                                </dt>
+                                                                                <dd className='ms-3'>
+                                                                                    {item.Quantity}
+                                                                                </dd>
+                                                                            </div>
+
+                                                                            <div className='col-6 '>
+                                                                                <dt className='p-1 m-0'>
+                                                                                    Trạng thái
+                                                                                </dt>
+                                                                                <dd className='ms-3'>
+                                                                                    {item.Status === "Waiting" ? "Chờ" : item.Status === "Approved" ? "Đã duyệt" : item.Status === "Cancled" ? "Đã hủy" : item.Status === "Denied" ? "Từ chối" : item.Status === "Made" ? "Đang làm" : item.Status === "InDelivery" ? "Đang giao" : "Hoàn tất"}
+                                                                                </dd>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </dd>
+
                                             </div>
+
                                         </div>
-                                        {/* <!-- End activity item--> */}
-
-                                        <div className="activity-item d-flex">
-                                            <div className="activite-label">4 tuần</div>
-                                            <i className='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
-                                            <div className="activity-content">
-                                                Nói nỗi đau của những điều này không phải của mình. Vì vậy, đó thực sự là những gì
-
-                                            </div>
-                                        </div>
-                                        {/* <!-- End activity item--> */}
-
-                                    </div>
+                                    }
 
                                 </div>
                             </div>

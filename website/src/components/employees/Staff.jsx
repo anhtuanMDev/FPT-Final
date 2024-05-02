@@ -234,12 +234,11 @@ const Staffs = (prop) => {
         let name = document.getElementById('yourName').value;
         let email = document.getElementById('yourUsername').value;
         let password = document.getElementById('yourPassword').value;
-        let token = document.getElementById('yourToken').value;
         let job = document.getElementById('yourJob').value;
         console.log(email, password);
 
 
-        const response = await AxiosInstance().post('/register-admin.php', { name, email, password, job, token });
+        const response = await AxiosInstance().post('/create-admin.php', { name, email, password, job });
         console.log(response.statusText);
 
         if (response.status) {

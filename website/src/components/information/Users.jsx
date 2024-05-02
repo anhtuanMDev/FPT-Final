@@ -1353,7 +1353,7 @@ const Users = (prop) => {
                                                     />
                                                 </div>
                                                 <div className="ps-3">
-                                                    <h6>{statistics.sellerNumber}đ</h6>
+                                                    <h6>{statistics.sellerNumber}</h6>
                                                     <span className={`text-success small pt-1 fw-bold ${statistics.sellerGrowth < 0 ? 'text-danger' : 'text-success'}`}>{statistics.sellerGrowth}%</span>
                                                     <span className="text-muted small pt-2 ps-1">{statistics.sellerState}</span>
                                                 </div>

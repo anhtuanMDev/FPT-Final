@@ -192,7 +192,7 @@ const Discounts = (prop) => {
     const loadEventDetail = async (eventId) => {
         const response = await AxiosInstance().get("get-event-detail.php", { params: { id: eventId } });
         // console.log(response.eventDetail);
-        dispatchData({ type: "GET_EVENT_DETAIL", payload: response.eventDetail });
+        dispatchData({ type: "GET_EVENT_DETAIL", payload: response.data });
     }
 
     const setEventEdit = (eventInfo) => {
@@ -1460,7 +1460,7 @@ const Discounts = (prop) => {
                                                     </div>
                                                     {/* <!-- End detail item--> */}
                                                     {
-                                                        data?.eventDetail?.Amount !== -1 &&
+                                                        !(data?.eventDetail?.Amount === -1 || data?.eventDetail?.Amount === null) &&
                                                         <div className="my-3 bg-light">
                                                             <dt className="my-2 p-2">Số lượng</dt>
                                                             <dd className="ms-4 p-1 ">

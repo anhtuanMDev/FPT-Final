@@ -49,6 +49,7 @@ const Users = (prop) => {
     document.title = 'Informations - Users';
     const chartRef = useRef(null);
 
+
     const navigate = useNavigate();
 
     const changePage = (link) => {
@@ -1792,7 +1793,7 @@ const Users = (prop) => {
                                                                     <td>{item.UpdateAt}</td>
                                                                     <td>
                                                                         <button type="button" className="btn btn-danger btn-sm" 
-                                                                        onClick={() => updateStatusUser(item.Name, "ADM7ANKA7YA7SVSNL5B6", "Active", item.Id)}>Bỏ cấm</button>
+                                                                        onClick={() => updateStatusUser(item.Name, adminID , "Active", item.Id)}>Bỏ cấm</button>
                                                                     </td>
                                                                 </tr>
                                                             ))}
@@ -1878,8 +1879,8 @@ const Users = (prop) => {
                                                                 <td >{item.Title}</td>
                                                                 <td className="fw-bold black-user-buttons-group">
                                                                     <button type="button" className="btn btn-danger btn-sm"
-                                                                        onClick={() => replyUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6", item.TargetID)}>Cấm</button>
-                                                                    <button onClick={() => repjectUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6", item.TargetID)} 
+                                                                        onClick={() => replyUserReports(item.Id, item.UserName, adminID, item.TargetID)}>Cấm</button>
+                                                                    <button onClick={() => repjectUserReports(item.Id, item.UserName, adminID, item.TargetID)} 
                                                                     type="button" className="btn btn-outline-warning btn-sm" >Xóa</button>
                                                                 </td>
                                                             </tr>

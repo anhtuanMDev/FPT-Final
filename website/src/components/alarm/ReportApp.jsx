@@ -687,7 +687,7 @@ const ReportApp = (prop) => {
                         <div className="tab-pane fade show active profile-overview" id="list-users-overview">
 
                           <div className="tab-title search nav">
-                            <h5 className="card-title">Người dùng xấu</h5>
+                            <h5 className="card-title">Báo cáo</h5>
                             <div className="datatable-search">
                               <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                             </div>
@@ -765,7 +765,7 @@ const ReportApp = (prop) => {
                                         <td className="fw-bold">{item.Title}</td>
                                         <td className="fw-bold">
                                           <button type="button" className='btn btn-warning'
-                                            onClick={() => replyUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6")}
+                                            onClick={() => replyUserReports(item.Id, item.UserName, adminID)}
                                           >Trả lời</button>
                                         </td>
                                       </tr>

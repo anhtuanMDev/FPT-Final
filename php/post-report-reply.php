@@ -30,7 +30,7 @@ try {
         "status" => true,
         "message" => "Đã cập nhật báo cáo $id thành công!"));
     
-    $query = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, UserID, Creator)
+    $query = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, TargetID, Creator)
     VALUES ('$notifyID', 'Báo cáo của bạn đã được trả lời', '$reply', 0, Now(), 
     (SELECT reports.Author FROM reports WHERE reports.Id = '$id'), '$replyBy')";
     $stmt = $dbConn->prepare($query);

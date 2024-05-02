@@ -162,9 +162,9 @@ const ReportFoods = (prop) => {
 
     {/** Start of banning restaurants */ }
 
-    const banRestaurants = async (reportID, name, adminID, status) => {
+    const banFood = async (reportID, name, adminID, status, targetID) => {
         Swal.fire({
-            title: `Bạn có muốn cấm nhà hàng ${name}`,
+            title: `Bạn có muốn cấm món ăn ${name}`,
             text: "Nhấn nút xác nhận để tiếp tục",
             icon: 'question',
             showCancelButton: true,
@@ -176,11 +176,13 @@ const ReportFoods = (prop) => {
                         const body = {
                             id: reportID,
                             replyBy: adminID,
-                            status: status
+                            status: status,
+                            targetID: targetID
                         }
                         const response = await AxiosInstance().post('/post-update-status.php', body);
+                        console.log("ress", response)
                         if (!response.status) {
-                            throw new Error(response.message);
+                            throw new Error(response.statusText);
                         }
                         getReportFoods();
                     }
@@ -191,6 +193,13 @@ const ReportFoods = (prop) => {
                     })
                 }
             },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    text: `Món ăn ${name} đã bị cấm`
+                })
+            }
         });
     }
 
@@ -711,7 +720,7 @@ const ReportFoods = (prop) => {
                                                 <div className="tab-pane fade show active profile-overview" id="list-users-overview">
 
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Người dùng xấu</h5>
+                                                        <h5 className="card-title">Báo cáo</h5>
                                                         <div className="datatable-search">
                                                             <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
@@ -789,15 +798,15 @@ const ReportFoods = (prop) => {
                                                                                 <td className="fw-bold">{item.TargetName}</td>
                                                                                 <td className="fw-bold" style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                                                     <button type="button" className='btn btn-warning'
-                                                                                        onClick={() => replyUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6")}
+                                                                                        onClick={() => replyUserReports(item.Id, item.UserName, adminID)}
                                                                                     >Trả lời</button>
                                                                                     <button type="button" className='btn btn-danger' style={{ marginLeft: 10 }}
-                                                                                        onClick={() => banRestaurants(item.Id, item.TargetName, "ADM7ANKA7YA7SVSNL5B6", "Banned")}
+                                                                                        onClick={() => banFood(item.Id, item.TargetName, adminID, "Banned", item.TargetID)}
                                                                                     >Cấm</button>
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td style={{ fontWeight: 700 }}>Reason for Reporting</td>
+                                                                                <td style={{ fontWeight: 700 }}>Lý do báo cáo</td>
                                                                                 <td colSpan={3}><a className="text-ember fw-bold">{item.Content || lorem}</a></td>
                                                                             </tr>
                                                                             <tr><td colSpan="4" style={{ height: 45, alignItems: 'center', display: 'flex' }}>

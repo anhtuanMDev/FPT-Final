@@ -79,12 +79,18 @@ const Search = () => {
     };
     console.log(body);
     const response = await AxiosInstance().post('/get-search-data.php', body);
+    const data = response.data;
+
     if (response.status) {
       setSearchData(response.data);
-      console.log(response.data);
+      console.log(data);
+    console.log(true);
+      
     } else {
       setSearchData({Foods: [], Restaurants: []});
-      console.log(response.statusText);
+      console.log(data);
+    console.log(false);
+
     }
   };
 

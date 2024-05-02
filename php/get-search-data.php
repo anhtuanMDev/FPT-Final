@@ -22,12 +22,12 @@ try {
     LEFT JOIN reviews ON foods.Id = reviews.TargetId
     INNER JOIN restaurants ON foods.RestaurantId = restaurants.Id
     LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserId = '$userID'
-    WHERE foods.Name LIKE '%$keyword%'
-    OR foods.Description LIKE '%$keyword%' OR foods.Price LIKE '%$keyword%'
+    WHERE foods.Name COLLATE utf8mb4_general_ci LIKE '%$keyword%'
+    OR foods.Description COLLATE utf8mb4_general_ci LIKE '%$keyword%' OR foods.Price LIKE '%$keyword%'
     OR foods.Discount LIKE '%$keyword%'
-    OR restaurants.Name LIKE '%$keyword%' OR restaurants.Address LIKE '%$keyword%'
-    OR restaurants.Email LIKE '%$keyword%' OR restaurants.City LIKE '%$keyword%'
-    OR restaurants.District LIKE '%$keyword%' OR restaurants.Ward LIKE '%$keyword%'
+    OR restaurants.Name COLLATE utf8mb4_general_ci LIKE '%$keyword%' OR restaurants.Address COLLATE utf8mb4_general_ci LIKE '%$keyword%'
+    OR restaurants.Email LIKE '%$keyword%' OR restaurants.City COLLATE utf8mb4_general_ci LIKE '%$keyword%'
+    OR restaurants.District COLLATE utf8mb4_general_ci LIKE '%$keyword%' OR restaurants.Ward COLLATE utf8mb4_general_ci LIKE '%$keyword%'
     GROUP BY foods.Id";
 
     $stmt = $dbConn->prepare($query);
@@ -56,12 +56,12 @@ try {
     echo json_encode(array(
         "status" => true,
         "data" => $result,
-        "statuseText" => "Tìm thấy dữ liệu người dùng yêu cầu"
+        "statusText" => "Tìm thấy dữ liệu người dùng yêu cầu"
     ));
 } catch (Exception $e) {
     echo json_encode(array(
         "status" => false,
         "data" => $result,
-        "statuseText" => "Không tìm thấy dữ liệu người dùng yêu cầu! $e"
+        "statusText" => "Không tìm thấy dữ liệu người dùng yêu cầu! $e"
     ));
 }

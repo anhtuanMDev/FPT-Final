@@ -18,7 +18,10 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import {useSelector} from 'react-redux';
-import {selectUserID} from '../../../../helpers/state/Global/globalSlice';
+import {
+  selectHost,
+  selectUserID,
+} from '../../../../helpers/state/Global/globalSlice';
 import Icons, {IconName} from '../../../../assets/icons/Icons';
 import {ParamList} from '../../../navigation/RootNavigation';
 
@@ -39,19 +42,24 @@ const initialState: Infor = {
 };
 const Rank = () => {
   const isFocused = useIsFocused();
+  const host = useSelector(selectHost);
   const [list, setList] = useState<Infor[]>([initialState]);
   const [numberOne, setNumberOne] = useState<Infor>(initialState);
   const userID = useSelector(selectUserID);
-  const [userIndex, setUserIndex] = useState<number>(0);
+  const [userIndex, setUserIndex] = useState({index: 0, image: ''});
   const navigation = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
 
   const getRank = async () => {
     const response = await AxiosInstance().get('/get-rank-user.php');
     const data: Infor[] = response.data;
     if (response.status) {
-      setUserIndex(data.findIndex(item => item.Id === userID));
+      setUserIndex({
+        index: data.findIndex(item => item.Id === userID),
+        image: data.find(item => item.Id === userID)?.Image || '',
+      });
+      console.log('user index', userIndex)
       setNumberOne(data.shift() as Infor);
-      setList(data);
+      setList(data.slice(0,19));
       // console.log(userIndex);
     }
   };
@@ -88,12 +96,12 @@ const Rank = () => {
           justifyContent: 'center',
         }}>
         <Image
-          source={require('../../../../assets/images/baseImage.png')}
+          source={{uri: `${host}/uploads/${userIndex.image}.jpg`}}
           style={{
             width: width * 0.3,
             height: width * 0.3,
             borderRadius: (width * 0.3) / 2,
-            borderColor: Colors.ember,
+            borderColor: Colors.white,
             borderWidth: 5,
           }}
         />
@@ -102,7 +110,7 @@ const Rank = () => {
             fonts.captionBold,
             {color: Colors.white, marginTop: 10, alignSelf: 'center'},
           ]}>
-          {'No. ' + (userIndex + 1)}
+          {'No. ' + (userIndex.index + 1)}
         </Text>
       </View>
 
@@ -162,7 +170,7 @@ const Rank = () => {
             justifyContent: 'flex-start',
           }}>
           <Image
-            source={require('../../../../assets/images/baseImage.png')}
+            source={{uri: `${host}/uploads/${numberOne.Image}.jpg`}}
             style={{width: 45, height: 45, borderRadius: 25}}
           />
           <View style={{marginLeft: 10}}>
@@ -239,7 +247,7 @@ const Rank = () => {
                   justifyContent: 'space-between',
                 }}>
                 <Image
-                  source={require('../../../../assets/images/baseImage.png')}
+                  source={{uri: `${host}/uploads/${item.Image}.jpg`}}
                   style={{width: 45, height: 45, borderRadius: 25}}
                 />
                 <Text

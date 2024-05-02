@@ -228,3 +228,14 @@ CREATE TABLE Confirmations (
     ExpireAt DATETIME, 
     Status TINYINT
 );
+
+ALTER TABLE foods
+MODIFY Name VARCHAR(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+MODIFY Description VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+ALTER TABLE restaurants
+MODIFY Name VARCHAR(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+MODIFY Address VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+MODIFY City VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+MODIFY District VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+MODIFY Ward VARCHAR(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci

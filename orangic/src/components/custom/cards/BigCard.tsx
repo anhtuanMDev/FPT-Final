@@ -104,7 +104,7 @@ const BigCard = (props: Prop) => {
                         props?.price *
                           (1 - (props?.discount ? props?.discount : 0) / 100) *
                           0.1,
-                      ) + '$'
+                      ) + 'k VNĐ'
                   : 'Miễn phí'}
               </Text>
             </View>

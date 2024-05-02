@@ -415,7 +415,7 @@ const US_FoodDetail = (props: Props) => {
                 />
                 <Text>
                   {Math.round(state.Price * (1 - state.Discount / 100) * 0.1) +
-                    '$'}
+                    'k VNĐ'}
                 </Text>
               </View>
               <View
@@ -442,7 +442,7 @@ const US_FoodDetail = (props: Props) => {
               },
             ]}>
             <Text style={[fonts.captionBold, {color: Colors.green}]}>
-              {Math.round(state.Price * (1 - state.Discount / 100))}$
+              {Math.round(state.Price * (1 - state.Discount / 100))}k VNĐ
             </Text>
             <View
               style={[

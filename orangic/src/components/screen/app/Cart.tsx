@@ -450,7 +450,7 @@ const Cart = () => {
                             );
                         })
                         .reduce((acc: number, item) => acc + (item || 0), 0) +
-                        ' $'}
+                        ' k VNĐ'}
                   </Text>
                 </View>
               </View>

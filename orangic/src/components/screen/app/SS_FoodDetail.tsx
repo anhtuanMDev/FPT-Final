@@ -695,7 +695,7 @@ const SS_FoodDetail = () => {
                 }}
                 width={width - 80}
                 height={220}
-                yAxisLabel="$"
+                yAxisLabel="k VNĐ"
                 yAxisSuffix=""
                 chartConfig={{
                   backgroundGradientFrom: Colors.white,
@@ -743,7 +743,7 @@ const SS_FoodDetail = () => {
                 }}
                 width={width - 80}
                 height={220}
-                yAxisLabel="$"
+                yAxisLabel="k VNĐ"
                 yAxisSuffix=""
                 chartConfig={{
                   backgroundGradientFrom: Colors.white,

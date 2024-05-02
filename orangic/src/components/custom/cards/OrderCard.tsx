@@ -84,7 +84,7 @@ const OrderItemDetail = (props: OrderItemDetailProp ) => {
         <View style={{flex: 1}} />
 
         <View style={{alignItems: 'flex-end'}}>
-          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>Tiền: {value}$</Text>
+          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>Tiền: {value}k VNĐ</Text>
           <Text style={[fonts.textBold, {marginLeft: 10}]}>Trạng thái: {status}</Text>
         </View>
       </View>
@@ -127,7 +127,7 @@ const OrderCard = (props: Prop) => {
           marginBottom: 25,
         }}>
         <Text>
-          Tổng giá tiền: <Text style={fonts.textBold}>{totalValue?.toString()}$</Text>
+          Tổng giá tiền: <Text style={fonts.textBold}>{totalValue?.toString()}k VNĐ</Text>
         </Text>
         <Text>
           Ngày đặt: <Text style={fonts.textBold}>{orderDate}</Text>

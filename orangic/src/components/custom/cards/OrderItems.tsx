@@ -110,7 +110,7 @@ const OrderItems = (props: Prop) => {
                 {foodRate.toString()}
               </Text>
             </View>
-            <Text style={[fonts.captionBold, {marginLeft: 10}]}>{price} $</Text>
+            <Text style={[fonts.captionBold, {marginLeft: 10}]}>{price} k VNĐ</Text>
           </View>
         </View>
       </View>

@@ -57,15 +57,15 @@ export const initialState: Information = {
 
 function convertPoint(point: number) {
   if (point < 1000) {
-    return 'Bronze';
+    return 'Đồng';
   } else if (point < 2000) {
-    return 'Silver';
+    return 'Bạc';
   } else if (point < 3000) {
-    return 'Gold';
+    return 'Vàng';
   } else if (point < 6000) {
-    return 'Platinum';
+    return 'Bạc Kim';
   } else if (point < 10000) {
-    return 'Diamond';
+    return 'Kim Cương';
   } else {
     return 'Vip';
   }

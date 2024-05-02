@@ -29,7 +29,7 @@ try {
     $email = $data->email;
 
     $query = "INSERT INTO restaurants (Id, Name, Email, Introduction, Status, ownerID, CreateAt)
-    VALUES('$id', '$name', '$email', '$intro', 'OPEN', '$userID', NOW())";
+    VALUES('$id', '$name', '$email', '$intro', 'Open', '$userID', NOW())";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
 

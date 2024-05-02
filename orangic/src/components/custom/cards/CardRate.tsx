@@ -5,6 +5,7 @@ import {fonts, lists} from '../styles/ComponentStyle';
 import {Colors} from '../styles/ScreenStyle';
 import Icons from '../../../assets/icons/Icons';
 import {IconName} from '../../../assets/icons/Icons';
+import Icons2 from '../../../assets/icons/Icons2';
 
 type Prop = {
   rate?: number;
@@ -14,11 +15,11 @@ type Prop = {
 
 const CardRate = (props: Prop) => {
   return (
-    <View style={[lists.cardRate_Cont, {alignItems: 'center'}, props?.style]}>
+    <View style={[lists.cardRate_Cont, props?.style]}>
       <Text style={[fonts.text, {textAlignVertical: 'center', marginRight: 2}]}>
         {props?.rate?.toString() || '0'}
       </Text>
-      <Icons color={Colors.yellow} name={IconName.star} size={12} />
+      <Icons2 color={Colors.yellow} name={IconName.star} size={12} />
       <Text
         style={[
           fonts.text,

@@ -71,8 +71,6 @@ type Prop = {
 const ChangeRestaurantInfor = (props: Prop) => {
   const infors = props.route.params?.infor as InforState;
   const size = Dimensions.get('window').width;
-  const isFocused = useIsFocused();
-  const [img, setImg] = useState<any[]>([]);
   const host = useSelector(selectHost);
   const resID = useSelector(selectRestaurantID);
   const navigation =
@@ -80,8 +78,13 @@ const ChangeRestaurantInfor = (props: Prop) => {
   const Tab = createMaterialTopTabNavigator();
 
   const [infor, setInfor] = useReducer(inforReducer, infors);
+  const isFocused = useIsFocused();
   const flashRef = useRef<FlashMessage | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    console.log(infor.Images);
+  }, [isFocused]);
 
   const requestCameraPermission = async () => {
     try {
@@ -153,7 +156,7 @@ const ChangeRestaurantInfor = (props: Prop) => {
     }
     const options: ImageLibraryOptions = {
       mediaType: 'photo',
-      selectionLimit: 5 - img.length,
+      selectionLimit: 5 - infor.Images.length,
     };
     try {
       const granted = await PermissionsAndroid.request(
@@ -198,6 +201,15 @@ const ChangeRestaurantInfor = (props: Prop) => {
   };
 
   const deleteImg = async (id: string) => {
+    if(infor.Images.length == 1) {
+      showMessage({
+        message: 'Xin lỗi',
+        description: 'Bạn cần ít nhất 1 hình ảnh',
+        type: 'warning',
+        icon: 'warning',
+      });
+      return;
+    }
     const newImg: {Id: string}[] = infor.Images.filter(item => {
       return item.Id != id;
     });

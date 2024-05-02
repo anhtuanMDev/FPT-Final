@@ -22,13 +22,10 @@ try {
     LEFT JOIN reviews ON foods.Id = reviews.TargetId
     INNER JOIN restaurants ON foods.RestaurantId = restaurants.Id
     LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserId = '$userID'
-    WHERE foods.Name COLLATE utf8mb4_general_ci LIKE '%$keyword%'
-    OR foods.Description COLLATE utf8mb4_general_ci LIKE '%$keyword%' OR foods.Price LIKE '%$keyword%'
-    OR foods.Discount LIKE '%$keyword%'
-    OR restaurants.Name COLLATE utf8mb4_general_ci LIKE '%$keyword%' OR restaurants.Address COLLATE utf8mb4_general_ci LIKE '%$keyword%'
-    OR restaurants.Email LIKE '%$keyword%' OR restaurants.City COLLATE utf8mb4_general_ci LIKE '%$keyword%'
-    OR restaurants.District COLLATE utf8mb4_general_ci LIKE '%$keyword%' OR restaurants.Ward COLLATE utf8mb4_general_ci LIKE '%$keyword%'
-    GROUP BY foods.Id";
+    WHERE (foods.Name COLLATE utf8mb4_general_ci LIKE '%$keyword%' 
+    OR restaurants.Name COLLATE utf8mb4_general_ci LIKE '%$keyword%')
+    AND foods.CreateAt <= NOW() AND foods.Status = 'Sale'
+    GROUP BY foods.Id ORDER BY foods.CreateAt DESC";
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
@@ -44,7 +41,7 @@ try {
     LEFT JOIN reviews ON restaurants.Id = reviews.TargetId
     LEFT JOIN favlist ON restaurants.Id = favlist.TargetID AND favlist.UserId = '$userID'
     WHERE restaurants.Name LIKE '%$keyword%'
-    OR restaurants.Address LIKE '%$keyword%' OR restaurants.Email LIKE '%$keyword%'
+    OR restaurants.Address LIKE '%$keyword%'
     OR restaurants.City LIKE '%$keyword%' OR restaurants.District LIKE '%$keyword%'
     OR restaurants.Ward LIKE '%$keyword%'
     GROUP BY restaurants.Id";

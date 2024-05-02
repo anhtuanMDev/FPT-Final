@@ -10,9 +10,9 @@ import React from 'react';
 import {Colors} from '../styles/ScreenStyle';
 import Icons2, {Icon2Name} from '../../../assets/icons/Icons2';
 import {fonts} from '../styles/ComponentStyle';
-import { Items } from '../../screen/app/Orders/OrderHistory';
-import { useSelector } from 'react-redux';
-import { selectHost } from '../../../helpers/state/Global/globalSlice';
+import {Items} from '../../screen/app/Orders/OrderHistory';
+import {useSelector} from 'react-redux';
+import {selectHost} from '../../../helpers/state/Global/globalSlice';
 
 const {width, height} = Dimensions.get('window');
 const padding = 20;
@@ -32,16 +32,27 @@ type OrderItemDetailProp = {
   status: string;
   value: number;
   image: string;
-}
+};
 
-const OrderItemDetail = (props: OrderItemDetailProp ) => {
-  const {
-    name,
-    quantity,
-    status,
-    value,
-    image,
-  } = props;
+const convertStatus = (status: string) => {
+  switch (status) {
+    case 'Waiting':
+      return 'Đang chờ';
+    case 'Approve':
+      return 'Đã xác nhận';
+    case 'Denied':
+      return 'Bị từ chối';
+    case 'In Delivery':
+      return 'Đang giao hàng';
+    case 'Done':
+      return 'Hoàn thành';
+    case 'Cancled':
+      return 'Đã hủy';
+  }
+};
+
+const OrderItemDetail = (props: OrderItemDetailProp) => {
+  const {name, quantity, status, value, image} = props;
 
   return (
     <View
@@ -75,7 +86,9 @@ const OrderItemDetail = (props: OrderItemDetailProp ) => {
         </View>
 
         <View>
-          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>{name}</Text>
+          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>
+            {name}
+          </Text>
           <Text style={[fonts.textBold, {marginLeft: 10}]}>
             Số lượng: {quantity}
           </Text>
@@ -84,8 +97,12 @@ const OrderItemDetail = (props: OrderItemDetailProp ) => {
         <View style={{flex: 1}} />
 
         <View style={{alignItems: 'flex-end'}}>
-          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>Tiền: {value}k VNĐ</Text>
-          <Text style={[fonts.textBold, {marginLeft: 10}]}>Trạng thái: {status}</Text>
+          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>
+            Tiền: {value}k VNĐ
+          </Text>
+          <Text style={[fonts.textBold, {marginLeft: 10}]}>
+            Trạng thái: {status}
+          </Text>
         </View>
       </View>
     </View>
@@ -93,14 +110,7 @@ const OrderItemDetail = (props: OrderItemDetailProp ) => {
 };
 
 const OrderCard = (props: Prop) => {
-  const {
-    id,
-    totalValue,
-    orderDate,
-    style,
-    items,
-    padding,
-  } = props;
+  const {id, totalValue, orderDate, style, items, padding} = props;
   const host = useSelector(selectHost);
   return (
     <View
@@ -127,7 +137,8 @@ const OrderCard = (props: Prop) => {
           marginBottom: 25,
         }}>
         <Text>
-          Tổng giá tiền: <Text style={fonts.textBold}>{totalValue?.toString()}k VNĐ</Text>
+          Tổng giá tiền:{' '}
+          <Text style={fonts.textBold}>{totalValue?.toString()}k VNĐ</Text>
         </Text>
         <Text>
           Ngày đặt: <Text style={fonts.textBold}>{orderDate}</Text>
@@ -141,10 +152,10 @@ const OrderCard = (props: Prop) => {
               image={`${host}/uploads/${item.Image}.jpg`}
               quantity={item.Quantity}
               name={item.FoodName}
-              status={item.Status}
+              status={convertStatus(item.Status) as string}
               value={item.Value}
             />
-          )
+          );
         })}
       </View>
     </View>

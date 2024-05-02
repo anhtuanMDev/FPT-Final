@@ -17,10 +17,9 @@ try {
     INNER JOIN orders ON orderitems.OrderID = orders.Id
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
-    WHERE orders.UserID = '$id' AND orders.Status = 'Done'
-    AND orderitems.Status != 'Canceled' AND orderitems.Status != 'Done' 
-    OR orderitems.Status = 'Denied'
-    ORDER BY orders.CreateAt DESC";
+    WHERE orders.UserID = '$id' AND orders.Status = 'Done' 
+    AND (orderitems.Status != 'Cancled' AND orderitems.Status != 'Done' AND orderitems.Status != 'Denied')
+    ORDER BY orders.CreateAt DESC LIMIT 100";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -28,7 +27,7 @@ try {
     foreach ($orders as $key => $value) {
         $query = "SELECT Id from images WHERE OwnerID = :id";
         $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['RestaurantID']);
+        $stmt->bindParam(':id', $orders[$key]['RestaurantID']);
         $stmt->execute();
         $image = $stmt->fetchColumn();
 
@@ -40,7 +39,7 @@ try {
 
         $query = "SELECT COALESCE(CAST(AVG(Point) AS DECIMAL(3,1)), 0) AS Rating FROM reviews WHERE TargetID = :id";
         $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['RestaurantID']);
+        $stmt->bindParam(':id', $orders[$key]['RestaurantID']);
         $stmt->execute();
         $point = $stmt->fetchColumn();
 
@@ -51,7 +50,7 @@ try {
     foreach ($orders as $key => $value) {
         $query = "SELECT Id from images WHERE OwnerID = :id";
         $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['FoodID']);
+        $stmt->bindParam(':id', $orders[$key]['FoodID']);
         $stmt->execute();
         $image = $stmt->fetchColumn();
 
@@ -63,7 +62,7 @@ try {
 
         $query = "SELECT COALESCE(CAST(AVG(Point) AS DECIMAL(3,1)), 0) AS Rating FROM reviews WHERE TargetID = :id";
         $stmt = $dbConn->prepare($query);
-        $stmt->bindParam(':id', $orders[0]['FoodID']);
+        $stmt->bindParam(':id', $orders[$key]['FoodID']);
         $stmt->execute();
         $point = $stmt->fetchColumn();
         $orders[$key]['FoodRating'] = $point;

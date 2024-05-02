@@ -38,7 +38,7 @@ import {
 } from '../../../helpers/state/Global/globalSlice';
 import { showMessage } from 'react-native-flash-message';
 
-function converTime(time: string): string {
+export function converTime(time: string): string {
   const parts = time.split(':');
   const hours = parseInt(parts[0]);
   let minutes = parseInt(parts[1]);
@@ -47,9 +47,9 @@ function converTime(time: string): string {
   if (secs > 30) minutes++;
 
   if (hours === 0) {
-    return `${minutes} mins`;
+    return `${minutes} phút`;
   } else {
-    return `${hours}hr ${minutes} mins`;
+    return `${hours}giờ ${minutes} phút`;
   }
 }
 

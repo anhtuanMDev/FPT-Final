@@ -46,8 +46,13 @@ try {
     $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $result['Reviews'] = $reviews;
 
-    $query = "SELECT Id, Name, Price, TimeMade, Discount, FeatureItem
-    FROM foods WHERE RestaurantID = '$id' AND Status = 'Sale' OR Status = 'InActive'";
+    $query = "SELECT foods.Id, Name, Price, TimeMade, Discount, FeatureItem, 
+    (SELECT COUNT(Id) FROM reviews WHERE TargetID = foods.Id) as RateCount,
+    CAST(ROUND(COALESCE(AVG(reviews.`Point`), 0), 1) AS DECIMAL(2,1)) as Rate
+    FROM foods
+    LEFT JOIN reviews ON foods.Id = reviews.TargetID
+    WHERE RestaurantID = '$id' AND foods.Status = 'Sale' OR foods.Status = 'InActive'
+    GROUP BY foods.Id";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);

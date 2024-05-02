@@ -16,7 +16,7 @@ try {
     foods.Discount, COUNT(favlist.Id) as UserFavorite FROM foods LEFT JOIN favlist
     ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
     WHERE foods.FeatureItem = 1 AND foods.Status = 'Sale'
-    GROUP BY foods.Id limit 20";
+    GROUP BY foods.Id limit 10";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -55,7 +55,7 @@ try {
     WHERE foods.Status = 'Sale' 
     GROUP BY foods.Id 
     ORDER BY CreateAt DESC, TimeMade DESC 
-    LIMIT 20";
+    LIMIT 10";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -92,7 +92,7 @@ try {
     WHERE foods.Status = 'Sale' 
     GROUP BY foods.Id 
     ORDER BY Sold DESC, TimeMade DESC, Price ASC 
-    LIMIT 20";
+    LIMIT 10";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -141,7 +141,7 @@ try {
     LEFT JOIN orderitems ON foods.Id = orderitems.FoodId
     LEFT JOIN favlist ON restaurants.Id = favlist.TargetID AND favlist.UserID = '$id'
     WHERE foods.Status != 'Banned' AND foods.Status != 'Removed' AND restaurants.Status != 'Banned' 
-    AND restaurants.Status != 'Removed' GROUP BY restaurants.Id, favlist.Id ORDER BY Sold DESC LIMIT 20";
+    AND restaurants.Status != 'Removed' GROUP BY restaurants.Id, favlist.Id ORDER BY Sold DESC LIMIT 5";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);

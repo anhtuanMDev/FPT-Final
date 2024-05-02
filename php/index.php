@@ -12,11 +12,8 @@ $secretKey = 'sk_test_51OsaA1AFTGMMMmVwrTy65JKAW5GUsRQAaMh8sFTGYIeNdtukbxAH2J72I
 \Stripe\Stripe::setApiKey($secretKey);
 
 try {
-  $data = json_decode(file_get_contents('php://input'));
-  $amount = $data->amount;
-  $currency = $data->currency;
-  // $customer = $data->currency;
-  // $currency = $data->currency;
+  // $data = json_decode(file_get_contents('php://input'));
+  // $amount = $data->amount;
   
 
   $customer = \Stripe\Customer::create(); // create a new customer

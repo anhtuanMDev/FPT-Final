@@ -13,7 +13,7 @@ const Loading = () => {
       />
       <Text style={{
         position: 'absolute',
-        bottom: 200,
+        bottom: 180,
         alignSelf: 'center',
         fontSize: 20,
         fontWeight: 'bold',

@@ -1,4 +1,11 @@
-import {View, Text, ScrollView, FlatList, StatusBar} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect, useReducer, useState} from 'react';
 import {Colors, screenStyles} from '../../custom/styles/ScreenStyle';
 import HomeBar from '../../custom/topbars/HomeBar';
@@ -22,6 +29,7 @@ import {
   // fetchRecommendedItems,
   // fetchRestaurants,
   RestaurantDisplayType,
+  selectEventArray,
   selectFeatureArray,
   selectNewItemsArray,
   selectPopularItemsArray,
@@ -36,7 +44,8 @@ import {
   selectLoading,
   selectUserID,
 } from '../../../helpers/state/Global/globalSlice';
-import { showMessage } from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
+import {fonts} from '../../custom/styles/ComponentStyle';
 
 export function converTime(time: string): string {
   const parts = time.split(':');
@@ -67,22 +76,23 @@ const Home = () => {
   const featureArray = useSelector(selectFeatureArray);
   const popularArray = useSelector(selectPopularItemsArray);
   const recommendArray = useSelector(selectRecommendedItemsArray);
+  const eventArray = useSelector(selectEventArray);
   const newArray = useSelector(selectNewItemsArray);
   const restaurantArray = useSelector(selectRestaurantsArray);
 
   const dispatched = useDispatch<AppDispatch>();
 
   const searchFood = () => {
-    if(search === '') {
+    if (search === '') {
       showMessage({
         message: 'Bạn muốn tìm gì vậy ?',
         type: 'warning',
-      })
-      return
-    }else {
+      });
+      return;
+    } else {
       navigation.navigate('Search', {search: search});
-    };
-  }
+    }
+  };
 
   useEffect(() => {
     const fetchAlldata = async () => {
@@ -120,21 +130,63 @@ const Home = () => {
       />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* {recommend && (
+        {recommendArray && (
           <View
             style={{
               marginTop: 20,
             }}>
-            <SectionBar name="Feature" onPress={() => {}} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 20,
+              }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  marginLeft: 10,
+                  marginBottom: 15,
+                  marginRight: 15,
+                }}>
+                Gợi ý hôm nay
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {eventArray.map((item, index) => {
+                  return (
+                    <TouchableOpacity
+                      key={item.Id}
+                      style={{paddingHorizontal: 10, paddingVertical: 5}}>
+                      <Text style={[fonts.button, {color: Colors.green}]}>
+                        {item.Title}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
             <FlatList
-              data={state.recommendItem}
+              data={recommendArray}
               horizontal
+              extraData={featureArray.length > 0}
+              ListEmptyComponent={() => <View></View>}
               showsHorizontalScrollIndicator={false}
+              style={{paddingLeft: 15}}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({item, index}) => (
                 <SmallCart
+                  time={converTime(item.TimeMade)}
+                  rate={item.Point}
+                  rateCount={item.TotalReview}
+                  name={item.Name.slice(0, 10) + '...'}
+                  favorite={item.UserFavorite == 1}
+                  onPress={() => {
+                    dispatched(isLoading(true));
+                    navigation.navigate('US_FoodDetail', {id: item.Id});
+                  }}
+                  image={
+                    item.Image ? `${host}/uploads/${item.Image}.jpg` : undefined
+                  }
                   style={{
-                    marginLeft: 20,
                     marginRight: 20,
                     marginBottom: 5,
                   }}
@@ -142,7 +194,8 @@ const Home = () => {
               )}
             />
           </View>
-        )} */}
+        )}
+
         {featureArray && featureArray.length > 0 && (
           <View
             style={{
@@ -296,7 +349,9 @@ const Home = () => {
                 marginBottom: 5,
               }}
               actionStyle={{color: Colors.green}}
-              onPress={() => {}}
+              onPress={() => {
+                navigation.navigate('AllRestaurants');
+              }}
             />
 
             {restaurantArray.map((item: RestaurantDisplayType, index) => (

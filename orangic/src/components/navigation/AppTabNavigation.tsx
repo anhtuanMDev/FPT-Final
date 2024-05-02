@@ -49,6 +49,7 @@ import RestaurantStatistic from '../screen/app/Store/RestaurantStatistic';
 import Report from '../screen/app/Report';
 import JoinEvent from '../screen/app/Store/JoinEvent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AllRestaurants from '../allScreen/AllRestaurants';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Drawer = createDrawerNavigator<ParamList>();
@@ -302,6 +303,15 @@ const AppTabNavigation = () => {
       <Tab.Screen
         name="US_Restaurant"
         component={US_Restaurant}
+        options={{
+          tabBarIconStyle: {display: 'none'},
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="AllRestaurants"
+        component={AllRestaurants}
         options={{
           tabBarIconStyle: {display: 'none'},
           tabBarButton: () => null,

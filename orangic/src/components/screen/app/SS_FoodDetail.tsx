@@ -269,6 +269,15 @@ const SS_FoodDetail = () => {
   };
 
   const removeImage = async (id: string) => {
+    if(statistics.Infor.Image.length == 1) {
+      showMessage({
+        message: 'Xin lỗi',
+        description: 'Bạn cần ít nhất 1 hình ảnh',
+        type: 'warning',
+        icon: 'warning',
+      });
+      return;
+    }
     const newImg: string[] = statistics.Infor.Image.filter(item => {
       return item!= id;
     });

@@ -12,7 +12,7 @@ export const store = configureStore({
         home: homeSlice,
         store: storeSlice,
         address: addressSlice,
-    }
+    },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

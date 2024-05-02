@@ -46,7 +46,8 @@ function changeFilter(event, id = 'new-user-card-title-span') {
 }
 
 const Dashboards = (prop) => {
-    const { host, adminID } = prop;
+    const { host, adminID, setID, adminDetail } = prop;
+
     document.title = 'Informations - Users';
     const chartRef = useRef(null);
     const navigate = useNavigate();
@@ -56,6 +57,10 @@ const Dashboards = (prop) => {
         navigate(link);
     };
 
+    const logOut = () => {
+        console.log("log out");
+        setID('');
+    }
     {/** declare user storage */ }
 
     const initialGrowthState = {
@@ -162,25 +167,25 @@ const Dashboards = (prop) => {
             switch (growth.userTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchGrowth({ type: 'USER_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'USER_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'USER_GROWTH', payload: cal });
                     dispatchGrowth({ type: 'USER_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchGrowth({ type: 'USER_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'USER_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'USER_GROWTH', payload: cal1 });
                     dispatchGrowth({ type: 'USER_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchGrowth({ type: 'USER_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'USER_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'USER_GROWTH', payload: cal2 });
                     dispatchGrowth({ type: 'USER_NUMBER', payload: statistic.THIS_YEAR });
                     break;
             }
         } else {
-            dispatchGrowth({ type: 'USER_STATE', payload: 'No record' });
+            dispatchGrowth({ type: 'USER_STATE', payload: 'Không có hồ sơ' });
             dispatchGrowth({ type: 'USER_GROWTH', payload: 0 });
             dispatchGrowth({ type: 'USER_NUMBER', payload: 0 });
         }
@@ -202,25 +207,25 @@ const Dashboards = (prop) => {
             switch (growth.revenueTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchGrowth({ type: 'REVENUE_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'REVENUE_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'REVENUE_GROWTH', payload: cal });
                     dispatchGrowth({ type: 'REVENUE_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchGrowth({ type: 'REVENUE_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'REVENUE_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'REVENUE_GROWTH', payload: cal1 });
                     dispatchGrowth({ type: 'REVENUE_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchGrowth({ type: 'REVENUE_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'REVENUE_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'REVENUE_GROWTH', payload: cal2 });
                     dispatchGrowth({ type: 'REVENUE_NUMBER', payload: statistic.THIS_YEAR });
                     break;
             }
         } else {
-            dispatchGrowth({ type: 'REVENUE_STATE', payload: 'No record' });
+            dispatchGrowth({ type: 'REVENUE_STATE', payload: 'Không có hồ sơ' });
             dispatchGrowth({ type: 'REVENUE_GROWTH', payload: 0 });
             dispatchGrowth({ type: 'REVENUE_NUMBER', payload: 0 });
         }
@@ -242,19 +247,19 @@ const Dashboards = (prop) => {
             switch (growth.bannedTime) {
                 case 'Today':
                     const cal = calculateGrowthRate(statistic.TODAY, statistic.PRE_DAY);
-                    dispatchGrowth({ type: 'BANNED_STATE', payload: cal < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'BANNED_STATE', payload: cal < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'BANNED_GROWTH', payload: cal });
                     dispatchGrowth({ type: 'BANNED_NUMBER', payload: statistic.TODAY });
                     break;
                 case 'This Month':
                     const cal1 = calculateGrowthRate(statistic.THIS_MONTH, statistic.PRE_MONTH);
-                    dispatchGrowth({ type: 'BANNED_STATE', payload: cal1 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'BANNED_STATE', payload: cal1 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'BANNED_GROWTH', payload: cal1 });
                     dispatchGrowth({ type: 'BANNED_NUMBER', payload: statistic.THIS_MONTH });
                     break;
                 case 'This Year':
                     const cal2 = calculateGrowthRate(statistic.THIS_YEAR, statistic.PRE_YEAR);
-                    dispatchGrowth({ type: 'BANNED_STATE', payload: cal2 < 0 ? 'Decrease' : 'Increase' });
+                    dispatchGrowth({ type: 'BANNED_STATE', payload: cal2 < 0 ? 'Giảm' : 'Tăng' });
                     dispatchGrowth({ type: 'BANNED_GROWTH', payload: cal2 });
                     dispatchGrowth({ type: 'BANNED_NUMBER', payload: statistic.THIS_YEAR });
                     break;
@@ -264,7 +269,7 @@ const Dashboards = (prop) => {
                     dispatchGrowth({ type: 'BANNED_NUMBER', payload: Object.values(statistic).reduce((a, b) => a + b, 0) });
             }
         } else {
-            dispatchGrowth({ type: 'BANNED_STATE', payload: 'No record' });
+            dispatchGrowth({ type: 'BANNED_STATE', payload: 'Không có hồ sơ' });
             dispatchGrowth({ type: 'BANNED_GROWTH', payload: 0 });
             dispatchGrowth({ type: 'BANNED_NUMBER', payload: 0 });
         }
@@ -316,7 +321,7 @@ const Dashboards = (prop) => {
             timePoints
         }
         const response = await AxiosInstance().post('/get-all-databoard-statistics.php', body);
-        console.log("319 response:",response)
+        console.log("319 response:", response)
         const result = await response.data;
         console.log(result)
         dispatchGrowth({ type: 'DATA_MIN', payload: result.min });
@@ -328,13 +333,13 @@ const Dashboards = (prop) => {
 
         ApexCharts.exec('dashboard', 'updateOptions', {
             series: [{
-                name: 'New Users',
+                name: 'Người dùng mới',
                 data: result.output.users,
             }, {
-                name: 'Partnership',
+                name: 'Đối tác',
                 data: result.output.revenues
             }, {
-                name: 'Banned',
+                name: 'Bị cấm',
                 data: result.output.banneds
             }],
             xaxis: {
@@ -353,13 +358,13 @@ const Dashboards = (prop) => {
         if (chartRef.current) {
             chart = new ApexCharts(document.getElementById("reportsChart"), {
                 series: [{
-                    name: 'New Users',
+                    name: 'Người dùng mới',
                     data: growth.userSeries,
                 }, {
-                    name: 'Partnership',
+                    name: 'Đối tác',
                     data: growth.revenueSeries
                 }, {
-                    name: 'Banned',
+                    name: 'Bị cấm',
                     data: growth.bannedSeries
                 }],
                 chart: {
@@ -447,7 +452,7 @@ const Dashboards = (prop) => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -473,8 +478,8 @@ const Dashboards = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -484,8 +489,8 @@ const Dashboards = (prop) => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -497,8 +502,8 @@ const Dashboards = (prop) => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -510,8 +515,8 @@ const Dashboards = (prop) => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -522,9 +527,9 @@ const Dashboards = (prop) => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -532,7 +537,7 @@ const Dashboards = (prop) => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a>Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -551,8 +556,8 @@ const Dashboards = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -563,8 +568,8 @@ const Dashboards = (prop) => {
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -577,8 +582,8 @@ const Dashboards = (prop) => {
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -591,8 +596,8 @@ const Dashboards = (prop) => {
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -601,7 +606,7 @@ const Dashboards = (prop) => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a>Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -613,8 +618,10 @@ const Dashboards = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span> } </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -630,7 +637,7 @@ const Dashboards = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -640,7 +647,7 @@ const Dashboards = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -650,7 +657,7 @@ const Dashboards = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -658,9 +665,9 @@ const Dashboards = (prop) => {
                                 </li>
 
                                 <li>
-                                    <a className="dropdown-item d-flex align-items-center">
+                                    <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -683,17 +690,17 @@ const Dashboards = (prop) => {
                 <ul className="sidebar-nav" id="sidebar-nav">
 
                     <li className="nav-item">
-                        <a className="nav-link">
+                        <a className="nav-link" onClick={() => changePage('/')}>
                             <ReactSVG
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
@@ -701,7 +708,7 @@ const Dashboards = (prop) => {
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -718,7 +725,7 @@ const Dashboards = (prop) => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
@@ -731,7 +738,7 @@ const Dashboards = (prop) => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
@@ -744,7 +751,7 @@ const Dashboards = (prop) => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -757,7 +764,7 @@ const Dashboards = (prop) => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -770,7 +777,7 @@ const Dashboards = (prop) => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -783,7 +790,7 @@ const Dashboards = (prop) => {
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -791,7 +798,7 @@ const Dashboards = (prop) => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a onClick={() => changePage('/incomes/discount')}>
+                                <a onClick={() => changePage('/incomes/discount')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -800,7 +807,7 @@ const Dashboards = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
                             <li>
@@ -813,7 +820,7 @@ const Dashboards = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -826,7 +833,7 @@ const Dashboards = (prop) => {
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -843,7 +850,7 @@ const Dashboards = (prop) => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
@@ -856,7 +863,7 @@ const Dashboards = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -869,7 +876,7 @@ const Dashboards = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -882,22 +889,22 @@ const Dashboards = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" href="users-profile.html">
+                        <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
                             <ReactSVG
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -907,14 +914,15 @@ const Dashboards = (prop) => {
             </aside>
             {/* <!-- End Sidebar--> */}
 
+            
             <main id="main" className="main">
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Admin Dashboard</h1>
+                    <h1>Trang tổng quan dành cho quản trị viên</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item active">Dashboard</li>
+                            <li className="breadcrumb-item active">Thống kê</li>
                         </ol>
                     </nav>
                 </div>
@@ -941,26 +949,26 @@ const Dashboards = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchGrowth({ type: 'USER_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchGrowth({ type: 'USER_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'new-user-card-title-span')
                                                     dispatchGrowth({ type: 'USER_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">New Users | <span id='new-user-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Người dùng mới | <span id='new-user-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -995,7 +1003,7 @@ const Dashboards = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item"
@@ -1003,24 +1011,24 @@ const Dashboards = (prop) => {
                                                         changeFilter(event, 'partnership-card-title-span')
                                                         dispatchGrowth({ type: 'REVENUE_TIME', payload: 'Today' })
                                                     }}
-                                                >Today</a></li>
+                                                >Hôm nay</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'partnership-card-title-span')
                                                         dispatchGrowth({ type: 'REVENUE_TIME', payload: 'This Month' })
                                                     }}
-                                                >This Month</a></li>
+                                                >Tháng này</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'partnership-card-title-span')
                                                         dispatchGrowth({ type: 'REVENUE_TIME', payload: 'This Year' })
                                                     }}
-                                                >Year</a></li>
+                                                >Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Partnership | <span id='partnership-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Đối tác | <span id='partnership-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1056,7 +1064,7 @@ const Dashboards = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item"
@@ -1064,30 +1072,30 @@ const Dashboards = (prop) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchGrowth({ type: 'BANNED_TIME', payload: 'Today' })
                                                     }}
-                                                >Today</a></li>
+                                                >Hôm nay</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchGrowth({ type: 'BANNED_TIME', payload: 'This Month' })
                                                     }}
-                                                >This Month</a></li>
+                                                >Tháng này</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchGrowth({ type: 'BANNED_TIME', payload: 'This Year' })
                                                     }}
-                                                >This Year</a></li>
+                                                >Năm này</a></li>
                                                 <li><a className="dropdown-item"
                                                     onClick={(event) => {
                                                         changeFilter(event, 'banned-card-title-span')
                                                         dispatchGrowth({ type: 'BANNED_TIME', payload: 'Total' })
                                                     }}
-                                                >Total</a></li>
+                                                >Tổng</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Banned | <span id='banned-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Bị cấm | <span id='banned-card-title-span'>Hôm nay</span></h5>
 
                                             <div className="d-flex align-items-center">
                                                 <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -1122,26 +1130,26 @@ const Dashboards = (prop) => {
                                             </a>
                                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                 <li className="dropdown-header text-start">
-                                                    <h6>Filter</h6>
+                                                    <h6>Lọc</h6>
                                                 </li>
 
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchGrowth({ type: 'DATA_BOARD_TIME', payload: 'Today' })
-                                                }}>Today</a></li>
+                                                }}>Hôm nay</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchGrowth({ type: 'DATA_BOARD_TIME', payload: 'This Month' })
-                                                }}>This Month</a></li>
+                                                }}>Tháng này</a></li>
                                                 <li><a className="dropdown-item" onClick={(event) => {
                                                     changeFilter(event, 'reports-card-title-span')
                                                     dispatchGrowth({ type: 'DATA_BOARD_TIME', payload: 'This Year' })
-                                                }}>This Year</a></li>
+                                                }}>Năm này</a></li>
                                             </ul>
                                         </div>
 
                                         <div className="card-body">
-                                            <h5 className="card-title">Reports / <span id='reports-card-title-span'>Today</span></h5>
+                                            <h5 className="card-title">Báo cáo / <span id='reports-card-title-span'>Hôm nay</span></h5>
 
 
                                             {/* <!-- Line Chart --> */}
@@ -1173,43 +1181,43 @@ const Dashboards = (prop) => {
                                     </a>
                                     <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                         <li className="dropdown-header text-start">
-                                            <h6>Filter</h6>
+                                            <h6>Lọc</h6>
                                         </li>
 
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Waiting')
                                             getOrdersByStatus('Waiting')
 
-                                        }}>Waiting</a></li>
+                                        }}>Đang chờ</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'In Process')
                                             getOrdersByStatus('In Process')
-                                        }}>In Process</a></li>
+                                        }}>Đang xử lý</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Approve')
                                             getOrdersByStatus('Approve')
-                                        }}>Approve</a></li>
+                                        }}>Chấp thuận</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Denied')
                                             getOrdersByStatus('Denied')
-                                        }}>Denied</a></li>
+                                        }}>Từ chối</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Made')
                                             getOrdersByStatus('Made')
-                                        }}>Made</a></li>
+                                        }}>Đang làm</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'In Delivery')
                                             getOrdersByStatus('In Delivery')
-                                        }}>In Delivery</a></li>
+                                        }}>Đang giao</a></li>
                                         <li><a className="dropdown-item" onClick={(event) => {
                                             changeFilter(event, 'recent-activity-order-card-title-span', 'Done')
                                             getOrdersByStatus('Done')
-                                        }}>Done</a></li>
+                                        }}>Hoàn tất</a></li>
                                     </ul>
                                 </div>
 
                                 <div className="card-body">
-                                    <h5 className="card-title">Recent Activity Orders | <span id='recent-activity-order-card-title-span'>Waiting</span>
+                                    <h5 className="card-title">Đơn đặt hàng hoạt động gần đây | <span id='recent-activity-order-card-title-span'>Đang chờ</span>
                                     </h5>
 
                                     <div className="activity">
@@ -1230,7 +1238,7 @@ const Dashboards = (prop) => {
                                                     )
                                                 }) :
                                                 <div className="activity-item d-flex">
-                                                    <div className="activite-label">No record</div>
+                                                    <div className="activite-label">Không có hồ sơ</div>
                                                 </div>
 
                                         }

@@ -5,7 +5,8 @@ import Users from './components/information/Users'
 import Restaurants from './components/information/Restaurants'
 import Foods from './components/information/Foods'
 import Notification from './components/information/Notification'
-import HistoryFiles from './components/information/HistoryFiles'
+import HistoryFiles from './components/information/HistoryFiles';
+import Staffs from './components/employees/Staff';
 import Discount from './components/incomes/Discount'
 import ReportUsers from './components/alarm/ReportUsers';
 import ReportFoods from './components/alarm/ReportFoods';
@@ -60,6 +61,7 @@ function App() {
           <Route path="/informations/foods" element={<Foods host={host} adminID={id} />} />
           <Route path="/informations/notifications" element={<Notification host={host} adminID={id} />} />
           <Route path="/informations/history-files" element={<HistoryFiles host={host} adminID={id} />} />
+          <Route path="/informations/staffs" element={<Staffs host={host} adminID={id} setID={setIdToLocalStorage} />} />
           <Route path="/incomes/discount" element={<Discount host={host} adminID={id} />} />
           <Route path="/incomes/orders" element={<Orders host={host} adminID={id} />} />
           <Route path="/reports/report-users" element={<ReportUsers host={host} adminID={id} />} />

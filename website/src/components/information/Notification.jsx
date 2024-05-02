@@ -37,7 +37,8 @@ import AxiosInstance from '../helpers/AxiosInstance.js';
 
 
 const Notification = (prop) => {
-    const { adminID, host } = prop;
+    const { host, adminID, setID, adminDetail } = prop;
+
     document.title = 'Informations - Foods';
     const chartRef = useRef(null);
     const navigate = useNavigate();
@@ -45,6 +46,11 @@ const Notification = (prop) => {
     const changePage = (link) => {
         navigate(link);
     };
+
+    const logOut = () => {
+        console.log("log out");
+        setID('');
+    }
 
     const initialState = {
         notifyList: [],
@@ -175,6 +181,7 @@ const Notification = (prop) => {
     const getRestaurantID = async () => {
         const response = await AxiosInstance().get('/get-all-restaurants.php');
         const cal = Math.ceil(response.data.length / 10);
+        console.log('/get-all-restaurants.php response', response);
         if (response.status) {
             console.log(response.data)
             dispatchData({ type: 'NOTIFY_RESTAURANT_RECEIVE', payload: response.data })
@@ -204,7 +211,7 @@ const Notification = (prop) => {
     $repeat = true; 
     */
 
-    const createUsersNotification = async (adminID, title, content, gift,userID ) => {
+    const createUsersNotification = async (adminID, title, content, gift, userID) => {
         const response = await AxiosInstance().post('/post-create-users-notification.php', {
             id: adminID,
             title: title,
@@ -217,16 +224,16 @@ const Notification = (prop) => {
         if (response.status) {
             getNotification();
             Swal.fire({
-                title: 'Success',
-                // text: 'Account successfully created',
+                title: 'Thành công',
+                text: 'Gửi thông báo thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             })
         } else {
 
             Swal.fire({
-                title: 'Failed',
-                // text: 'Account creation failed',
+                title: 'Thất bại',
+                text: 'Gửi thông báo thành công thất bại',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -235,24 +242,24 @@ const Notification = (prop) => {
 
     const handleSendUserNotifi = async (event) => {
         event.preventDefault();
-                                                                
+
         let title = document.getElementById('user-notification-title').value;
         let content = document.getElementById('user-notification-content').value;
         let select = document.querySelector('#form-select-userID').selectedOptions;
         let gift = document.getElementById('user-addGift').checked;
         let userID = new Array();
         for (const item of select) {
-            if (item.value !== "Open this select menu") {
+            if (item.value !== "Mở danh sách chọn") {
                 userID.push(item.value);
             }
         }
-        // // userID 0 = Open this select menu
+        // // userID 0 = Mở danh sách chọn
         // userID.splice(0, 1);
         console.log(userID)
         createUsersNotification(adminID, title, content, gift, userID);
     }
 
-    const createRestaurantsNotification = async (adminID, title, content, restaurantIDs ) => {
+    const createRestaurantsNotification = async (adminID, title, content, restaurantIDs) => {
         const response = await AxiosInstance().post('/post-create-restaurants-notification.php', {
             id: adminID,
             title: title,
@@ -264,16 +271,16 @@ const Notification = (prop) => {
         if (response.status) {
             getRestaurantNotification();
             Swal.fire({
-                title: 'Success',
-                // text: 'Account successfully created',
+                title: 'Thành công',
+                text: 'Gửi thông báo thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             })
         } else {
 
             Swal.fire({
-                title: 'Failed',
-                // text: 'Account creation failed',
+                title: 'Thất bại',
+                text: 'Gửi thông báo thành công thất bại',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -282,20 +289,20 @@ const Notification = (prop) => {
 
     const handleSendRestaurantNotifi = async (event) => {
         event.preventDefault();
-                                                                
+
         let title = document.getElementById('restaurant-notification-title').value;
         let content = document.getElementById('restaurant-notification-content').value;
         let select = document.querySelector('#form-select-restaurantID').selectedOptions;
 
         let restaurantIDs = new Array();
         for (const item of select) {
-            if (item.value !== "Open this select menu") {
+            if (item.value !== "Mở danh sách chọn") {
                 restaurantIDs.push(item.value);
             }
         }
-        // // restaurantIDs 0 = Open this select menu
+        // // restaurantIDs 0 = Mở danh sách chọn
         // restaurantIDs.splice(0, 1);
-        console.log("restaurantIDs ",restaurantIDs);
+        console.log("restaurantIDs ", restaurantIDs);
         createRestaurantsNotification(adminID, title, content, restaurantIDs);
     }
 
@@ -316,7 +323,7 @@ const Notification = (prop) => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -342,8 +349,8 @@ const Notification = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -353,8 +360,8 @@ const Notification = (prop) => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -366,8 +373,8 @@ const Notification = (prop) => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -379,8 +386,8 @@ const Notification = (prop) => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -391,9 +398,9 @@ const Notification = (prop) => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -401,7 +408,7 @@ const Notification = (prop) => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a>Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -420,8 +427,8 @@ const Notification = (prop) => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -432,8 +439,8 @@ const Notification = (prop) => {
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -446,8 +453,8 @@ const Notification = (prop) => {
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -460,8 +467,8 @@ const Notification = (prop) => {
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -470,7 +477,7 @@ const Notification = (prop) => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a>Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -482,8 +489,10 @@ const Notification = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -499,7 +508,7 @@ const Notification = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -509,7 +518,7 @@ const Notification = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -519,7 +528,7 @@ const Notification = (prop) => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -527,9 +536,9 @@ const Notification = (prop) => {
                                 </li>
 
                                 <li>
-                                    <a className="dropdown-item d-flex align-items-center">
+                                    <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -557,20 +566,20 @@ const Notification = (prop) => {
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
-                        <a className="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
+                        <a className="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true">
                             <ReactSVG
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -587,7 +596,7 @@ const Notification = (prop) => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
@@ -600,7 +609,7 @@ const Notification = (prop) => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
@@ -613,7 +622,7 @@ const Notification = (prop) => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -626,7 +635,7 @@ const Notification = (prop) => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -639,7 +648,7 @@ const Notification = (prop) => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -652,7 +661,7 @@ const Notification = (prop) => {
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -660,7 +669,7 @@ const Notification = (prop) => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a onClick={() => changePage('/incomes/discount')}>
+                                <a onClick={() => changePage('/incomes/discount')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -669,7 +678,7 @@ const Notification = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
                             <li>
@@ -682,7 +691,7 @@ const Notification = (prop) => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -695,7 +704,7 @@ const Notification = (prop) => {
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -712,7 +721,7 @@ const Notification = (prop) => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
@@ -725,7 +734,7 @@ const Notification = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
@@ -738,7 +747,7 @@ const Notification = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
@@ -751,14 +760,14 @@ const Notification = (prop) => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
                         <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
@@ -766,7 +775,7 @@ const Notification = (prop) => {
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -780,11 +789,11 @@ const Notification = (prop) => {
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Send Notifications</h1>
+                    <h1>Thông báo</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a>Informations</a></li>
-                            <li className="breadcrumb-item active">Notifications</li>
+                            <li className="breadcrumb-item"><a>Thông tin</a></li>
+                            <li className="breadcrumb-item active">Thông báo</li>
                         </ol>
                     </nav>
                 </div>
@@ -809,19 +818,19 @@ const Notification = (prop) => {
                                             <ul className="nav nav-tabs nav-tabs-bordered">
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Users Notification List</button>
+                                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Danh sách thông báo người dùng</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Restaurant Notification List</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Danh sách thông báo nhà hàng</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Send users Notification</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Gửi thông báo người dùng</button>
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Send Restaurants Notification</button>
+                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Gửi thông báo nhà hàng</button>
                                                 </li>
 
 
@@ -832,7 +841,7 @@ const Notification = (prop) => {
 
                                                 <div className="tab-pane fade show active profile-overview" id="profile-overview">
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Notification List</h5>
+                                                        <h5 className="card-title">Danh sách thông báo người dùng</h5>
                                                         <div className="datatable-search" style={{ flex: 1, display: 'flex', borderWidth: 0 }}>
                                                             <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" style={{ width: '50%', margin: 10, borderRadius: 2, borderWidth: 0.5, padding: 3 }} />
                                                         </div>
@@ -841,27 +850,79 @@ const Notification = (prop) => {
                                                             <ul className="pagination">
                                                                 <li className="page-item">
                                                                     <a className="page-link" aria-label="Previous" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                        dispatchData({ type: 'NOTIFY_LIST', payload: 1 })
+                                                                        dispatchData({ type: 'SET_NOTIFY_LIST_PAGE', payload: 1 })
                                                                     }}>
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
                                                                 </li>
                                                                 {
                                                                     Array.from({ length: data.notifyListTotalPage }, (_, index) => {
-                                                                        return (
-                                                                            <li key={index} className={`page-item ${data.notifyListPage === index + 1 ? 'active' : ''}`}><a className="page-link" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                                dispatchData({ type: 'SET_NOTIFY_LIST_PAGE', payload: index + 1 })
-                                                                            }}>{index + 1}</a></li>
-                                                                        )
+                                                                        // Xác định phần hiển thị số trang
+                                                                        if (data.notifyListTotalPage > 10) {
+                                                                            // console.log("-----------------------------------------------------------------------------------------------------------------------------------");
+
+                                                                            // console.log("index", index);
+                                                                            // console.log('data.notifyListPage', data.notifyListPage);
+
+                                                                            // console.log('index === 0', index === 0);
+
+                                                                            // console.log('index === data.notifyListTotalPage - 1', index === data.notifyListTotalPage - 1);
+
+                                                                            // console.log('index >= data.notifyListPage - 2', index >= data.notifyListPage - 2);
+                                                                            // console.log('index <= data.notifyListPage', index <= data.notifyListPage);
+                                                                            // console.log('index >= data.notifyListPage - 2 && index <= data.notifyListPage', index >= data.notifyListPage - 2 && index <= data.notifyListPage);
+
+                                                                            // console.log('index === 1 ', index === 1);
+                                                                            // console.log('data.notifyListPage > 3', data.notifyListPage > 3);
+                                                                            // console.log('index === 1 && data.notifyListPage > 3', index === 1 && data.notifyListPage > 3);
+
+                                                                            // console.log('index >= data.notifyListTotalPage - 2 ', index >= data.notifyListTotalPage - 2);
+                                                                            // console.log('data.notifyListPage <= data.notifyListTotalPage - 2', data.notifyListPage <= data.notifyListTotalPage - 2);
+                                                                            // console.log('index >= data.notifyListTotalPage - 2 && data.notifyListPage <= data.notifyListTotalPage - 2', index >= data.notifyListTotalPage - 2 && data.notifyListPage <= data.notifyListTotalPage - 2)
+                                                                            // console.log('all', index === 0 || index === data.notifyListTotalPage - 1 || (index >= data.notifyListPage - 2 && index <= data.notifyListPage) || (index === 1 && data.notifyListPage > 3) || (index >= data.notifyListTotalPage - 2 && data.notifyListPage <= data.notifyListTotalPage - 2));
+
+                                                                            if (index === 0 || // Trang đầu tiên
+                                                                                index === data.notifyListTotalPage - 1 || // Trang cuối cùng
+                                                                                (index >= data.notifyListPage - 2 && index <= data.notifyListPage) || // 1 trang trước và sau trang hiện tại (index -1 , index, index + 1)
+                                                                                (index === 1 && data.notifyListPage > 3) || // Hiển thị dấu ... sau trang 2 nếu trang hiện tại lớn hơn 3
+                                                                                (index >= data.notifyListTotalPage - 2 && data.notifyListPage <= data.notifyListTotalPage - 2) // Hiển thị dấu ... trước trang cuối cùng nếu trang hiện tại nhỏ hơn tổng trang trừ đi 2
+                                                                            ) {
+                                                                               
+                                                                                return (
+                                                                                    <li className={`page-item ${data.notifyListPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_NOTIFY_LIST_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
+                                                                                    </li>
+                                                                                );
+                                                                            } else if ((index === 2 && data.notifyListPage >= 4) || (index >= data.notifyListTotalPage - 3 && data.notifyListPage <= data.notifyListTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
+                                                                            }
+                                                                        } else {
+                                                                            return (
+                                                                                <li className={`page-item ${data.notifyListPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
+                                                                                    <a className="page-link" onClick={() =>
+                                                                                        dispatchData({ type: 'SET_NOTIFY_LIST_PAGE', payload: index + 1 })
+                                                                                    }>{index + 1}</a>
+                                                                                </li>
+                                                                            );
+                                                                        }
                                                                     })
+
                                                                 }
                                                                 <li className="page-item">
-                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'NOTIFY_LIST', payload: data.notifyList }) }}>
+                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_NOTIFY_LIST_PAGE', payload: data.notifyListTotalPage }) }}>
                                                                         <span aria-hidden="true">»</span>
                                                                     </a>
                                                                 </li>
                                                             </ul>
                                                         </nav>
+
+
                                                     </div>
 
                                                     <table className="table table-borderless"
@@ -869,11 +930,11 @@ const Notification = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Creator</th>
-                                                                <th scope="col">Title</th>
-                                                                <th scope="col">Content</th>
-                                                                <th scope="col">To</th>
-                                                                <th scope="col">Stauts</th>
+                                                                <th scope="col">Người tạo</th>
+                                                                <th scope="col">Tiêu đề</th>
+                                                                <th scope="col">Nội dung</th>
+                                                                <th scope="col">Đến</th>
+                                                                <th scope="col">Trạng thái</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -900,7 +961,7 @@ const Notification = (prop) => {
 
                                                     {/* <!-- Banned Table --> */}
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Restaurants Notifications</h5>
+                                                        <h5 className="card-title">Danh sách thông báo nhà hàng</h5>
                                                         <div className="datatable-search" style={{ flex: 1, display: 'flex', borderWidth: 0 }}>
                                                             <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" style={{ width: '50%', margin: 10, borderRadius: 2, borderWidth: 0.5, padding: 3 }} />
                                                         </div>
@@ -938,11 +999,11 @@ const Notification = (prop) => {
                                                         <thead>
                                                             <tr>
                                                                 <>
-                                                                    <th scope="col">Creator</th>
-                                                                    <th scope="col">Title</th>
-                                                                    <th scope="col">Content</th>
-                                                                    <th scope="col">To</th>
-                                                                    <th scope="col">Stauts</th>
+                                                                    <th scope="col">Người tạo</th>
+                                                                    <th scope="col">Tiêu đề</th>
+                                                                    <th scope="col">Nội dung</th>
+                                                                    <th scope="col">Đến</th>
+                                                                    <th scope="col">Trạng thái</th>
                                                                 </>
                                                             </tr>
                                                         </thead>
@@ -976,19 +1037,19 @@ const Notification = (prop) => {
                                                     <form className='need-validation'>
                                                         <div className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
                                                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-                                                                <label htmlFor="user-notification-title" className="form-label">Title</label>
+                                                                <label htmlFor="user-notification-title" className="form-label">Tiêu đề</label>
                                                                 <div>
                                                                     <input type="checkbox" id="user-addGift" name="add gift" style={{ marginRight: 5 }} />
-                                                                    <label for="user-addGift" style={{ cursor: 'pointer' }}> Add Gift</label>
+                                                                    <label for="user-addGift" style={{ cursor: 'pointer' }}>Thêm quà tặng</label>
                                                                 </div>
                                                             </div>
                                                             <input type="text" className="form-control" id="user-notification-title" maxLength={50} minLength={10} />
-                                                            <div className="invalid-feedback">Please check this input context.</div>
+                                                            <div className="invalid-feedback">Vui lòng kiểm tra bối cảnh đầu vào này.</div>
                                                         </div>
                                                         <div className="mb-3">
-                                                            <label htmlFor="user-notification-content" className="form-label">Content</label>
+                                                            <label htmlFor="user-notification-content" className="form-label">Nội dung</label>
                                                             <textarea className="form-control" id="user-notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
-                                                            <div className="invalid-feedback">Please check if this input context is correct ? .</div>
+                                                            <div className="invalid-feedback">Vui lòng kiểm tra xem bối cảnh đầu vào này có đúng không?</div>
                                                         </div>
 
                                                         {/* <div className="mb-3">
@@ -997,7 +1058,7 @@ const Notification = (prop) => {
 
                                                         <div className="mb-3">
                                                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-                                                                <label htmlFor="exampleInputPassword1" className="form-label">To</label>
+                                                                <label htmlFor="exampleInputPassword1" className="form-label">Đến</label>
                                                                 <div>
                                                                     <input type="checkbox" id="user-selectAll" name="select all" style={{ marginRight: 5 }} onClick={() => {
                                                                         document.getElementById('user-selectAll').addEventListener('change', function () {
@@ -1009,15 +1070,15 @@ const Notification = (prop) => {
                                                                             }
                                                                         });
                                                                     }} />
-                                                                    <label for="user-selectAll" style={{ cursor: 'pointer' }}> Check All</label>
+                                                                    <label for="user-selectAll" style={{ cursor: 'pointer' }}>Đánh dấu tất cả</label>
                                                                 </div>
                                                             </div>
                                                             <select multiple className="form-select" id="form-select-userID" aria-label="Default select example" style={{ height: 200 }}>
-                                                                <option selected style={{ display: 'none' }}>Open this select menu</option>
+                                                                <option selected style={{ display: 'none' }}>Mở danh sách chọn</option>
                                                                 {
                                                                     data.notifyReceive.map((item, index) => {
                                                                         return (
-                                                                            <option key={index} value={item.Id}>{`${item.Id} * ${item.Name}`}</option>
+                                                                            <option key={index} value={item.Id}>{`${item.Name}`}</option>
                                                                         )
                                                                     })
                                                                 }
@@ -1025,7 +1086,7 @@ const Notification = (prop) => {
                                                         </div><div className="mb-3 text-end">
                                                             <button type="submit" className="btn btn-primary" onClick={(event) => {
                                                                 handleSendUserNotifi(event);
-                                                            }}>Submit</button>
+                                                            }}>Xác nhận</button>
                                                         </div>
                                                     </form>
                                                     {/* <!-- End Leader Board Table --> */}
@@ -1036,14 +1097,14 @@ const Notification = (prop) => {
 
                                                     <form className='need-validation'>
                                                         <div className="mb-3" style={{ display: 'flex', flexDirection: 'column' }}>
-                                                            <label htmlFor="restaurant-notification-title" className="form-label">Title</label>
+                                                            <label htmlFor="restaurant-notification-title" className="form-label">Tiêu đề</label>
                                                             <input type="text" className="form-control" id="restaurant-notification-title" maxLength={50} minLength={10} />
-                                                            <div className="invalid-feedback">Please check this input context.</div>
+                                                            <div className="invalid-feedback">Vui lòng kiểm tra bối cảnh đầu vào này.</div>
                                                         </div>
                                                         <div className="mb-3">
-                                                            <label htmlFor="restaurant-notification-content" className="form-label">Content</label>
+                                                            <label htmlFor="restaurant-notification-content" className="form-label">Nội dung</label>
                                                             <textarea className="form-control" id="restaurant-notification-content" rows="3" maxLength={300} minLength={10} ></textarea>
-                                                            <div className="invalid-feedback">Please check if this input context is correct ? .</div>
+                                                            <div className="invalid-feedback">Vui lòng kiểm tra bối cảnh đầu vào này.</div>
                                                         </div>
 
                                                         {/* <div className="mb-3">
@@ -1052,7 +1113,7 @@ const Notification = (prop) => {
 
                                                         <div className="mb-3">
                                                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-                                                                <label htmlFor="exampleInputPassword1" className="form-label">To</label>
+                                                                <label htmlFor="exampleInputPassword1" className="form-label">Đến</label>
                                                                 <div>
                                                                     <input type="checkbox" id="restaurant-selectAll" name="select all" style={{ marginRight: 5 }} onClick={() => {
                                                                         document.getElementById('restaurant-selectAll').addEventListener('change', function () {
@@ -1064,15 +1125,15 @@ const Notification = (prop) => {
                                                                             }
                                                                         });
                                                                     }} />
-                                                                    <label for="restaurant-selectAll" style={{ cursor: 'pointer' }}> Check All</label>
+                                                                    <label for="restaurant-selectAll" style={{ cursor: 'pointer' }}>Đánh dấu tất cả</label>
                                                                 </div>
                                                             </div>
                                                             <select multiple className="form-select" id="form-select-restaurantID" aria-label="Default select example" style={{ height: 200 }}>
-                                                                <option selected style={{ display: 'none' }}>Open this select menu</option>
+                                                                <option selected style={{ display: 'none' }}>Mở danh sách chọn</option>
                                                                 {
                                                                     data?.notifyRestaurantReceive?.map((item, index) => {
                                                                         return (
-                                                                            <option key={index} value={item.Id}>{`${item.Id} * ${item.Name}`}</option>
+                                                                            <option key={index} value={item.Id}>{` ${item.Name}`}</option>
                                                                         )
                                                                     })
                                                                 }
@@ -1083,7 +1144,7 @@ const Notification = (prop) => {
                                                                 // event.preventDefault();
                                                                 handleSendRestaurantNotifi(event);
                                                                 console.log('send restaurant');
-                                                            }}>Submit</button>
+                                                            }}>Xác nhận</button>
                                                         </div>
                                                     </form>
 

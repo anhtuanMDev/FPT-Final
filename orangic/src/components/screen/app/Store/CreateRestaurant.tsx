@@ -323,7 +323,6 @@ const CreateRestaurant = () => {
           }}
         />
       </View>
-
       <View
         style={{
           justifyContent: 'space-around',

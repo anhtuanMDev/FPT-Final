@@ -1,24 +1,23 @@
-import {View, Text} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import { View, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import UserStackNavigation from './UserStackNavigation';
 import FlashMessage from 'react-native-flash-message';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../helpers/state/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../helpers/state/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppTabNavigation from './AppTabNavigation';
-import {set} from 'mongoose';
+// import {set} from 'mongoose';
 import {
   isLogin,
   selectUserID,
   setHost,
-  setImage,
   setName,
   setPoint,
   setUserID,
 } from '../../helpers/state/Global/globalSlice';
 import AxiosInstance from '../../helpers/AxiosInstance';
-import {Information} from '../screen/app/Drawer/Profile';
+import { Information } from '../screen/app/Drawer/Profile';
 import { InforState } from '../screen/app/Store/HasRestaurantScreen';
 
 /** Type param */
@@ -32,7 +31,7 @@ export type ParamList = {
 
   /** App Tab */
   Home: undefined;
-  Favorite: undefined | {id: string};
+  Favorite: undefined | { id: string };
   Store: undefined;
   Cart: undefined;
   Address: undefined;
@@ -45,9 +44,9 @@ export type ParamList = {
   OrderManagement: undefined;
   Schedules: undefined;
   Notifications: undefined;
-  Search: undefined | {search: string};
-  ChangeInformation: undefined | {infor: Information};
-  NotificationDetails: undefined | {context: NotifyDetail};
+  Search: undefined | { search: string };
+  ChangeInformation: undefined | { infor: Information };
+  NotificationDetails: undefined | { context: NotifyDetail };
 
   /** Hide Tab */
   CommentList: undefined;
@@ -59,16 +58,17 @@ export type ParamList = {
   CreateRestaurant: undefined;
   ChangeFoodInfor: undefined;
   AllFood: undefined;
-  Report: undefined | {id: string, title: string,};
-  SS_FoodDetail: undefined | {id: string};
-  OrderDetail: undefined | {id: string};
-  ChangeRestaurantInfor: undefined | {infor: InforState};
-  ChangeRestaurantBaseInfor: undefined | {id: string};
-  ChangeRestaurantAddressInfor: undefined | {id: string};
-  US_FoodDetail: undefined | {id: string};
-  US_Restaurant: undefined | {id: string};
-  CreateFood: undefined | {id: string};
-  AddressInfor: undefined | {title: string; id?: string};
+  Report: undefined | { id: string, title: string, };
+  SS_FoodDetail: undefined | { id: string };
+  OrderDetail: undefined | { id: string };
+  ChangeRestaurantInfor: undefined | { infor: InforState };
+  ChangeRestaurantBaseInfor: undefined | { id: string };
+  ChangeRestaurantAddressInfor: undefined | { id: string };
+  US_FoodDetail: undefined | { id: string };
+  US_Restaurant: undefined | { id: string };
+  CreateFood: undefined | { id: string };
+  AddressInfor: undefined | { title: string; id?: string };
+  JoinEvent: undefined | { id: string };
 };
 
 /** Type for notification's detail */
@@ -109,7 +109,7 @@ const RootNavigation = () => {
   const id = useSelector(selectUserID);
 
   useEffect(() => {
-    dispatch(setHost('http://172.16.92.199:8686'));
+    dispatch(setHost('http://127.0.0.1:8686'));
   }, []);
 
   const getInfor = async () => {
@@ -119,7 +119,6 @@ const RootNavigation = () => {
     console.log('get user infor', response.data);
     dispatch(setName(response.data.Name));
     dispatch(setPoint(response.data.Rank));
-    dispatch(setImage(response.data.Image));
   };
 
   useEffect(() => {

@@ -28,15 +28,16 @@ const ForgotPass = (prop) => {
         const response = await AxiosInstance().post('/post-admin-forgot-password-notification.php', { email, ex });
         if (response.status) {
             Swal.fire({
-                title: 'Success',
-                text: 'Your request has been sent to the admin',
+                title: 'Thành công',
+                text: 'Yêu cầu của bạn đã được gửi đến quản trị viên',
                 icon: 'success',
                 confirmButtonText: 'OK'
             })
+
         } else {
             Swal.fire({
-                title: 'Failed',
-                text: 'Your request has not been sent to the admin',
+                title: 'Thất bại',
+                text: 'Yêu cầu của bạn chưa được gửi đến quản trị viên',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -67,34 +68,34 @@ const ForgotPass = (prop) => {
                                         <div className="card-body">
 
                                             <div className="pt-4 pb-2">
-                                                <h5 className="card-title text-center pb-0 fs-4">Retrieve Accound</h5>
-                                                <p className="text-center small">Enter your ID & reason for loosing password</p>
+                                                <h5 className="card-title text-center pb-0 fs-4">Truy xuất tài khoản</h5>
+                                                <p className="text-center small">Nhập Email và lý do mất mật khẩu</p>
                                             </div>
 
                                             <form className="row g-3 needs-validation">
 
                                                 <div className="col-12">
-                                                    <label htmlFor="yourUsername" className="form-label">Username's Email</label>
+                                                    <label htmlFor="yourUsername" className="form-label">Email</label>
                                                     <div className="input-group has-validation">
                                                         <span className="input-group-text" id="inputGroupPrepend">@</span>
-                                                        <input type="text" name="username" className="form-control" id="yourUsername" required maxLength={20} minLength={20} value={'OliviaRamirez@gmail.com'} />
-                                                        <div className="invalid-feedback">Please enter your username.</div>
+                                                        <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={''} />
+                                                        <div className="invalid-feedback">Vui lòng nhập Email.</div>
                                                     </div>
                                                 </div>
 
                                                 <div className="col-12">
-                                                    <label htmlFor="yourPassword" className="form-label">Excuse</label>
-                                                    <textarea type="text" name="password" className="form-control" id="yourPassword" required value={'123456'} maxLength={200} minLength={5} style={{ height: 200, width: 400 }} />
-                                                    <div className="invalid-feedback">Please enter your reason!</div>
+                                                    <label htmlFor="yourPassword" className="form-label">Lý do</label>
+                                                    <textarea type="text" name="password" className="form-control" id="yourPassword" required maxLength={200} minLength={5} style={{ height: 200, width: 400 }} />
+                                                    <div className="invalid-feedback">Vui lòng nhập Lý do!</div>
                                                 </div>
 
 
                                                 <div className="col-12">
                                                     <button className="btn btn-primary w-100" type="button" style={{ background: '#fd7e14', marginTop: 50, borderWidth: 0 }}
-                                                        onClick={(event) => handleSubmit(event)}>Submit</button>
+                                                        onClick={(event) => handleSubmit(event)}>Xác nhận gửi</button>
                                                 </div>
                                                 <div className="col-12">
-                                                    <p className="small mb-0">Remember your password? <a className='text-primary' onClick={() => { navigation('/login/signin') }} style={{ cursor: 'pointer' }}>Then let login and start working</a></p>
+                                                    <p className="small mb-0">Ghi nhớ mật khẩu của bạn? <a className='text-primary' onClick={() => { navigation('/login/signin') }} style={{ cursor: 'pointer' }}>Sau đó hãy đăng nhập và bắt đầu làm việc!</a></p>
                                                 </div>
                                             </form>
 

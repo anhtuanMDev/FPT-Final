@@ -1,7 +1,7 @@
-import {View, Text, StatusBar, Image} from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ParamList} from './RootNavigation';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ParamList } from './RootNavigation';
 import Home from '../screen/app/Home';
 import Store from '../screen/app/Store';
 import Favorite from '../screen/app/Favorite';
@@ -11,8 +11,8 @@ import US_Restaurant from '../screen/app/US_Restaurant';
 import US_FoodDetail from '../screen/app/US_FoodDetail';
 import Profile from '../screen/app/Drawer/Profile';
 import SS_FoodDetail from '../screen/app/SS_FoodDetail';
-import Icons, {IconName} from '../../assets/icons/Icons';
-import {Colors} from '../custom/styles/ScreenStyle';
+import Icons, { IconName } from '../../assets/icons/Icons';
+import { Colors } from '../custom/styles/ScreenStyle';
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
@@ -21,8 +21,8 @@ import {
 import OrderManagement from '../screen/app/Drawer/OrderManagement';
 import Schedules from '../screen/app/Drawer/Schedules';
 import Avatar from '../../assets/images/avatar.svg';
-import {fonts} from '../custom/styles/ComponentStyle';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import { fonts } from '../custom/styles/ComponentStyle';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Rank from '../screen/app/Drawer/Rank';
 import Animated from 'react-native-reanimated';
 import CreateRestaurant from '../screen/app/Store/CreateRestaurant';
@@ -30,8 +30,8 @@ import ChangeRestaurantInfor from '../screen/app/Store/ChangeRestaurantInfor';
 import CreateFood from '../screen/app/Store/CreateFood';
 import AddressInfor from '../screen/app/Address/AddressInfor';
 import Notifications from '../screen/app/Drawer/Notifications';
-import {useDispatch, useSelector} from 'react-redux';
-import {selectHost, selectImage, selectName, selectPoint} from '../../helpers/state/Global/globalSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectName, selectPoint } from '../../helpers/state/Global/globalSlice';
 import ChangeInformation from '../screen/app/Drawer/ChangeInformation';
 import NotificationDetails from '../screen/app/Drawer/NotificationDetails';
 import RestaurantOrders from '../screen/app/Store/RestaurantOrders';
@@ -40,6 +40,7 @@ import Search from '../screen/app/Drawer/Search';
 import AllFood from '../screen/app/Store/AllFood';
 import RestaurantStatistic from '../screen/app/Store/RestaurantStatistic';
 import Report from '../screen/app/Report';
+import JoinEvent from '../screen/app/Store/JoinEvent';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Drawer = createDrawerNavigator<ParamList>();
@@ -61,19 +62,16 @@ export function convertPoint(point: number) {
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const {state} = props;
+  const { state } = props;
   const point = useSelector(selectPoint);
   const name = useSelector(selectName);
-  const host = useSelector(selectHost);
-  const image = useSelector(selectImage);
 
   const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
   return (
-    <View style={{padding: 20}}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        {/* <Avatar width={70} height={70} /> */}
-        <Image source={{uri: `${host}/uploads/${image}.jpg`}} style={{width: 35, height: 35, borderRadius: 15, marginRight: 15}}/>
-        <View style={{alignItems: 'flex-start'}}>
+    <View style={{ padding: 20 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Avatar width={70} height={70} />
+        <View style={{ alignItems: 'flex-start' }}>
           <Text style={[fonts.captionBold]}>{name}</Text>
           <Text style={[fonts.sublineBold]}>Rank: {convertPoint(point)}</Text>
         </View>
@@ -162,9 +160,8 @@ const AppTabNavigation = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color}) => {
-          let label;
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
           let iconName;
           switch (route.name) {
             case 'HomeDrawer':
@@ -173,7 +170,6 @@ const AppTabNavigation = () => {
               ) : (
                 <Icons name={IconName.home} color={color} />
               );
-              label='Trang chủ';
               break;
             case 'Store':
               iconName = focused ? (

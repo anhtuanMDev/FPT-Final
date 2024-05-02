@@ -1,6 +1,6 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchRestaurantID } from "../AppTab/storeSlice";
-import { set } from "mongoose";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface GlobalState {
     login: boolean;
@@ -37,6 +37,12 @@ const globalSlice = createSlice({
         },
         isLogin: (state, action: PayloadAction<boolean>) => {
             state.login = action.payload;
+
+            if (!(action.payload)) {
+                // console.log("Logout action.payload false", action.payload);
+                state.userID = "";
+            }
+
         },
         setUserID: (state, action: PayloadAction<string>) => {
             state.userID = action.payload;

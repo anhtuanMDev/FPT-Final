@@ -5,12 +5,13 @@ import {
   Image,
   ViewStyle,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React from 'react';
 import CardRate from './CardRate';
-import {cards, fonts} from '../styles/ComponentStyle';
-import Icons, {IconName} from '../../../assets/icons/Icons';
-import {Colors} from '../styles/ScreenStyle';
+import { cards, fonts } from '../styles/ComponentStyle';
+import Icons, { IconName } from '../../../assets/icons/Icons';
+import { Colors } from '../styles/ScreenStyle';
 import Icons2, { Icon2Name } from '../../../assets/icons/Icons2';
 
 const width = Dimensions.get('window').width * 0.38;
@@ -59,34 +60,34 @@ const SmallCart = (props: Prop) => {
       ]}>
       <Image
         source={
-          image ? {uri: image} : require('../../../assets/images/baseImage.png')
+          image ? { uri: image } : require('../../../assets/images/baseImage.png')
         }
-        style={{width: '100%', height: '60%'}}
+        style={{ width: '100%', height: '60%' }}
       />
-
-      <View
-        style={{
-          width: 30,
-          height: 30,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 25,
-          elevation: 5,
-          position: 'absolute',
-          backgroundColor: Colors.white,
-          top: 10,
-          right: 10,
-          zIndex: 1,
-        }}>
-        {favorite ? (
-          <Icons2 name={Icon2Name.love} color={Colors.orange} size={18} />
-        ) : (
-          <Icons name={IconName.like} color={Colors.black} size={18} />
-        )}
-      </View>
-
+      <TouchableWithoutFeedback>
+        <View
+          style={{
+            width: 30,
+            height: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 25,
+            elevation: 5,
+            position: 'absolute',
+            backgroundColor: Colors.white,
+            top: 10,
+            right: 10,
+            zIndex: 1,
+          }}>
+          {favorite ? (
+            <Icons2 name={Icon2Name.love} color={Colors.orange} size={18} />
+          ) : (
+            <Icons name={IconName.like} color={Colors.black} size={18} />
+          )}
+        </View>
+      </TouchableWithoutFeedback>
       <CardRate
-        style={[{bottom: '35%', left: 10}]}
+        style={[{ bottom: '35%', left: 10 }]}
         rate={rate}
         rateCount={rateCount}
       />
@@ -103,7 +104,7 @@ const SmallCart = (props: Prop) => {
           <Text
             style={[
               fonts.text,
-              {marginLeft: 5, flex: 1, textAlignVertical: 'center'},
+              { marginLeft: 5, flex: 1, textAlignVertical: 'center' },
             ]}>
             {time || '10 - 15 mins'}
           </Text>

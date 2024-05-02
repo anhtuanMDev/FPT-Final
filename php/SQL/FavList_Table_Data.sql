@@ -1,0 +1,10 @@
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVERTYUIOPASDFGHJKLZXCV', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVasdfghjklzxcvbnmQW', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVasdfghjklzxcvbnmQW', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVERTYUIOPASDFGHJKLZXCV', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVasdfghjklzxcvbnmQW', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVERTYUIOPASDFGHJKLZXCV', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVERTYUIOPASDFGHJKLZXCV', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAV123456789qwertyuiop', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVasdfghjklzxcvbnmQW', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');
+insert into Admin_Table_Data (Id, UserID, TargetID) values ('FAVERTYUIOPASDFGHJKLZXCV', 'error: undefined method `first'' for nil:NilClass', 'error: undefined method `first'' for nil:NilClass');

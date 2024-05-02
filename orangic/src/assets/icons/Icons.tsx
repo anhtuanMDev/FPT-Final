@@ -48,6 +48,8 @@ export enum IconName {
   close = 'stop',
   pin = 'thumbtack',
   flag = 'flag',
+  event = 'calendar-days',
+  lock = 'lock',
 }
 const Icons = ({name, color, size}: IconProps) => {
   return <FontAwesome name={name} size={size || 20} color={color} />;

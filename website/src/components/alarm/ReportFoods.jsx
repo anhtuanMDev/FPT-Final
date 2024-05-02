@@ -36,16 +36,22 @@ import { Navigate, useNavigate, useHref } from 'react-router-dom';
 import AxiosInstance from '../helpers/AxiosInstance.js';
 import Swal from 'sweetalert2';
 
-const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \
-Sed ac ex et turpisconvallis pharetra. In hac habitasse platea dictumst. \
-Integer sed venenatis leo. Phasellusnon ultrices mauris."
+const lorem = "Khách hàng rất quan trọng, khách hàng sẽ được khách hàng theo đuổi. \
+Nhưng như từ và run rẩy turpisconvalli. Anh ta được cho là đã sống ở con phố này. \
+Gan dạ nhưng độc ác. Ultrarice không có động cơ."
 
-const ReportFoods = () => {
+const ReportFoods = (prop) => {
+    const { host, adminID, setID, adminDetail } = prop;
+
     document.title = 'Errors - Users';
-
     const navigate = useNavigate();
     const changePage = (page) => {
         navigate(page);
+    }
+
+    const logOut = () => {
+        console.log("log out");
+        setID('');
     }
 
     const initialState = {
@@ -108,20 +114,20 @@ const ReportFoods = () => {
     {/** Start of reply reports */ }
     const replyUserReports = async (reportID, name, adminID) => {
         Swal.fire({
-            title: `What do you want to said to ${name}`,
+            title: `Bạn muốn nói gì với ${name}`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Send',
+            confirmButtonText: 'Gửi',
             input: "textarea",
-            inputPlaceholder: "Type your message here...",
+            inputPlaceholder: "Gõ tin nhắn của bạn ở đây...",
             inputAttributes: {
-                "aria-label": "Type your message here"
+                "aria-label": "Gõ tin nhắn của bạn ở đây"
             },
             showLoaderOnConfirm: true,
             showCancelButton: true,
             inputValidator: (value) => {
                 if (!value) {
-                    return "Sorry your input was invalid!";
+                    return "Rất tiếc thông tin nhập của bạn không hợp lệ!";
                 }
             },
             preConfirm: async (resp) => {
@@ -139,7 +145,7 @@ const ReportFoods = () => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -147,7 +153,7 @@ const ReportFoods = () => {
             if (result.isConfirmed) {
                 Swal.fire({
                     icon: 'success',
-                    text: `Your message has been send to ${name}`
+                    text: `Tin nhắn của bạn đã được gửi tới ${name}`
                 })
             }
         })
@@ -158,11 +164,11 @@ const ReportFoods = () => {
 
     const banRestaurants = async (reportID, name, adminID, status) => {
         Swal.fire({
-            title: `Do you want to banned restaurant ${name}`,
-            text: "Press confirm button to continue",
+            title: `Bạn có muốn cấm nhà hàng ${name}`,
+            text: "Nhấn nút xác nhận để tiếp tục",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Confirm',
+            confirmButtonText: 'Xác nhận',
             showLoaderOnConfirm: true,
             preConfirm: async (res) => {
                 try {
@@ -181,7 +187,7 @@ const ReportFoods = () => {
                 } catch (error) {
                     Swal.fire({
                         icon: 'error',
-                        text: `Request failed: ${error}`
+                        text: `Yêu cầu không thành công: ${error}`
                     })
                 }
             },
@@ -207,7 +213,7 @@ const ReportFoods = () => {
 
                 <div className="search-bar">
                     <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
+                        <input type="text" name="query" placeholder="Tìm..." title="Nhập từ khóa tìm kiếm" />
                         <button type="submit" title="Search"><img src={search} /></button>
                     </form>
                 </div>
@@ -217,7 +223,7 @@ const ReportFoods = () => {
                     <ul className="d-flex align-items-center">
 
                         <li className="nav-item d-block d-lg-none">
-                            <a className="nav-link nav-icon search-bar-toggle " href="#">
+                            <a className="nav-link nav-icon search-bar-toggle ">
                                 <i className="bi bi-search"></i>
                             </a>
                         </li>
@@ -225,7 +231,7 @@ const ReportFoods = () => {
 
                         <li className="nav-item dropdown">
 
-                            <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                            <a className="nav-link nav-icon" data-bs-toggle="dropdown">
                                 <img src={notify} alt='Error notify icon' />
                                 <span className="badge bg-primary badge-number">4</span>
                             </a>
@@ -233,8 +239,8 @@ const ReportFoods = () => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
                                 <li className="dropdown-header">
-                                    You have 4 new notifications
-                                    <a href="#"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 4 thông báo mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
@@ -244,8 +250,8 @@ const ReportFoods = () => {
                                     <i className="bi bi-exclamation-circle text-warning"></i>
                                     <div>
                                         <h4>Lorem Ipsum</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>30 min. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>30 phút trước</p>
                                     </div>
                                 </li>
 
@@ -257,8 +263,8 @@ const ReportFoods = () => {
                                     <i className="bi bi-x-circle text-danger"></i>
                                     <div>
                                         <h4>Atque rerum nesciunt</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>1 hr. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>1 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -270,8 +276,8 @@ const ReportFoods = () => {
                                     <i className="bi bi-check-circle text-success"></i>
                                     <div>
                                         <h4>Sit rerum fuga</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>2 hrs. ago</p>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>2 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -282,9 +288,9 @@ const ReportFoods = () => {
                                 <li className="notification-item">
                                     <i className="bi bi-info-circle text-primary"></i>
                                     <div>
-                                        <h4>Dicta reprehenderit</h4>
-                                        <p>Quae dolorem earum veritatis oditseno</p>
-                                        <p>4 hrs. ago</p>
+                                        <h4>Anh ấy chỉ trích những gì anh ấy nói</h4>
+                                        <p>Tôi ghét nỗi đau của sự thật của họ</p>
+                                        <p>4 giờ trước</p>
                                     </div>
                                 </li>
 
@@ -292,7 +298,7 @@ const ReportFoods = () => {
                                     <hr className="dropdown-divider" />
                                 </li>
                                 <li className="dropdown-footer">
-                                    <a href="#">Show all notifications</a>
+                                    <a>Hiển thị tất cả thông báo</a>
                                 </li>
 
                             </ul>
@@ -303,7 +309,7 @@ const ReportFoods = () => {
 
                         <li className="nav-item dropdown">
 
-                            <a className="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                            <a className="nav-link nav-icon" data-bs-toggle="dropdown">
                                 <img src={chat_box} alt='Error notify icon' />
                                 <span className="badge bg-success badge-number">3</span>
                             </a>
@@ -311,20 +317,20 @@ const ReportFoods = () => {
 
                             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
                                 <li className="dropdown-header">
-                                    You have 3 new messages
-                                    <a href="#"><span className="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                                    Bạn có 3 tin nhắn mới
+                                    <a><span className="badge rounded-pill bg-primary p-2 ms-2">Xem tất cả</span></a>
                                 </li>
                                 <li>
                                     <hr className="dropdown-divider" />
                                 </li>
 
                                 <li className="message-item">
-                                    <a href="#">
+                                    <a>
                                         <img src="assets/img/messages-1.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Maria Hudson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>4 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>4 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -333,12 +339,12 @@ const ReportFoods = () => {
                                 </li>
 
                                 <li className="message-item">
-                                    <a href="#">
+                                    <a>
                                         <img src="assets/img/messages-2.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>Anna Nelson</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>6 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>6 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -347,12 +353,12 @@ const ReportFoods = () => {
                                 </li>
 
                                 <li className="message-item">
-                                    <a href="#">
+                                    <a>
                                         <img src="assets/img/messages-3.jpg" alt="" className="rounded-circle" />
                                         <div>
                                             <h4>David Muldon</h4>
-                                            <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                                            <p>8 hrs. ago</p>
+                                            <p>Nó muốn trở nên cứng rắn hơn và chúng ta dẫn đến việc từ chối nhiệm vụ công việc một cách lỏng lẻo để...</p>
+                                            <p>8 giờ trước</p>
                                         </div>
                                     </a>
                                 </li>
@@ -361,7 +367,7 @@ const ReportFoods = () => {
                                 </li>
 
                                 <li className="dropdown-footer">
-                                    <a href="#">Show all messages</a>
+                                    <a>Hiển thị tất cả tin nhắn</a>
                                 </li>
 
                             </ul>
@@ -372,9 +378,11 @@ const ReportFoods = () => {
 
                         <li className="nav-item dropdown pe-3">
 
-                            <a className="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                                <img src={avatar} alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">Alex</span>
+                            <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
+                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
+                                    alt="Error Profile" className="rounded-circle" />
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -390,7 +398,7 @@ const ReportFoods = () => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-person"></i>
-                                        <span>My Profile</span>
+                                        <span>Hồ sơ của tôi</span>
                                     </a>
                                 </li>
                                 <li>
@@ -400,7 +408,7 @@ const ReportFoods = () => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                                         <i className="bi bi-gear"></i>
-                                        <span>Account Settings</span>
+                                        <span>Cài đặt tài khoản</span>
                                     </a>
                                 </li>
                                 <li>
@@ -410,7 +418,7 @@ const ReportFoods = () => {
                                 <li>
                                     <a className="dropdown-item d-flex align-items-center" href="pages-faq.html">
                                         <i className="bi bi-question-circle"></i>
-                                        <span>Need Help?</span>
+                                        <span>Cần giúp đỡ?</span>
                                     </a>
                                 </li>
                                 <li>
@@ -418,9 +426,9 @@ const ReportFoods = () => {
                                 </li>
 
                                 <li>
-                                    <a className="dropdown-item d-flex align-items-center" href="#">
+                                    <a className="dropdown-item d-flex align-items-center" onClick={() => { logOut() }}>
                                         <i className="bi bi-box-arrow-right"></i>
-                                        <span>Sign Out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
 
@@ -443,33 +451,33 @@ const ReportFoods = () => {
                 <ul className="sidebar-nav" id="sidebar-nav">
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" onClick={()=> changePage('/')}>
+                        <a className="nav-link collapsed" onClick={() => changePage('/')}>
                             <ReactSVG
                                 src={dashboard}
                                 className='nav-link-icon'
                             />
-                            <span>Dashboard</span>
+                            <span>Thống kê</span>
                         </a>
                     </li>
                     {/* <!-- End Dashboard Nav --> */}
 
-                    <li className="nav-heading">Applications</li>
+                    <li className="nav-heading">Ứng dụng</li>
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" aria-expanded="true" href="#">
+                        <a className="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" >
                             <ReactSVG
                                 src={infor}
                                 className='nav-link-icon'
                             />
-                            <span>Informations</span>
+                            <span>Thông tin</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
                             />
                         </a>
-                        <ul id="components-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-                            <li>
-                                <a onClick={()=> changePage('/informations/users')} className=''>
+                        <ul id="components-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
+                            <li >
+                                <a onClick={() => changePage('/informations/users')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -478,11 +486,11 @@ const ReportFoods = () => {
                                         src={users}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Users</span>
+                                    <span>Người dùng</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a onClick={() => changePage('/informations/notifications')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -491,11 +499,11 @@ const ReportFoods = () => {
                                         src={send_notify}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Notification</span>
+                                    <span>Thông báo</span>
                                 </a>
                             </li>
                             <li>
-                                <a onClick={()=> changePage('/informations/restaurants')}>
+                                <a onClick={() => changePage('/informations/restaurants')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -504,11 +512,11 @@ const ReportFoods = () => {
                                         src={restaurant}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Restaurants</span>
+                                    <span>Nhà hàng</span>
                                 </a>
                             </li>
                             <li>
-                                <a onClick={()=> changePage('/informations/users')}>
+                                <a onClick={() => changePage('/informations/foods')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -517,11 +525,11 @@ const ReportFoods = () => {
                                         src={food}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Foods</span>
+                                    <span>Món ăn</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a onClick={() => changePage('/informations/history-files')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -530,7 +538,7 @@ const ReportFoods = () => {
                                         src={history}
                                         className='nav-link-subicon'
                                     />
-                                    <span>History Files</span>
+                                    <span>Tệp lịch sử</span>
                                 </a>
                             </li>
                         </ul>
@@ -538,12 +546,12 @@ const ReportFoods = () => {
                     {/* <!-- End Information Nav --> */}
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                        <a className="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" aria-expanded="true">
                             <ReactSVG
                                 src={income}
                                 className='nav-link-icon'
                             />
-                            <span>Income</span>
+                            <span>Thu nhập</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -551,7 +559,7 @@ const ReportFoods = () => {
                         </a>
                         <ul id="forms-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
                             <li>
-                                <a href="#">
+                                <a onClick={() => changePage('/incomes/discount')} >
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -560,7 +568,7 @@ const ReportFoods = () => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Discounts</span>
+                                    <span>Giảm giá</span>
                                 </a>
                             </li>
                             <li>
@@ -573,7 +581,7 @@ const ReportFoods = () => {
                                         src={discount}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Orders</span>
+                                    <span>Đơn hàng</span>
                                 </a>
                             </li>
                         </ul>
@@ -581,12 +589,12 @@ const ReportFoods = () => {
                     {/* <!-- End Income Nav --> */}
 
                     <li className="nav-item">
-                        <a className="nav-link" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+                        <a className="nav-link " data-bs-target="#tables-nav" data-bs-toggle="collapse">
                             <ReactSVG
                                 src={danger}
                                 className='nav-link-icon'
                             />
-                            <span>Errors</span>
+                            <span>Lỗi</span>
                             <ReactSVG
                                 src={dropdown}
                                 className='nav-link-icon ms-auto'
@@ -594,7 +602,7 @@ const ReportFoods = () => {
                         </a>
                         <ul id="tables-nav" className="nav-content collapse show" data-bs-parent="#sidebar-nav">
                             <li>
-                                <a onClick={()=> changePage('/reports/report-errors')}>
+                                <a onClick={() => changePage('/reports/report-errors')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -603,11 +611,11 @@ const ReportFoods = () => {
                                         src={error}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Errors</span>
+                                    <span>Báo cáo lỗi</span>
                                 </a>
                             </li>
                             <li>
-                                <a onClick={()=> changePage('/reports/report-restaurants')}>
+                                <a onClick={() => changePage('/reports/report-restaurants')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -616,11 +624,11 @@ const ReportFoods = () => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Restaurants</span>
+                                    <span>Báo cáo nhà hàng</span>
                                 </a>
                             </li>
                             <li>
-                                <a onClick={()=> changePage('/reports/report-foods')} className='active'>
+                                <a onClick={() => changePage('/reports/report-foods')} className='active'>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -629,11 +637,11 @@ const ReportFoods = () => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Foods</span>
+                                    <span>Báo cáo món ăn</span>
                                 </a>
                             </li>
                             <li>
-                                <a onClick={()=> changePage('/reports/report-users')}>
+                                <a onClick={() => changePage('/reports/report-users')}>
                                     <ReactSVG
                                         src={dot}
                                         className='nav-link-subicon dot'
@@ -642,22 +650,22 @@ const ReportFoods = () => {
                                         src={report}
                                         className='nav-link-subicon'
                                     />
-                                    <span>Report Users</span>
+                                    <span>Báo cáo người dùng</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     {/* <!-- End Errors Nav --> */}
 
-                    <li className="nav-heading">Pages</li>
+                    <li className="nav-heading">Trang</li>
 
                     <li className="nav-item">
-                        <a className="nav-link collapsed" href="users-profile.html">
+                        <a className="nav-link collapsed" onClick={() => changePage('/informations/staffs')}>
                             <ReactSVG
                                 src={employee}
                                 className='nav-link-icon'
                             />
-                            <span>Employees</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     {/* <!-- End Empployee Page Nav --> */}
@@ -671,11 +679,11 @@ const ReportFoods = () => {
 
                 {/* <!-- ======= Main ======= --> */}
                 <div className="pagetitle">
-                    <h1>Report Foods</h1>
+                    <h1>Báo cáo món ăn</h1>
                     <nav>
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a href="#">Errors</a></li>
-                            <li className="breadcrumb-item active">Foods</li>
+                            <li className="breadcrumb-item"><a href="#">Lỗi</a></li>
+                            <li className="breadcrumb-item active">Món ăn</li>
                         </ol>
                     </nav>
                 </div>
@@ -702,9 +710,9 @@ const ReportFoods = () => {
                                                 <div className="tab-pane fade show active profile-overview" id="list-users-overview">
 
                                                     <div className="tab-title search nav">
-                                                        <h5 className="card-title">Bad Users</h5>
+                                                        <h5 className="card-title">Người dùng xấu</h5>
                                                         <div className="datatable-search">
-                                                            <input className="datatable-input" placeholder="Search..." type="search" title="Search within table" />
+                                                            <input className="datatable-input" placeholder="Tìm..." type="search" title="Tìm kiếm trong bảng" />
                                                         </div>
 
                                                         <nav aria-label="Page navigation example">
@@ -717,13 +725,26 @@ const ReportFoods = () => {
                                                                 {
                                                                     Array.from({ length: state.errorTotal }, (_, index) => {
                                                                         if (state.errorTotal > 10) {
-                                                                            if ((index >= state.errorPage - 2 && index <= state.errorPage + 1) || // 2 pages before and after current page
-                                                                                index >= state.errorTotal - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === state.errorTotal - 1 ||
+                                                                                (index >= state.errorPage - 2 && index <= state.errorPage) ||
+                                                                                (index === 1 && state.errorPage > 3) ||
+                                                                                (index >= state.errorTotal - 2 && state.errorPage <= state.errorTotal - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${state.errorPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => setState({ type: 'CHANGE_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            setState({ type: 'CHANGE_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && state.errorPage >= 4) || (index >= state.errorTotal - 3 && state.errorPage <= state.errorTotal - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
@@ -749,9 +770,9 @@ const ReportFoods = () => {
                                                             <thead>
                                                                 <tr>
                                                                     <th scope="col">ID</th>
-                                                                    <th scope="col">Reporter</th>
-                                                                    <th scope="col">Reported</th>
-                                                                    <th scope="col">Action</th>
+                                                                    <th scope="col">Người báo cáo</th>
+                                                                    <th scope="col">Báo cáo</th>
+                                                                    <th scope="col">Hành động</th>
                                                                 </tr>
                                                             </thead>
                                                             {
@@ -768,10 +789,10 @@ const ReportFoods = () => {
                                                                                 <td className="fw-bold" style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                                                     <button type="button" className='btn btn-warning'
                                                                                         onClick={() => replyUserReports(item.Id, item.UserName, "ADM7ANKA7YA7SVSNL5B6")}
-                                                                                    >Reply</button>
+                                                                                    >Trả lời</button>
                                                                                     <button type="button" className='btn btn-danger' style={{ marginLeft: 10 }}
                                                                                         onClick={() => banRestaurants(item.Id, item.TargetName, "ADM7ANKA7YA7SVSNL5B6", "Banned")}
-                                                                                    >Banned</button>
+                                                                                    >Cấm</button>
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>
@@ -814,7 +835,7 @@ const ReportFoods = () => {
                             <div className="card">
 
                                 <div className="card-body">
-                                    <h5 className="card-title">Report Information</h5>
+                                    <h5 className="card-title">Thông tin báo cáo</h5>
 
                                     <div className="activity">
 

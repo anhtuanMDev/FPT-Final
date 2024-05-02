@@ -15,7 +15,8 @@ export enum Icon2Name {
   pin = 'pushpino',
   flag = 'flag',
   star = 'star',
-  close = 'close'
+  close = 'close',
+  check = 'check'
 }
 const Icons2 = ({name, color, size}: IconProps) => {
   return <FontAwesome name={name} size={size || 20} color={color} />;

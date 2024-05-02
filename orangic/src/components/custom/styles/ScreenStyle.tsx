@@ -12,15 +12,19 @@ export enum Colors {
     navy = '#395998',
     nox = '#263238',
     yellow = '#FFC529',
+    selected = "#EE4D2D82",
+    unselected = "#ECECEC"
   }
 
 export const screenStyles = StyleSheet.create({
     parent_container: {
         flex: 1,
+        backgroundColor: Colors.white
     },
     container: {
         flex: 1,
         padding: 20,
-        paddingTop: 15
+        paddingTop: 15,
+        backgroundColor: Colors.white
     },
 })

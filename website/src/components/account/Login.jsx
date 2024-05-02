@@ -33,7 +33,7 @@ const Login = (prop) => {
             setID(response?.data?.Id);
             console.log("success")
             Swal.fire({
-                title: 'Thnahf công',
+                title: 'Thành công',
                 text: 'Đăng nhập thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'

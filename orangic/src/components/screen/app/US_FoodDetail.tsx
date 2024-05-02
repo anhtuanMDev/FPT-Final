@@ -544,7 +544,6 @@ const US_FoodDetail = (props: Props) => {
               <FlatList
                 data={state.FeatureList}
                 horizontal
-                pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item, index}) => (

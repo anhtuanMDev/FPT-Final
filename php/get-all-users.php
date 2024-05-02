@@ -9,7 +9,7 @@ include_once 'connection.php';
 
 try {
 
-    $query = "SELECT *
+    $query = "SELECT *, (SELECT Id FROM images WHERE OwnerID = users.Id LIMIT 1) AS Image
     FROM users WHERE Status = 'Active'";
 
     $stmt = $dbConn->prepare($query);

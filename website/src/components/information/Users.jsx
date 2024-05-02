@@ -1576,8 +1576,6 @@ const Users = (prop) => {
                                                     >
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" style={{ textAlign: 'center' }}>Avatar</th>
-                                                                <th scope="col">Name</th>
                                                                 <th scope="col" style={{ textAlign: 'center' }}>Ảnh</th>
                                                                 <th scope="col">Tên</th>
                                                                 <th scope="col">Email</th>
@@ -1587,7 +1585,7 @@ const Users = (prop) => {
                                                             {data.users.map((item, index) => (
                                                                 <tr key={item.Id}>
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} alt="" className="avatar" /></a>
+                                                                        <a><img src={`${host}/uploads/${item.Image}.jpg`} alt="" className="avatar" /></a>
                                                                     </th>
                                                                     <td>{item.Name}</td>
                                                                     <td className="fw-bold">{item.Email}</td>
@@ -1668,7 +1666,7 @@ const Users = (prop) => {
                                                             {data.topUsers.map((item, index) => (
                                                                 <tr key={index}>
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} alt="" className="avatar" /></a>
+                                                                    <a><img src={`${host}/uploads/${item.Image}.jpg`} alt="" className="avatar" /></a>
                                                                     </th>
                                                                     <td>{item.Name}</td>
                                                                     <td>{item.Email}</td>

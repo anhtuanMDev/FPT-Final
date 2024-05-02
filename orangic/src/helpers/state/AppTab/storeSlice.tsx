@@ -37,6 +37,7 @@ const storeSlice = createSlice({
         });
 
         builder.addCase(fetchRestaurant.fulfilled, (state, action) => {
+            console.log("action.payload:", action.payload)
             state.restaurantID = action.payload.Id;
             state.restaurantStatus = action.payload.Status;
             state.restaurantName = action.payload.Name;

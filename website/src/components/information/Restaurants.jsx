@@ -773,7 +773,8 @@ const Restaurants = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                <img src={adminDetail?.Image ? `${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    style={{ width: '40px', height: '40px' }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
                                     alt="Error Profile" className="rounded-circle" />
                                 <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
@@ -1399,7 +1400,7 @@ const Restaurants = (prop) => {
                                                                 data.allRestaurants.map((res, index) => {
                                                                     return (
                                                                         <tr key={index}>
-                                                                            <th scope="row"><a href="#"><img src={res.Image !== '' ? `http://${host}:8686/uploads/${res.Image}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <th scope="row"><a href="#"><img src={res.Image !== '' ? `${host}/uploads/${res.Image}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
                                                                             <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.Name}</a></td>
                                                                             <td>{res.Email}</td>
                                                                             <td className="fw-bold">{res.Foods.length}</td>
@@ -1455,7 +1456,7 @@ const Restaurants = (prop) => {
                                                                 data.topRestaurants
                                                                     .map((res, index) => (
                                                                         <tr key={index}>
-                                                                            <th scope="row"><a href="#"><img src={res.Image !== '' ? `http://${host}:8686/uploads/${res.Image}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <th scope="row"><a href="#"><img src={res.Image !== '' ? `${host}/uploads/${res.Image}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
                                                                             <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.Name}</a></td>
                                                                             <td>{res.Email}</td>
                                                                             <td className="fw-bold" style={{ textAlign: 'center' }}>{res.Foods.length}</td>
@@ -1607,7 +1608,7 @@ const Restaurants = (prop) => {
                                                                 data.banRestaurants.map((res, index) => {
                                                                     return (
                                                                         <tr key={index}>
-                                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={res.Image ? `http://${host}:8686/uploads/${res.Image}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <th scope="row" style={{ textAlign: 'center' }}><a href="#"><img src={res.Image ? `${host}/uploads/${res.Image}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
                                                                             <td><a href="#" className="text-primary fw-bold">{res.Name}</a></td>
                                                                             <td>{res.Email}</td>
                                                                             <td>
@@ -1675,7 +1676,7 @@ const Restaurants = (prop) => {
                                                         data.topSaleItems.map((res) => {
                                                             return (
                                                                 <tr key={res.Id}>
-                                                                    <th scope="row"><a href="#"><img src={res.Image ? `http://${host}:8686/uploads/${res.Image}.jpg` : avatar} style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                    <th scope="row"><a href="#"><img src={res.Image ? `${host}/uploads/${res.Image}.jpg` : avatar} style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" /></a></th>
                                                                     <td><a href="#" className="fw-bold" style={{ color: 'orange' }}>{res.FoodName}</a></td>
                                                                     <td>{res.RestaurantName}</td>
                                                                     <td className="fw-bold" style={{ textAlign: 'center' }}>{res.Price}</td>

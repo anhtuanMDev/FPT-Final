@@ -77,7 +77,7 @@ CREATE TABLE Address (
     City VARCHAR(30), 
     District VARCHAR(30), 
     Ward VARCHAR(40), 
-    Priority TINYINT,
+    Priority TINYINT
 );
 
 
@@ -203,7 +203,7 @@ CREATE TABLE Reports (
     ImageID VARCHAR(20), 
     Status VARCHAR(20),
     FOREIGN KEY (Author) REFERENCES Users (Id), 
-    FOREIGN KEY (ReplyBy) REFERENCES Admin (Id), 
+    FOREIGN KEY (ReplyBy) REFERENCES Admin (Id)
 );
 
 CREATE TABLE Notifications (
@@ -215,7 +215,7 @@ CREATE TABLE Notifications (
     TargetID VARCHAR(20) NOT NULL, 
     GiftID VARCHAR(20), 
     Creator VARCHAR(25) NOT NULL, 
-    FOREIGN KEY (GiftID) REFERENCES Coupons (Id)
+    FOREIGN KEY (GiftID) REFERENCES Coupons (Id),
     FOREIGN KEY (Creator) REFERENCES Admin (Id)
 );
 

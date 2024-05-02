@@ -492,7 +492,8 @@ const Staffs = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                <img src={adminDetail?.Image ? `${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    style={{ width: '40px', height: '40px' }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
                                     alt="Error Profile" className="rounded-circle" />
                                 <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
@@ -910,7 +911,7 @@ const Staffs = (prop) => {
                                                                 data?.allStaffs?.map((item, index) => (
                                                                     <tr key={item.Id}>
                                                                         <td scope="row" style={{ textAlign: 'center' }}>
-                                                                            <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar" className="avatar" /></a>
+                                                                            <a><img src={item.Image ? `${host}/uploads/${item.Image}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar" className="avatar" /></a>
                                                                         </td>
                                                                         <td style={{ justifyContent: 'center' }}>{item.Name}</td>
                                                                         <td className="fw-bold">{item.Email}</td>
@@ -1000,7 +1001,7 @@ const Staffs = (prop) => {
                                                                 data?.reqPassChange?.map((item, index) => (
                                                                     <tr key={item.Id}>
                                                                         <td scope="row" style={{ textAlign: 'center' }}>
-                                                                            <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="" className="avatar" /></a>
+                                                                            <a><img src={item.Image ? `${host}/uploads/${item.Image}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="" className="avatar" /></a>
                                                                         </td>
                                                                         <td style={{ justifyContent: 'center' }}>{item.Name}</td>
                                                                         <td className="fw-bold">{item.Email}</td>

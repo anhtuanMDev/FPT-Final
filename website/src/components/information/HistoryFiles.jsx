@@ -473,7 +473,8 @@ const HistoryFiles = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                <img src={adminDetail?.Image ? `${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    style={{ width: '40px', height: '40px' }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
                                     alt="Error Profile" className="rounded-circle" />
                                 <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
@@ -1058,7 +1059,7 @@ const HistoryFiles = (prop) => {
                                                                         <tr>
                                                                             <th scope="row" style={{ textAlign: 'center' }}>
                                                                                 <a>
-                                                                                    <img src={res.Imgae ? `http://${host}/uploads/${res.image[0].Id}.jpg` : avatar}
+                                                                                    <img src={res.Imgae ? `${host}/uploads/${res.image[0].Id}.jpg` : avatar}
                                                                                         style={{ width: 50, height: 40, resize: 'initial' }} alt="" className="avatar" />
                                                                                 </a>
                                                                             </th>
@@ -1124,7 +1125,7 @@ const HistoryFiles = (prop) => {
                                                                             <>
                                                                                 <th scope="row" style={{ textAlign: 'center' }}>
                                                                                     <a>
-                                                                                        <img src={res.Image ? `http://${host}/uploads/${res.Image}.jpg` : avatar}
+                                                                                        <img src={res.Image ? `${host}/uploads/${res.Image}.jpg` : avatar}
                                                                                             style={{ width: 50, height: 40 }} alt="" className="avatar" />
                                                                                     </a>
                                                                                 </th>
@@ -1286,7 +1287,7 @@ const HistoryFiles = (prop) => {
                                                                 data.banFood.length > 0 ? data.banFood.map((res, index) => {
                                                                     return (
                                                                         <tr key={index}>
-                                                                            <th scope="row"><a><img src={res.Image ? `http://${host}/uploads/${res.image[0].Id}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
+                                                                            <th scope="row"><a><img src={res.Image ? `${host}/uploads/${res.image[0].Id}.jpg` : avatar} style={{ width: 60, height: 50, resize: 'initial' }} alt="" className="avatar" /></a></th>
                                                                             <td>{res.Name}</td>
                                                                             <td>{res.ResName}</td>
                                                                             <td><a className="text-primary fw-bold">{res.Price}</a></td>

@@ -19,7 +19,7 @@ import Staffs from './components/employees/Staff';
 
 
 function App() {
-  const host = 'http://172.16.71.64:8686';
+  const host = 'http://172.16.71.65:8686';
   const getIdFromLocalStorage = () => {
     const id = localStorage.getItem('id')
     if (id) return JSON.parse(id)
@@ -31,7 +31,19 @@ function App() {
     localStorage.setItem('id', JSON.stringify(id));
   }
 
+  const getAdminDetailFromLocalStorage = () => {
+    const adminDetail = localStorage.getItem('adminDetail')
+    if (adminDetail) return JSON.parse(adminDetail)
+    return null
+  }
+
+  const setAdminDetailToLocalStorage = (detail) => {
+    setAdminDetail(detail);  // Set the detail in the state first
+    localStorage.setItem('adminDetail', JSON.stringify(detail));
+  }
+
   const [id, setID] = useState(getIdFromLocalStorage())
+  const [adminDetail, setAdminDetail] = useState(getAdminDetailFromLocalStorage());
 
   const ProtectedLayout = () => {
     if (!id) {
@@ -50,23 +62,23 @@ function App() {
     <Router>
       <Routes>
         <Route element={<UnprotectedLayout />} >
-          <Route path="/login/signin" element={<Login setID={setIdToLocalStorage} />} />
+          <Route path="/login/signin" element={<Login setID={setIdToLocalStorage} setAdminDetail={setAdminDetailToLocalStorage}/>} />
           <Route path="/login/forgot-password" element={<ForgotPass/>} />
         </Route>
         <Route element={<ProtectedLayout />} >
-          <Route path="/" element={<Dashboards host={host} adminID={id} />} />
-          <Route path="/informations/users" element={<Users host={host} adminID={id} />} />
-          <Route path="/informations/restaurants" element={<Restaurants host={host} adminID={id} />} />
-          <Route path="/informations/foods" element={<Foods host={host} adminID={id} />} />
-          <Route path="/informations/notifications" element={<Notification host={host} adminID={id} />} />
-          <Route path="/informations/history-files" element={<HistoryFiles host={host} adminID={id} />} />
-          <Route path="/incomes/discount" element={<Discount host={host} adminID={id} />} />
-          <Route path="/incomes/orders" element={<Orders host={host} adminID={id} />} />
-          <Route path="/reports/report-users" element={<ReportUsers host={host} adminID={id} />} />
-          <Route path="/reports/report-foods" element={<ReportFoods host={host} adminID={id} />} />
-          <Route path="/reports/report-restaurants" element={<ReportRestaurants host={host} adminID={id} />} />
-          <Route path="/reports/report-errors" element={<ReportApp host={host} adminID={id} />} />
-          <Route path="/informations/staffs" element={<Staffs host={host} adminID={id} setID={setIdToLocalStorage} />} />
+          <Route path="/" element={<Dashboards host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/informations/users" element={<Users host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/informations/restaurants" element={<Restaurants host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/informations/foods" element={<Foods host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/informations/notifications" element={<Notification host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/informations/history-files" element={<HistoryFiles host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/informations/staffs" element={<Staffs host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage} />} />
+          <Route path="/incomes/discount" element={<Discount host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/incomes/orders" element={<Orders host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/reports/report-users" element={<ReportUsers host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/reports/report-foods" element={<ReportFoods host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/reports/report-restaurants" element={<ReportRestaurants host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
+          <Route path="/reports/report-errors" element={<ReportApp host={host} adminID={id} adminDetail={adminDetail} setID={setIdToLocalStorage}/>} />
         </Route>
       </Routes>
     </Router>

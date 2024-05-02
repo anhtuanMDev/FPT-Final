@@ -574,7 +574,8 @@ const Discounts = (prop) => {
                         <li className="nav-item dropdown pe-3">
 
                             <a className="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
-                                <img src={adminDetail?.Image ? `http://${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                <img src={adminDetail?.Image ? `${host}/uploads/${adminDetail?.Image}.jpg` : avatar}
+                                    style={{ width: '40px', height: '40px' }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
                                     alt="Error Profile" className="rounded-circle" />
                                 <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span> } </span>
@@ -1395,7 +1396,7 @@ const Discounts = (prop) => {
                                                     <div className="my-3 bg-light">
                                                         <dt className="my-2 p-2">Được tạo bởi</dt>
                                                         <dd className="d-flex align-items-center ms-4 p-1 ">
-                                                            <img src={data?.eventDetail?.ImageCreateBy ? `http://${host}/uploads/${data?.eventDetail?.ImageCreateBy}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar"
+                                                            <img src={data?.eventDetail?.ImageCreateBy ? `${host}/uploads/${data?.eventDetail?.ImageCreateBy}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar"
                                                                 className="me-2" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
                                                             <div>
                                                                 <span>{data?.eventDetail?.CreateBy || " "}</span>
@@ -1423,7 +1424,7 @@ const Discounts = (prop) => {
                                                         <div className="my-3 bg-light">
                                                             <dt className="my-2 p-2">Được cập nhật bởi</dt>
                                                             <dd className="d-flex align-items-center ms-4 p-1 ">
-                                                                <img src={data?.eventDetail?.ImageUpdateBy ? `http://${host}/uploads/${data?.eventDetail?.ImageUpdateBy}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar"
+                                                                <img src={data?.eventDetail?.ImageUpdateBy ? `${host}/uploads/${data?.eventDetail?.ImageUpdateBy}.jpg` : avatar} onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar"
                                                                     className="me-2" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
                                                                 <div>
                                                                     <span>{data?.eventDetail?.UpdateBy || " "}</span>
@@ -1578,7 +1579,7 @@ const Discounts = (prop) => {
                                                                         // style={{ cursor: "pointer" }}
                                                                         >
                                                                             <td scope="row" style={{ textAlign: 'center' }}>
-                                                                                <a><img src={item.Image ? `http://${host}/uploads/${item.Image}.jpg` : avatar}
+                                                                                <a><img src={item.Image ? `${host}/uploads/${item.Image}.jpg` : avatar}
                                                                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }} alt="Avatar"
                                                                                     className="me-2 avatar" style={{ width: '30px', height: '30px', borderRadius: '50%' }}
                                                                                 /></a>

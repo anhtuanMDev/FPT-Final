@@ -343,7 +343,7 @@ const AddressInfor = (props: Props) => {
           maxHeight={300}
           labelField="name"
           valueField="name"
-          placeholder={!cityFocus ? 'Select item' : '...'}
+          placeholder={!cityFocus ? 'Chọn Tỉnh/Thành phố' : '...'}
           searchPlaceholder="Search..."
           value={city}
           onFocus={() => dispatch({type: 'cityFocus', payload: true})}
@@ -382,7 +382,7 @@ const AddressInfor = (props: Props) => {
           maxHeight={300}
           labelField="name"
           valueField="name"
-          placeholder={!districtFocus ? 'Select item' : '...'}
+          placeholder={!districtFocus ? 'Chọn Quận/Tỉnh' : '...'}
           searchPlaceholder="Search..."
           value={district}
           onFocus={() => dispatch({type: 'districtFocus', payload: true})}
@@ -421,7 +421,7 @@ const AddressInfor = (props: Props) => {
           maxHeight={280}
           labelField="name"
           valueField="name"
-          placeholder={!wardFocus ? 'Select item' : '...'}
+          placeholder={!wardFocus ? 'Chọn Phường/Xã' : '...'}
           searchPlaceholder="Search..."
           value={ward}
           onFocus={() => dispatch({type: 'wardFocus', payload: true})}

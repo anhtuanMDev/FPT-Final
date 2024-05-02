@@ -933,7 +933,7 @@ const Users = (prop) => {
                                     style={{ width: '40px', height: '40px' }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
                                     alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span> } </span>
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -1668,7 +1668,7 @@ const Users = (prop) => {
                                                             {data.topUsers.map((item, index) => (
                                                                 <tr key={index}>
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
-                                                                    <a><img src={`${host}/uploads/${item.Image}.jpg`} alt="" className="avatar" /></a>
+                                                                        <a><img src={`${host}/uploads/${item.Image}.jpg`} alt="" className="avatar" /></a>
                                                                     </th>
                                                                     <td>{item.Name}</td>
                                                                     <td>{item.Email}</td>
@@ -1787,13 +1787,13 @@ const Users = (prop) => {
                                                             {data.bannedUsers.map((item, index) => (
                                                                 <tr key={index}>
                                                                     <th scope="row" style={{ textAlign: 'center' }}>
-                                                                        <a><img src={item.avatar || avatar} alt="" className="avatar" /></a>
+                                                                        <a><img src={`${host}/uploads/${item.Image}.jpg`} alt="err" className="avatar" /></a>
                                                                     </th>
                                                                     <td>{item.Name}</td>
                                                                     <td>{item.UpdateAt}</td>
                                                                     <td>
-                                                                        <button type="button" className="btn btn-danger btn-sm" 
-                                                                        onClick={() => updateStatusUser(item.Name, adminID , "Active", item.Id)}>Bỏ cấm</button>
+                                                                        <button type="button" className="btn btn-danger btn-sm"
+                                                                            onClick={() => updateStatusUser(item.Name, adminID, "Active", item.Id)}>Bỏ cấm</button>
                                                                     </td>
                                                                 </tr>
                                                             ))}
@@ -1837,7 +1837,7 @@ const Users = (prop) => {
                                                     {data.newUser.map((item, index) => (
                                                         <tr key={index}>
                                                             <th scope="row" style={{ textAlign: 'center' }}>
-                                                                <a><img src={item.avatar || avatar} alt="" className="avatar" /></a>
+                                                                <a><img src={`${host}/uploads/${item.Image}.jpg`} alt="" className="avatar" /></a>
                                                             </th>
                                                             <td>{item.Name}</td>
                                                             <td className="fw-bold">{item.Email}</td>
@@ -1880,8 +1880,8 @@ const Users = (prop) => {
                                                                 <td className="fw-bold black-user-buttons-group">
                                                                     <button type="button" className="btn btn-danger btn-sm"
                                                                         onClick={() => replyUserReports(item.Id, item.UserName, adminID, item.TargetID)}>Cấm</button>
-                                                                    <button onClick={() => repjectUserReports(item.Id, item.UserName, adminID, item.TargetID)} 
-                                                                    type="button" className="btn btn-outline-warning btn-sm" >Xóa</button>
+                                                                    <button onClick={() => repjectUserReports(item.Id, item.UserName, adminID, item.TargetID)}
+                                                                        type="button" className="btn btn-outline-warning btn-sm" >Xóa</button>
                                                                 </td>
                                                             </tr>
                                                         ))

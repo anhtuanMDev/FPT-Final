@@ -7,7 +7,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 include_once 'connection.php'; 
 
-    $query = "SELECT * FROM users 
+    $query = "SELECT users.*, images.id as Image FROM users
+    INNER JOIN images ON users.Id = images.OwnerID
     WHERE DATE(`CreateAt`) <= DATE(NOW())
     ORDER BY `CreateAt` DESC LIMIT 10";
     $stmt = $dbConn->prepare($query);

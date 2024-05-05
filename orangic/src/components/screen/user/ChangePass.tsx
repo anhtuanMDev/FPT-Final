@@ -11,7 +11,7 @@ import Input from '../../custom/textinput/Input';
 import Fluid_btn from '../../custom/buttons/Fluid_btn';
 import {IconName} from '../../../assets/icons/Icons';
 import {showMessage} from 'react-native-flash-message';
-import { isLoading } from '../../../helpers/state/Global/globalSlice';
+import {isLoading} from '../../../helpers/state/Global/globalSlice';
 import AxiosInstance from '../../../helpers/AxiosInstance';
 
 /** Declaring state of reducer */
@@ -19,7 +19,6 @@ import AxiosInstance from '../../../helpers/AxiosInstance';
 type ChangePassState = {
   email: string;
   confirm: string;
-  password: string;
 };
 
 type ChangePassAction = {
@@ -30,7 +29,6 @@ type ChangePassAction = {
 const initialState: ChangePassState = {
   email: 'anhtt676@gmail.com',
   confirm: '757346',
-  password: '123456789123456',
 };
 
 const reducer = (state: ChangePassState, action: ChangePassAction) => {
@@ -90,42 +88,43 @@ const ChangePass = () => {
   };
 
   /** Create OTP */
-  const createOTP = async() =>{
+  const createOTP = async () => {
     const {email} = state;
     showMessage({
       message: 'Đang gửi mã xác thực',
       type: 'info',
       icon: 'info',
     });
-    if(!isEmailValid(email)) return showMessage({
-      message: 'Email không hợp lệ',
-      type: 'danger',
-      icon: 'warning',
-    })
+    if (!isEmailValid(email))
+      return showMessage({
+        message: 'Email không hợp lệ',
+        type: 'danger',
+        icon: 'warning',
+      });
     const response = await AxiosInstance().post('post-send-email.php', {
       email,
       token: '757346',
-      type: 'Đổi mật khẩu'
+      type: 'Đổi mật khẩu',
     });
     console.log(response);
-    if(response.status){
+    if (response.status) {
       showMessage({
         message: 'Mã xác thực đã được gửi',
         type: 'success',
         icon: 'info',
       });
-    }else {
+    } else {
       showMessage({
         message: response.statusText,
         type: 'danger',
         icon: 'warning',
-      })
+      });
     }
-  }
+  };
 
   const changePassword = async () => {
-    const {email, password, confirm} = state;
-    if (!checkField(email, password, confirm)) {
+    const {email, confirm} = state;
+    if (!checkField(email, confirm)) {
       return showMessage({
         message: 'Xin hãy điền đầy đủ thông tin',
         type: 'danger',
@@ -135,12 +134,15 @@ const ChangePass = () => {
     dispatchGlobal(isLoading(true));
     const body = {
       email,
-      password,
+      password: '123456',
       token: confirm,
-    }
-    const response = await AxiosInstance().post('post-change-password.php', body);
+    };
+    const response = await AxiosInstance().post(
+      'post-change-password.php',
+      body,
+    );
     dispatchGlobal(isLoading(false));
-    if(response.status){
+    if (response.status) {
       showMessage({
         message: 'Đổi mật khẩu thành công',
         type: 'success',
@@ -153,7 +155,7 @@ const ChangePass = () => {
         type: 'danger',
         icon: 'warning',
       });
-      console.log(response.statusText)
+      console.log(response.statusText);
     }
   };
 
@@ -193,19 +195,20 @@ const ChangePass = () => {
         />
 
         <Input
-          placeholder="Mật khẩu mới"
-          onChange={text => {
-            dispatch({type: 'password', payload: text});
-          }}
-          value={state.password}
-        />
-        <Input
           placeholder="Mã xác thực"
           onChange={text => {
             dispatch({type: 'confirm', payload: text});
           }}
           value={state.confirm}
         />
+
+        <Text
+          style={[
+            {color: Colors.orange, marginVertical: 15, alignSelf: 'center', textAlign: 'center'},
+          ]}
+          >
+          *Lưu ý: Mật khẩu sẽ được đặt mặc định là 123456 sau khi bạn đã xác thực quên mật khẩu thành công
+        </Text>
 
         <Fluid_btn
           title="Đổi mật khẩu"

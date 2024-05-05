@@ -12,7 +12,7 @@ try {
     $email = $data->email;
     $password = $data->password;
 
-    $sql = "SELECT Id, Name, `Rank` FROM users WHERE Email ='$email' AND Password='$password' AND Status = 'Active'";
+    $sql = "SELECT Id FROM users WHERE Email ='$email' AND Password='$password' AND Status = 'Active' OR Status = 'Not Confirm'";
     $stmt = $dbConn->prepare($sql);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);

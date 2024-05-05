@@ -111,7 +111,7 @@ const RootNavigation = () => {
   const id = useSelector(selectUserID);
 
   useEffect(() => {
-    dispatch(setHost('http://192.168.1.4:8686'));
+    dispatch(setHost('http://192.168.1.7:8686'));
   }, []);
 
   const getInfor = async () => {
@@ -128,11 +128,9 @@ const RootNavigation = () => {
     const getID = async () => {
       await AsyncStorage.getItem('userID').then(res => {
         if (res) {
-          console.log('root navigation id', res);
           dispatch(isLogin(true));
           dispatch(setUserID(res));
         } else {
-          console.log('root navigation id', 'no id');
           dispatch(isLogin(false));
           dispatch(setUserID(''));
         }

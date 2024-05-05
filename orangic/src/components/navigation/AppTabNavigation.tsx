@@ -80,19 +80,14 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
   const logOut = async () => {
     try {
-      // dispatch(isLogin(false));
       await AsyncStorage.removeItem('userID', err =>
         console.log('userID', err),
       );
-      // dispatch(setUserID(''));
       dispatch(isLogin(false));
 
-      console.log('log out');
     } catch (error) {
       console.error('Failed to remove the item', error);
     }
-    // dispatch(isLogin(false));
-    // dispatch(setUserID(''));
   };
 
   const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
@@ -101,7 +96,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       <View
         style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
         <Image
-          source={{uri: `${host}/uploads/${image}.jpg`}}
+          source={image ? {uri: `${host}/uploads/${image}.jpg`} : require('./../../assets/images/baseImage.png')}
           style={{width: 35, height: 35, borderRadius: 35, marginRight: 15}}
         />
         <View style={{alignItems: 'flex-start'}}>

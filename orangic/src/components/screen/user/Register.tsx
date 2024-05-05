@@ -25,22 +25,15 @@ import AxiosInstance from '../../../helpers/AxiosInstance';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {ParamList} from '../../navigation/RootNavigation';
 import {generateID} from '../app/Store/CreateRestaurant';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height * 0.4;
 
-const avatarSize = width * 0.3;
-
 /** Declaring state of reducer */
 
 type RegisterState = {
-  name: string;
   email: string;
   password: string;
-  image: string;
-  confirm: string;
 };
 
 type RegisterAction = {
@@ -49,11 +42,8 @@ type RegisterAction = {
 };
 
 const initialState: RegisterState = {
-  name: 'Anh Tuấn',
   email: 'anhtt676@gmail.com',
   password: '123456',
-  image: '',
-  confirm: '',
 };
 
 const reducer = (state: RegisterState, action: RegisterAction) => {
@@ -63,58 +53,7 @@ const reducer = (state: RegisterState, action: RegisterAction) => {
 const Register = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigation = useNavigation<NavigationProp<ParamList>>();
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['20%', '30%'], []);
-
-  const openCamera = async () => {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      const result: any = await launchCamera({
-        mediaType: 'photo',
-        cameraType: 'front',
-      });
-
-      if (result.didCancel) {
-        console.log('User cancelled image picker');
-      }
-
-      // Kiểm tra nếu `result` không phải null và `result.assets` có ít nhất một phần tử
-      if (result && result.assets && result.assets.length > 0) {
-        dispatch({type: 'image', payload: result.assets[0].uri});
-      }
-    }
-  };
-
-  const openLibrary = async () => {
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
-      selectionLimit: 1,
-    };
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        const result: any = launchImageLibrary(
-          options,
-          (response: ImagePickerResponse) => {
-            if (response.didCancel || response.errorCode) {
-              return;
-            }
-            // Process the selected images
-            if (response && response.assets && response.assets.length > 0) {
-              const uris: any[] = response.assets.map(asset => asset.uri);
-              dispatch({type: 'image', payload: uris[0]});
-            }
-          },
-        );
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
+  const [showPass, setShowPass] = useState(false);
 
   const isEmailValid = (email: string) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -154,68 +93,22 @@ const Register = () => {
     return true;
   };
 
-  /** Start of register account for user */
-  const createOTP = async () => {
-    const {email} = state;
-    showMessage({
-      message: 'Đang gửi mã xác thực',
-      type: 'info',
-      icon: 'info',
-    });
-    if (!isEmailValid(email))
-      return showMessage({
-        message: 'Email không hợp lệ',
-        type: 'danger',
-        icon: 'warning',
-      });
-    const response = await AxiosInstance().post(
-      '/post-send-register-email.php',
-      {
-        email,
-        token: '757346',
-        type: 'Đăng ký tài khoản',
-      },
-    );
-    console.log(response);
-    if (response.status) {
-      showMessage({
-        message: 'Mã xác thực đã được gửi',
-        type: 'success',
-        icon: 'info',
-      });
-    } else {
-      showMessage({
-        message: response.statusText,
-        type: 'danger',
-        icon: 'warning',
-      });
-    }
-  };
-
   const registerAccount = async () => {
-    const {name, email, password, confirm, image} = state;
-    if (image.length === 0) {
-      showMessage({
-        message: 'Xin hãy chọn ảnh đại diện',
-        type: 'danger',
-        icon: 'warning',
-      });
-      return;
-    }
-
+    const {email, password} = state;
+    const name = email.slice(0, email.indexOf('@'));
     showMessage({
       message: 'Đang đăng ký tài khoản',
       type: 'info',
       icon: 'info',
     });
-    if (!checkField(email, name, password, confirm)) return;
+    if (!checkField(email, name, password)) return;
     const body = {
       name,
       email,
-      token: confirm,
       password,
     };
     const response = await AxiosInstance().post('/register-user.php', body);
+    console.log(response);
     if (response.status) {
       showMessage({
         message: 'Đăng ký thành công',
@@ -225,7 +118,7 @@ const Register = () => {
       const formData = new FormData();
       const id = generateID('IMG');
       formData.append('image', {
-        uri: image,
+        uri: './../../../assets/images/avatart.jpg',
         name: `${id}.jpg`,
         type: 'image/jpg',
       });
@@ -233,11 +126,14 @@ const Register = () => {
         '/upload-file.php',
         formData,
       );
+      console.log(result);
       const data = {
         id: id,
         ownerID: response.data,
       };
       const upload: any = await AxiosInstance().post('/insert-image.php', data);
+      console.log(upload);
+
       navigation.navigate('Login');
     } else {
       showMessage({
@@ -249,154 +145,60 @@ const Register = () => {
     }
   };
 
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-
-  const handleCloseModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.close();
-  }, []);
-
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <View style={{flex: 1, backgroundColor: Colors.white}}>
-        <FastFood width={width} height={height} />
+    <View style={{flex: 1, backgroundColor: Colors.white}}>
+      <FastFood width={width} height={height} />
 
-        {state.image.length > 0 ? (
-          <TouchableOpacity
-            onPress={() => {
-              handlePresentModalPress();
-            }}
-            style={{
-              width: avatarSize,
-              height: avatarSize,
-              position: 'absolute',
-              top: height - avatarSize / 1.5,
-              left: width / 2 - avatarSize / 2,
-              borderRadius: avatarSize / 2,
-              borderWidth: 5,
-              borderColor: Colors.ember,
-              overflow: 'hidden',
-            }}>
-            <Image
-              source={{uri: state.image}}
-              style={{
-                width: avatarSize,
-                height: avatarSize,
-              }}
-            />
-          </TouchableOpacity>
-        ) : (
-          <Avatar
-            width={avatarSize}
-            height={avatarSize}
-            style={{
-              position: 'absolute',
-              top: height - avatarSize / 1.5,
-              left: width / 2 - avatarSize / 2,
-              borderRadius: avatarSize / 2,
-              borderWidth: 5,
-              borderColor: Colors.ember,
-            }}
-            onPress={() => {
-              handlePresentModalPress();
-            }}
-          />
-        )}
+      <View
+        style={{
+          flex: 1,
+          marginTop: 30,
+          paddingTop: 20,
+          paddingHorizontal: 20,
+        }}>
+        <Input
+          placeholder="Email"
+          onChange={text => {
+            dispatch({type: 'email', payload: text});
+          }}
+          value={state.email}
+          SVG={IconName.send}
+        />
 
-        <View
-          style={{
-            flex: 1,
-            marginTop: 30,
-            paddingTop: 20,
-            paddingHorizontal: 20,
+        <Input
+          onChange={text => {
+            dispatch({type: 'password', payload: text});
+          }}
+          value={state.password}
+          placeholder="Password"
+          secureTextEntry={!showPass}
+          showButton={true}
+          SVG={showPass ? IconName.eye : IconName.eyeClose}
+          color={Colors.black}
+          onPress={() => {
+            setShowPass(!showPass);
+          }}
+        />
+
+        <Text
+          style={[
+            {color: Colors.orange, marginVertical: 15, alignSelf: 'center'},
+          ]}
+          onPress={() => {
+            navigation.navigate('Login');
           }}>
-          <Input
-            placeholder="Tên của bạn"
-            onChange={text => {
-              dispatch({type: 'name', payload: text});
-            }}
-            value={state.name}
-          />
-          <Input
-            placeholder="Email"
-            onChange={text => {
-              dispatch({type: 'email', payload: text});
-            }}
-            value={state.email}
-            showButton
-            SVG={IconName.send}
-            onPress={() => {
-              createOTP();
-            }}
-          />
-          <Input
-            placeholder="Mật khẩu"
-            onChange={text => {
-              dispatch({type: 'password', payload: text});
-            }}
-            value={state.password}
-          />
-          <Input
-            placeholder="Mã xác thực"
-            onChange={text => {
-              dispatch({type: 'confirm', payload: text});
-            }}
-            value={state.confirm}
-          />
+          Bạn đã có tài khoản?
+        </Text>
 
-          <Fluid_btn
-            title="Đăng ký"
-            onPress={() => {
-              registerAccount();
-            }}
-          />
-        </View>
-
-        <BottomSheetModalProvider>
-          <BottomSheetModal
-            ref={bottomSheetModalRef}
-            index={1}
-            style={{
-              backgroundColor: Colors.white,
-              elevation: 5,
-              paddingHorizontal: 20,
-            }}
-            snapPoints={snapPoints}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingTop: 30,
-                paddingHorizontal: 20,
-              }}>
-              <TouchableOpacity
-                style={{alignItems: 'center'}}
-                onPress={() => {
-                  handleCloseModalPress();
-                  openCamera();
-                }}>
-                <Icons name={IconName.camera} size={30} color={Colors.ember} />
-                <Text style={{fontSize: 20, color: Colors.ember}}>
-                  Chụp ảnh
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{alignItems: 'center'}}
-                onPress={() => {
-                  handleCloseModalPress();
-                  openLibrary();
-                }}>
-                <Icons name={IconName.library} size={30} color={Colors.ember} />
-                <Text style={{fontSize: 20, color: Colors.ember}}>
-                  Chọn ảnh
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </BottomSheetModal>
-        </BottomSheetModalProvider>
+        <Fluid_btn
+          title="Đăng ký"
+          style={{marginTop: 20}}
+          onPress={() => {
+            registerAccount();
+          }}
+        />
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 

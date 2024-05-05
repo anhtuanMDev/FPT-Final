@@ -90,7 +90,7 @@ const Login = (prop) => {
                                                     <label htmlFor="yourUsername" className="form-label">Email</label>
                                                     <div className="input-group has-validation">
                                                         <span className="input-group-text" id="inputGroupPrepend">@</span>
-                                                        <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'buivanham@gmail.com'} />
+                                                        <input type="text" name="username" className="form-control" id="yourUsername" required defaultValue={'trank9626@gmail.com'} />
                                                         <div className="invalid-feedback">Vui lòng nhập Email.</div>
                                                     </div>
                                                 </div>

@@ -1139,7 +1139,7 @@ const Discounts = (prop) => {
                                                         <div className='col-12'>
                                                             <label htmlFor="eventTitle" className="form-label">Tiêu đề sự kiện</label>
                                                             <div className='input-group'>
-                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required />
+                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required defaultValue={"Sự kiện mùa hè"}/>
                                                             </div>
                                                             <div className='invalid-feedback'>Xin vui lòng nhập Tiêu đề sự kiện!</div>
                                                         </div>
@@ -1147,7 +1147,7 @@ const Discounts = (prop) => {
                                                         <div className='col-12'>
                                                             <label htmlFor="eventContent" className="form-label">Nội dung sự kiện</label>
                                                             <div className='input-group'>
-                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required />
+                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required defaultValue={"Giảm giá lên tới 20%"}/>
                                                             </div>
                                                             <div className='invalid-feedback'>Xin vui lòng nhập Nội dung sự kiện!</div>
                                                         </div>
@@ -1165,7 +1165,7 @@ const Discounts = (prop) => {
                                                                 <div className="col-3" >
                                                                     <label htmlFor="eventDiscount" className="form-label">Giảm giá (%)</label>
                                                                     <div className='input-group'>
-                                                                        <input type='number' className='form-control' id='eventDiscount' name='eventDiscount' required maxLength={2} min={0} max={100} defaultValue={0} />
+                                                                        <input type='number' className='form-control' id='eventDiscount' name='eventDiscount' required maxLength={2} min={0} max={100} defaultValue={20} />
                                                                     </div>
                                                                     <div className='invalid-feedback'>Xin vui lòng nhập Giảm giá!</div>
                                                                 </div>
@@ -1217,7 +1217,7 @@ const Discounts = (prop) => {
                                                                     console.log("press create event");
                                                                     handleCreateEvent(event);
 
-                                                                }}>Create</button>
+                                                                }}>Tạo</button>
                                                         </div>
                                                     </form>
                                                 </div>

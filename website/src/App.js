@@ -19,7 +19,7 @@ import Staffs from './components/employees/Staff';
 
 
 function App() {
-  const host = 'http://192.168.1.4:8686';
+  const host = 'http://172.16.71.125:8686';
   const getIdFromLocalStorage = () => {
     const id = localStorage.getItem('id')
     if (id) return JSON.parse(id)

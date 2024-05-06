@@ -9,15 +9,15 @@ import {
   Button,
   Modal,
 } from 'react-native';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   NavigationProp,
   RouteProp,
   useNavigation,
   useIsFocused,
 } from '@react-navigation/native';
-import {ParamList, UserComment} from '../../navigation/RootNavigation';
-import {useDispatch, useSelector} from 'react-redux';
+import { ParamList, UserComment } from '../../navigation/RootNavigation';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   isLoading,
   selectHost,
@@ -26,25 +26,25 @@ import {
 } from '../../../helpers/state/Global/globalSlice';
 import Loading from '../../custom/ui/Loading';
 import AxiosInstance from '../../../helpers/AxiosInstance';
-import {showMessage} from 'react-native-flash-message';
-import {ScrollView} from 'react-native';
-import {Colors, screenStyles} from '../../custom/styles/ScreenStyle';
-import {StatusBar} from 'react-native';
-import {fonts} from '../../custom/styles/ComponentStyle';
-import Icons, {IconName} from '../../../assets/icons/Icons';
+import { showMessage } from 'react-native-flash-message';
+import { ScrollView } from 'react-native';
+import { Colors, screenStyles } from '../../custom/styles/ScreenStyle';
+import { StatusBar } from 'react-native';
+import { fonts } from '../../custom/styles/ComponentStyle';
+import Icons, { IconName } from '../../../assets/icons/Icons';
 import BigCard from '../../custom/cards/BigCard';
 import Fluid_btn from '../../custom/buttons/Fluid_btn';
 import Quantity_btn from '../../custom/buttons/Quantity_btn';
-import Icons2, {Icon2Name} from '../../../assets/icons/Icons2';
+import Icons2, { Icon2Name } from '../../../assets/icons/Icons2';
 import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ReviewCard from '../../custom/cards/ReviewCard';
 import Linear_btn from '../../custom/buttons/Linear_btn';
-import {convertPoint} from '../../navigation/AppTabNavigation';
+import { convertPoint } from '../../navigation/AppTabNavigation';
 import TextArea from '../../custom/textinput/TextArea';
 import CustomRating from '../../custom/ui/CustomRating';
 import WaitingModal from '../../custom/ui/WaitingModal';
@@ -229,7 +229,10 @@ const US_FoodDetail = (props: Props) => {
   const [comment, setComment] = useState<UserComment>(initialComment);
 
   useEffect(() => {
-    if (!isFocused) naviagtion.setParams({id: ''});
+    if (!isFocused) {
+      naviagtion.setParams({ id: '' });
+      setQuantity(1);
+    }
   }, [isFocused]);
 
   const getFoodDetail = async () => {
@@ -268,7 +271,7 @@ const US_FoodDetail = (props: Props) => {
     const response = await AxiosInstance().post('/post-add-favorite.php', body);
     // console.log('add favorite', response);
     if (response.status) {
-      setState({...state, userFavorite: 1});
+      setState({ ...state, userFavorite: 1 });
     }
   };
 
@@ -283,13 +286,13 @@ const US_FoodDetail = (props: Props) => {
     );
     // console.log('remove favorite', response);
     if (response.status) {
-      setState({...state, userFavorite: 0});
+      setState({ ...state, userFavorite: 0 });
     }
   };
 
   useEffect(() => {
     const backAction = () => {
-      naviagtion.setParams({id: ''});
+      naviagtion.setParams({ id: '' });
       naviagtion.goBack();
       return true;
     };
@@ -310,12 +313,12 @@ const US_FoodDetail = (props: Props) => {
   return load ? (
     <Loading />
   ) : (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <View style={{flex: 1}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <LoadModal />
 
         <ScrollView
-          style={{flex: 1, backgroundColor: Colors.white}}
+          style={{ flex: 1, backgroundColor: Colors.white }}
           showsVerticalScrollIndicator={false}>
           <StatusBar backgroundColor={Colors.white} barStyle="dark-content" />
 
@@ -326,15 +329,15 @@ const US_FoodDetail = (props: Props) => {
               showsHorizontalScrollIndicator={false}
               ListEmptyComponent={
                 <Image
-                  style={{height: 200, width: width, resizeMode: 'cover'}}
+                  style={{ height: 200, width: width, resizeMode: 'cover' }}
                   source={require('../../../assets/images/baseImage.png')}
                 />
               }
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <Image
-                  style={{height: 200, width}}
-                  source={{uri: `${host}/uploads/${state.Images[index]}.jpg`}}
+                  style={{ height: 200, width }}
+                  source={{ uri: `${host}/uploads/${state.Images[index]}.jpg` }}
                   resizeMode="cover"
                 />
               )}
@@ -372,7 +375,7 @@ const US_FoodDetail = (props: Props) => {
           <Text
             style={[
               fonts.titleBold,
-              {marginLeft: 20, marginTop: 20, marginBottom: 15},
+              { marginLeft: 20, marginTop: 20, marginBottom: 15 },
             ]}>
             {state.Name}
           </Text>
@@ -392,7 +395,7 @@ const US_FoodDetail = (props: Props) => {
               <Icons name={IconName.star} color={Colors.yellow} size={18} />
 
               <Text style={[fonts.sublineBold]}>{state.Rating}</Text>
-              <Text style={[fonts.text, {textAlignVertical: 'top'}]}>
+              <Text style={[fonts.text, { textAlignVertical: 'top' }]}>
                 {`(${state.ReviewCount})`}
               </Text>
             </View>
@@ -441,32 +444,32 @@ const US_FoodDetail = (props: Props) => {
                 marginVertical: 20,
               },
             ]}>
-            <Text style={[fonts.captionBold, {color: Colors.green}]}>
+            <Text style={[fonts.captionBold, { color: Colors.green }]}>
               {Math.round(state.Price * (1 - state.Discount / 100))}k VNĐ
             </Text>
             <View
               style={[
-                {flexDirection: 'row', columnGap: 10, alignItems: 'center'},
+                { flexDirection: 'row', columnGap: 10, alignItems: 'center' },
               ]}>
               <Quantity_btn
                 type="minus"
                 onPress={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
-                style={{width: 20}}
+                style={{ width: 20 }}
               />
-              <Text style={[fonts.sublineBold, {color: Colors.black}]}>
+              <Text style={[fonts.sublineBold, { color: Colors.black }]}>
                 {quantity}
               </Text>
               <Quantity_btn
                 type="plus"
                 onPress={() => setQuantity(quantity <= 10 ? quantity + 1 : 10)}
-                style={{width: 20}}
+                style={{ width: 20 }}
               />
             </View>
           </View>
           <Text
             style={[
               fonts.sublineBold,
-              {marginHorizontal: 20, color: Colors.slate},
+              { marginHorizontal: 20, color: Colors.slate },
             ]}>
             {state.Description}
           </Text>
@@ -503,7 +506,7 @@ const US_FoodDetail = (props: Props) => {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={[fonts.button, {color: Colors.black}]}>
+              <Text style={[fonts.button, { color: Colors.black }]}>
                 Đánh giá và bình luận
               </Text>
             </TouchableOpacity>
@@ -535,10 +538,10 @@ const US_FoodDetail = (props: Props) => {
                   marginTop: 30,
                   marginHorizontal: 20,
                 }}>
-                <Text style={[fonts.sublineBold, {flex: 1}]}>
+                <Text style={[fonts.sublineBold, { flex: 1 }]}>
                   Món ăn đặc biệt của nhà hàng
                 </Text>
-                <Text style={[fonts.link, {color: Colors.green}]}>See all</Text>
+                <Text style={[fonts.link, { color: Colors.green }]}>See all</Text>
               </View>
 
               <FlatList
@@ -546,7 +549,7 @@ const US_FoodDetail = (props: Props) => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({item, index}) => (
+                renderItem={({ item, index }) => (
                   <BigCard
                     type="Food"
                     discount={item.Discount}
@@ -554,7 +557,7 @@ const US_FoodDetail = (props: Props) => {
                     name={item.Name}
                     price={item.Price}
                     onPress={async () => {
-                      naviagtion.setParams({id: item.Id});
+                      naviagtion.setParams({ id: item.Id });
                       await getFoodDetail();
                     }}
                     rate={item.Rating}
@@ -583,18 +586,18 @@ const US_FoodDetail = (props: Props) => {
                   marginTop: 30,
                   marginHorizontal: 20,
                 }}>
-                <Text style={[fonts.sublineBold, {flex: 1}]}>
+                <Text style={[fonts.sublineBold, { flex: 1 }]}>
                   Món ăn khác của nhà hàng
                 </Text>
-                <Text style={[fonts.link, {color: Colors.green}]}>See all</Text>
+                <Text style={[fonts.link, { color: Colors.green }]}>See all</Text>
               </View>
               <FlatList
                 data={state.OtherList}
                 horizontal
-                style={{marginBottom: 50}}
+                style={{ marginBottom: 50 }}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({item, index}) => {
+                renderItem={({ item, index }) => {
                   return (
                     <BigCard
                       type="Food"
@@ -604,7 +607,7 @@ const US_FoodDetail = (props: Props) => {
                       price={item.Price}
                       rate={item.Rating}
                       onPress={async () => {
-                        naviagtion.setParams({id: item.Id});
+                        naviagtion.setParams({ id: item.Id });
                         await getFoodDetail();
                       }}
                       rateCount={item.ReviewCount}
@@ -677,7 +680,7 @@ const US_FoodDetail = (props: Props) => {
             <Text
               style={[
                 fonts.captionBold,
-                {marginVertical: 10, textAlign: 'center'},
+                { marginVertical: 10, textAlign: 'center' },
               ]}>
               {typeof state.Opinion == 'object'
                 ? 'Chỉnh sửa bình luận'
@@ -685,18 +688,18 @@ const US_FoodDetail = (props: Props) => {
             </Text>
 
             <CustomRating
-              style={{alignSelf: 'center', marginVertical: 15}}
+              style={{ alignSelf: 'center', marginVertical: 15 }}
               point={comment.Point}
               onChange={p => {
-                setComment({...comment, Point: p});
+                setComment({ ...comment, Point: p });
               }}
             />
 
             <View>
               <TextArea
-                onChange={text => setComment({...comment, Comment: text})}
+                onChange={text => setComment({ ...comment, Comment: text })}
                 value={comment.Comment}
-                style={{height: 100}}
+                style={{ height: 100 }}
               />
 
               <Fluid_btn
@@ -705,22 +708,22 @@ const US_FoodDetail = (props: Props) => {
                   setWait(true);
                   typeof state.Opinion == 'boolean'
                     ? await createReview({
-                        point: comment.Point,
-                        content: comment.Comment,
-                        userID: userID,
-                        targetID: id as string,
-                      })
+                      point: comment.Point,
+                      content: comment.Comment,
+                      userID: userID,
+                      targetID: id as string,
+                    })
                     : await saveReview({
-                        id: comment.Id,
-                        point: comment.Point,
-                        content: comment.Comment,
-                        userID: userID as string,
-                      });
+                      id: comment.Id,
+                      point: comment.Point,
+                      content: comment.Comment,
+                      userID: userID as string,
+                    });
                   await getFoodDetail();
                   setWait(false);
                   handlePresentModalPress();
                 }}
-                style={{marginTop: 20}}
+                style={{ marginTop: 20 }}
               />
             </View>
           </BottomSheetModal>
@@ -739,14 +742,14 @@ const US_FoodDetail = (props: Props) => {
                   state.hasUseService != 0
                     ? handlePresentCommentModalPress()
                     : showMessage({
-                        message:
-                          'Bạn cần sử dụng dịch vụ của nhà hàng để có thể bình luận và đánh giá',
-                        type: 'warning',
-                        icon: 'info',
-                      });
+                      message:
+                        'Bạn cần sử dụng dịch vụ của nhà hàng để có thể bình luận và đánh giá',
+                      type: 'warning',
+                      icon: 'info',
+                    });
                 }}
                 title="Để lại bình luận & đánh giá"
-                style={{marginVertical: 20}}
+                style={{ marginVertical: 20 }}
               />
             ) : (
               <TouchableOpacity onPress={handlePresentCommentModalPress}>
@@ -761,9 +764,9 @@ const US_FoodDetail = (props: Props) => {
             )}
             <BottomSheetFlatList
               data={state.Reviews}
-              ItemSeparatorComponent={() => <View style={{height: 15}} />}
-              contentContainerStyle={{paddingVertical: 20}}
-              renderItem={({item}) => (
+              ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+              contentContainerStyle={{ paddingVertical: 20 }}
+              renderItem={({ item }) => (
                 <ReviewCard
                   name={item.UserName}
                   point={item.Point}

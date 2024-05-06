@@ -1,8 +1,8 @@
-import {View, Text, Image, ViewStyle} from 'react-native';
+import { View, Text, Image, ViewStyle } from 'react-native';
 import React from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import Quantity_btn from '../buttons/Quantity_btn';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { Colors } from '../styles/ScreenStyle';
 import { fonts } from '../styles/ComponentStyle';
@@ -65,7 +65,7 @@ const CartItems = (props: Prop) => {
         <View
           style={{
             shadowColor: Colors.orange,
-            shadowOffset: {width: 0, height: 2},
+            shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
             elevation: 5,
@@ -83,7 +83,7 @@ const CartItems = (props: Prop) => {
             ]}
           />
         </View>
-        <View style={[{flex: 1, marginLeft: 10}]}>
+        <View style={[{ flex: 1, marginLeft: 10 }]}>
           <View
             style={[
               {
@@ -92,19 +92,22 @@ const CartItems = (props: Prop) => {
                 alignItems: 'center',
               },
             ]}>
-            <Text style={[fonts.titleBold]}>{props?.name || 'CartItems'}</Text>
+            <Text
+              style={[fonts.titleBold]}
+
+            >{(props?.name && props.name.length > 12 ? props.name.slice(0,12) + "..." : props.name )|| 'CartItems'}</Text>
             <CheckBox
               value={typeof props?.value != undefined ? props?.value : false}
               onChange={() => {
                 props?.onPress && props?.onPress();
               }}
-              tintColors={{true: Colors.orange, false: Colors.slate}}
+              tintColors={{ true: Colors.orange, false: Colors.slate }}
             />
           </View>
           <Text
             style={[
               fonts.subline,
-              {flex: 1, color: Colors.slate, marginVertical: 5},
+              { flex: 1, color: Colors.slate, marginVertical: 5 },
             ]}>
             {props?.intro || 'This is a description'}
           </Text>
@@ -117,17 +120,17 @@ const CartItems = (props: Prop) => {
                 paddingBottom: 5,
               },
             ]}>
-            <Text style={[fonts.subline, {color: Colors.orange}]}>
+            <Text style={[fonts.subline, { color: Colors.orange }]}>
               {props?.price || '0'}k VNĐ
             </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Quantity_btn
                 type="minus"
                 onPress={() => {
                   props?.minus && props?.minus();
                 }}
               />
-              <Text style={[fonts.subline, {marginHorizontal: 10}]}>
+              <Text style={[fonts.subline, { marginHorizontal: 10 }]}>
                 {props?.quantity || '0'}
               </Text>
               <Quantity_btn

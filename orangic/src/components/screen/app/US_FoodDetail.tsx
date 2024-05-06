@@ -48,6 +48,7 @@ import {convertPoint} from '../../navigation/AppTabNavigation';
 import TextArea from '../../custom/textinput/TextArea';
 import CustomRating from '../../custom/ui/CustomRating';
 import WaitingModal from '../../custom/ui/WaitingModal';
+import {set} from 'mongoose';
 /** Type access data */
 
 type SideFoodType = {
@@ -137,6 +138,7 @@ const addCart = async (userID: string, foodID: string, quantity: number) => {
     quantity: quantity,
   };
   const repsonse = await AxiosInstance().post('/post-orders.php', data);
+  console.log(repsonse);
   if (repsonse.status !== 400 && repsonse.status !== 500) {
     showMessage({
       message: 'Thêm món ăn vào giỏ hàng thành công',
@@ -229,7 +231,10 @@ const US_FoodDetail = (props: Props) => {
   const [comment, setComment] = useState<UserComment>(initialComment);
 
   useEffect(() => {
-    if (!isFocused) naviagtion.setParams({id: ''});
+    if (!isFocused) {
+      setQuantity(1);
+      naviagtion.setParams({id: ''});
+    }
   }, [isFocused]);
 
   const getFoodDetail = async () => {

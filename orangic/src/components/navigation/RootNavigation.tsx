@@ -46,6 +46,7 @@ export type ParamList = {
   Schedules: undefined;
   Notifications: undefined;
   Search: undefined | { search: string };
+  US_OrderDetail: undefined | { id: string };
   ChangeInformation: undefined | { infor: Information };
   NotificationDetails: undefined | { context: NotifyDetail };
 
@@ -111,7 +112,7 @@ const RootNavigation = () => {
   const id = useSelector(selectUserID);
 
   useEffect(() => {
-    dispatch(setHost('http://192.168.1.7:8686'));
+    dispatch(setHost('http://172.16.72.215:8686'));
   }, []);
 
   const getInfor = async () => {

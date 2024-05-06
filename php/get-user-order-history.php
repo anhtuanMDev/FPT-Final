@@ -11,11 +11,16 @@ try {
     $data = json_decode(file_get_contents('php://input'));
     $id = $data->id;
 
-    $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt,
-    address.Address, address.Phone, address.City, address.District, address.Ward
+    // $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt,
+    // address.Address, address.Phone, address.City, address.District, address.Ward
+    // FROM orders
+    // INNER JOIN address ON orders.AddressID = address.Id
+    // WHERE orders.UserID = '$id' AND orders.Status = 'Done'";
+
+    $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt
     FROM orders
-    INNER JOIN address ON orders.AddressID = address.Id
     WHERE orders.UserID = '$id' AND orders.Status = 'Done'";
+
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,10 +28,11 @@ try {
     foreach ($orders as $key => $order) {
     $ordID = $order["Id"];
     $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Value,
-    orderitems.ArriveAt, orderitems.Status, 
-    (SELECT Name FROM foods WHERE orderitems.FoodID = foods.Id) AS FoodName,
-    (SELECT Id FROM images WHERE orderitems.FoodID = images.OwnerID) AS Image
-    FROM orderitems WHERE orderitems.OrderID = '$ordID'";
+    orderitems.ArriveAt, orderitems.Status, foods.Name AS FoodName, images.Id AS Image
+    FROM orderitems
+    INNER JOIN foods ON foods.Id = orderitems.FoodID
+    INNER JOIN images ON images.OwnerID = orderitems.FoodID
+    WHERE orderitems.OrderID = '$ordID'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -50,6 +50,7 @@ import Report from '../screen/app/Report';
 import JoinEvent from '../screen/app/Store/JoinEvent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AllRestaurants from '../allScreen/AllRestaurants';
+import US_OrderDetail from '../screen/app/Drawer/US_OrderDetail';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Drawer = createDrawerNavigator<ParamList>();
@@ -187,6 +188,7 @@ const AppDrawerNavigation = () => {
       <Drawer.Screen name="Search" component={Search} />
       <Drawer.Screen name="Profile" component={Profile} />
       <Drawer.Screen name="OrderManagement" component={OrderManagement} />
+      <Drawer.Screen name="US_OrderDetail" component={US_OrderDetail} />
       <Drawer.Screen name="Schedules" component={Schedules} />
       <Drawer.Screen name="Rank" component={Rank} />
       <Drawer.Screen name="Notifications" component={Notifications} />

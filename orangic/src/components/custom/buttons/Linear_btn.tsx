@@ -14,6 +14,7 @@ type Prop = {
   style?: ViewStyle | ViewStyle[];
   textStyle?: TextStyle | TextStyle[];
   title?: string;
+  disabled?: boolean;
   underlayColor?: ColorValue;
 };
 
@@ -23,6 +24,7 @@ const Linear_btn = (props: Prop) => {
     <TouchableHighlight
       activeOpacity={0.49}
       underlayColor={underlayColor || Colors.ember}
+      disabled={props.disabled}
       onPress={() => {
         onPress && onPress();
       }}

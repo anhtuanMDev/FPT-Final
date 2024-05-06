@@ -10,12 +10,21 @@ import React from 'react';
 import {Colors} from '../styles/ScreenStyle';
 import Icons2, {Icon2Name} from '../../../assets/icons/Icons2';
 import {fonts} from '../styles/ComponentStyle';
-import {Items} from '../../screen/app/Orders/OrderHistory';
 import {useSelector} from 'react-redux';
 import {selectHost} from '../../../helpers/state/Global/globalSlice';
 
 const {width, height} = Dimensions.get('window');
 const padding = 20;
+
+type Items = {
+  ArriveAt: string;
+  FoodName: string;
+  Id: string;
+  Image: string;
+  Quantity: number;
+  Status: string;
+  Value: number;
+};
 
 type Prop = {
   id: string;
@@ -24,6 +33,7 @@ type Prop = {
   style?: ViewStyle | ViewStyle[];
   items: Items[];
   padding: number;
+  onPress: () => void;
 };
 
 type OrderItemDetailProp = {
@@ -58,24 +68,22 @@ const OrderItemDetail = (props: OrderItemDetailProp) => {
     <View
       style={{
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         paddingTop: 10,
-        paddingLeft: 15,
-        paddingRight: 20,
+        paddingLeft: 5,
+        paddingRight: 10,
+        marginBottom: 10,
       }}>
       <View
         style={{
           flex: 1,
           flexDirection: 'row',
           justifyContent: 'flex-start',
-          alignItems: 'center',
           paddingLeft: 15,
         }}>
         <View
           style={{
-            width: width * 0.08,
-            height: width * 0.08,
+            width: width * 0.15,
+            height: width * 0.15,
             overflow: 'hidden',
             borderRadius: 20,
           }}>
@@ -85,24 +93,23 @@ const OrderItemDetail = (props: OrderItemDetailProp) => {
           />
         </View>
 
-        <View>
-          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>
-            {name}
-          </Text>
-          <Text style={[fonts.textBold, {marginLeft: 10}]}>
-            Số lượng: {quantity}
-          </Text>
-        </View>
+        <View style={{flex: 1, marginLeft: 15, justifyContent: 'space-evenly'}}>
+          <Text style={[fonts.sublineBold]}>{name}</Text>
 
-        <View style={{flex: 1}} />
-
-        <View style={{alignItems: 'flex-end'}}>
-          <Text style={[fonts.text, {marginLeft: 5, marginBottom: 5}]}>
-            Tiền: {value}k VNĐ
-          </Text>
-          <Text style={[fonts.textBold, {marginLeft: 10}]}>
-            Trạng thái: {status}
-          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={[fonts.textBold, {color: Colors.orange}]}>
+                {value}k VNĐ
+              </Text>
+              <Text style={[fonts.subline, {marginLeft: 5}]}>x {quantity}</Text>
+            </View>
+            <Text style={[fonts.sublineBold, {marginLeft: 5}]}>{status}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -110,10 +117,11 @@ const OrderItemDetail = (props: OrderItemDetailProp) => {
 };
 
 const OrderCard = (props: Prop) => {
-  const {id, totalValue, orderDate, style, items, padding} = props;
+  const {id, totalValue, orderDate, style, items, padding, onPress} = props;
   const host = useSelector(selectHost);
   return (
-    <View
+    <TouchableOpacity
+      onPress={()=>{onPress && onPress()}}
       style={[
         {
           width: width - padding * 2,
@@ -122,7 +130,8 @@ const OrderCard = (props: Prop) => {
           borderRadius: 18,
           paddingBottom: 15,
           paddingTop: 15,
-          paddingHorizontal: padding,
+          paddingHorizontal: 10,
+          marginHorizontal: padding,
           elevation: 5,
         },
         style,
@@ -158,7 +167,7 @@ const OrderCard = (props: Prop) => {
           );
         })}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

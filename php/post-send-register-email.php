@@ -120,8 +120,6 @@ try {
     $dbConn->query("INSERT INTO confirmations (Email, Token, Type, CreateAt, ExpireAt, Status) 
         VALUES ('$email', '$token', '$type', NOW(), NOW() + INTERVAL 5 MINUTE, 1)");
 
-    // link email gan port reactJS
-    $link = "Mã bảo vệ của bạn là $token. Lưu ý mã này chỉ tồn tại trong 5 phút. Nếu không phải bạn yêu cầu, vui lòng bỏ qua email này.";
 
     $mail = new PHPMailer();
     $mail->CharSet = "utf-8";

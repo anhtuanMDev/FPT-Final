@@ -25,24 +25,6 @@ try {
     $foodID = $data->foodID;
     $quantity = $data->quantity;
 
-    // Get address
-
-    $query = "SELECT Id from address WHERE `OwnerID` = '$user' AND `Priority` = 1";
-    $stmt = $dbConn->prepare($query);
-    $stmt->execute();
-    $address = $stmt->fetchColumn();
-    if ($address) {
-        $query = "SELECT Id from address WHERE `OwnerID` = '$user'";
-        $stmt = $dbConn->prepare($query);
-        $stmt->execute();
-        $address = $stmt->fetchColumn();
-        if(!$address){
-            echo json_encode(array("address" => $address,  "user" => $user, "status" => 400));
-            return;
-        }
-    }
-
-
     // Get order in waiting status
 
     $query = "SELECT Id from orders WHERE `UserID` = '$user' AND `Status` = 'Waiting'";
@@ -51,7 +33,7 @@ try {
     $order = $stmt->fetchColumn();
     if ($order == null) {
         // Create new order
-        $query = "INSERT INTO `orders`(`Id`,`UserID`, `AddressID`, `Status`) VALUES ('$id','$user', '$address', 'Waiting')";
+        $query = "INSERT INTO `orders`(`Id`,`UserID`, `Status`) VALUES ('$id','$user', 'Waiting')";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
 
@@ -69,7 +51,6 @@ try {
             )
         );
     } else {
-        // Check if item already exist
         $query =  "SELECT Id FROM orderitems WHERE `OrderID` = '$order' AND `FoodID` = '$foodID'";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();

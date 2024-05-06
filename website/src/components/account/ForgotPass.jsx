@@ -85,7 +85,7 @@ const ForgotPass = (prop) => {
 
                                                 <div className="col-12">
                                                     <label htmlFor="yourPassword" className="form-label">Lý do</label>
-                                                    <textarea type="text" name="password" className="form-control" id="yourPassword" required maxLength={200} minLength={5} style={{ height: 200, width: "100%" }} defaultValue={"Quên mật khẩu"}/>
+                                                    <textarea type="text" name="password" className="form-control" id="yourPassword" required maxLength={200} minLength={5} style={{ height: 200, width: "100%" }} defaultValue={"Quên mật khẩu"} />
                                                     <div className="invalid-feedback">Vui lòng nhập Lý do!</div>
                                                 </div>
 

@@ -165,7 +165,7 @@ const Cart = () => {
           return { ...item, Pick: true };
         });
         setData({ type: 'data', payload: arr });
-      }
+      } 
     }
   }, [check]);
 
@@ -176,7 +176,7 @@ const Cart = () => {
     }
   }, [data]);
 
-  const checkingItemInPayment = async () => {
+  const checkingItemInPayment = () => {
     if (
       /** if no item got check */
       !data.data.every((item: Data) => {
@@ -191,7 +191,8 @@ const Cart = () => {
           id: item.Id,
           quantity: item.Quantity,
         }));
-      await updateItemInPaymentPick(data.Id, item);
+      // await updateItemInPaymentPick(data.Id, item);
+      handlePayment();
     } else {
       showMessage({
         type: 'warning',
@@ -236,7 +237,11 @@ const Cart = () => {
 
   const publicKey =
     'pk_test_51OsaA1AFTGMMMmVwNrZ2DZJ0yFvXYpW16C4oaCwwuVROBuJMgoFCefRGy77C8YMlFpIAx02m6Uaq8EYcpb52GgUR006Tg9Wjh6';
-  const { initPaymentSheet, presentPaymentSheet } = usePaymentSheet();
+  const { initPaymentSheet, presentPaymentSheet, loading } = usePaymentSheet();
+
+  useEffect(() => {
+    initialisePaymentSheet();
+  }, []);
 
   const initialisePaymentSheet = async () => {
     const { paymentIntent, emphermeralKey, customer } =
@@ -247,43 +252,44 @@ const Cart = () => {
       customerEphemeralKeySecret: emphermeralKey,
       paymentIntentClientSecret: paymentIntent,
       allowsDelayedPaymentMethods: true,
-      returnURL: 'payments-example://stripe-redirect',
+      returnURL: 'stripe-example://stripe-redirect',
       merchantDisplayName: 'Example Inc.',
     });
+
     if (error) {
       console.log('initialisePaymentSheet', error);
     } else {
       setReady(true);
       console.log('Initialize payment success');
-      const body = {
-        orderID: data.Id,
-        userID: id as string,
-        addressID: data.AddressID,
-      };
+      // const body = {
+      //   orderID: data.Id,
+      //   userID: id as string,
+      //   addressID: data.AddressID,
+      // };
 
-      const response = await AxiosInstance().post(
-        '/post-handle-after-payment.php',
-        body,
-      );
-      if (response.status) {
-        setRefresh(true);
-        getCartItem(id as string);
-        setRefresh(false);
-        showMessage({
-          type: 'success',
-          icon: 'success',
-          message: response.statusText,
-        });
-        setReady(false);
-        setRefresh(false);
-        return;
-      }
+      // const response = await AxiosInstance().post(
+      //   '/post-handle-after-payment.php',
+      //   body,
+      // );
+      // if (response.status) {
+      //   setRefresh(true);
+      //   getCartItem(id as string);
+      //   setRefresh(false);
+      //   showMessage({
+      //     type: 'success',
+      //     icon: 'success',
+      //     message: response.statusText,
+      //   });
+      //   setReady(false);
+      //   setRefresh(false);
+      //   return;
+      // }
 
-      showMessage({
-        type: 'danger',
-        icon: 'danger',
-        message: response.statusText,
-      });
+      // showMessage({
+      //   type: 'danger',
+      //   icon: 'danger',
+      //   message: response.statusText,
+      // });
     }
   };
 
@@ -318,7 +324,37 @@ const Cart = () => {
         `handlePayment error: ${error.code}, Error message: ${error.message}`,
       );
     } else {
-      setReady(false);
+      // setReady(false);
+      const body = {
+        orderID: data.Id,
+        userID: id as string,
+        addressID: data.AddressID,
+      };
+
+      const response = await AxiosInstance().post(
+        '/post-handle-after-payment.php',
+        body,
+      );
+      if (response.status) {
+        setRefresh(true);
+        getCartItem(id as string);
+        setRefresh(false);
+        showMessage({
+          type: 'success',
+          icon: 'success',
+          message: response.statusText,
+        });
+        setReady(false);
+        setRefresh(false);
+        return;
+      }
+
+      showMessage({
+        type: 'danger',
+        icon: 'danger',
+        message: response.statusText,
+      });
+
     }
   };
 
@@ -396,7 +432,7 @@ const Cart = () => {
                 return (
                   <AddressItemCart
                     address={item.Address}
-                    style={{ marginVertical: 6, backgroundColor: item.Id == data.AddressID ? Colors.unselected : Colors.white, borderRadius: 10}}
+                    style={{ marginVertical: 6, backgroundColor: item.Id == data.AddressID ? Colors.unselected : Colors.white, borderRadius: 10 }}
                     detail={`${item.Ward}, ${item.District}, ${item.City}`}
                     onPress={() => {
                       // setLocate(item.Address);
@@ -421,7 +457,7 @@ const Cart = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StripeProvider publishableKey={publicKey}>
         <View style={screenStyles.parent_container}>
-          <ModalProcess />
+          {/* <ModalProcess /> */}
           {modalVisible && (
             <View
               style={{
@@ -446,6 +482,12 @@ const Cart = () => {
             style={{ paddingHorizontal: 20, marginTop: 10 }}
             onPress={() => {
               setCheck(!check);
+              if (check) {
+                const arr = data.data.map((item: Data) => {
+                  return { ...item, Pick: false };
+                });
+                setData({ type: 'data', payload: arr });
+              }
             }}
           />
 
@@ -511,7 +553,7 @@ const Cart = () => {
                     setData({
                       type: 'data',
                       payload: data.data.map(i => {
-                        if (i.Id === item.Id) i.Quantity--;
+                        if (i.Id === item.Id && i.Quantity > 1) i.Quantity--;
                         return i;
                       }),
                     });
@@ -598,9 +640,11 @@ const Cart = () => {
             <Fluid_btn
               style={{ marginBottom: 25 }}
               title="Thanh toán"
+              enable={loading || !ready}
               onPress={async () => {
-                setRefresh(true);
+                // setRefresh(true);
                 await checkingItemInPayment();
+                // handlePayment();
               }}
             />
           </View>

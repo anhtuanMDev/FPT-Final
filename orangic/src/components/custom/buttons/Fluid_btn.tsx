@@ -16,6 +16,7 @@ type Prop = {
   title?: string;
   underlayColor?: ColorValue;
   enable?: boolean;
+  // disabled?: boolean;
 };
 
 const Fluid_btn = (props: Prop) => {

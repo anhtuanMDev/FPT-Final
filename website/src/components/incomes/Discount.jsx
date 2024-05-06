@@ -1139,7 +1139,7 @@ const Discounts = (prop) => {
                                                         <div className='col-12'>
                                                             <label htmlFor="eventTitle" className="form-label">Tiêu đề sự kiện</label>
                                                             <div className='input-group'>
-                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required defaultValue={"Sự kiện mùa hè"}/>
+                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required defaultValue={"Khuyến mãi mùa hè"}/>
                                                             </div>
                                                             <div className='invalid-feedback'>Xin vui lòng nhập Tiêu đề sự kiện!</div>
                                                         </div>
@@ -1147,7 +1147,7 @@ const Discounts = (prop) => {
                                                         <div className='col-12'>
                                                             <label htmlFor="eventContent" className="form-label">Nội dung sự kiện</label>
                                                             <div className='input-group'>
-                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required defaultValue={"Giảm giá lên tới 20%"}/>
+                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required defaultValue={"Giảm giá lên đến 30%"}/>
                                                             </div>
                                                             <div className='invalid-feedback'>Xin vui lòng nhập Nội dung sự kiện!</div>
                                                         </div>
@@ -1157,7 +1157,7 @@ const Discounts = (prop) => {
                                                                 <div className="col-3" >
                                                                     <label htmlFor="couponCode" className="form-label">Mã phiếu mua hàng</label>
                                                                     <div className='input-group'>
-                                                                        <input type='text' className='form-control' id='couponCode' name='couponCode' required maxLength={6} />
+                                                                        <input type='text' className='form-control' id='couponCode' name='couponCode' required maxLength={6} defaultValue={"AHDUD6"}/>
                                                                     </div>
                                                                     <div className='invalid-feedback'>Xin vui lòng nhập Mã phiếu mua hàng!</div>
                                                                 </div>
@@ -1196,7 +1196,7 @@ const Discounts = (prop) => {
                                                                 <div className="col-6" >
                                                                     <label htmlFor="eventStart" className="form-label">Ngày bắt đầu</label>
                                                                     <div className='input-group'>
-                                                                        <input type='datetime-local' className='form-control' id='eventStart' name='eventStart' required />
+                                                                        <input type='datetime-local' className='form-control' id='eventStart' name='eventStart' required/>
                                                                     </div>
                                                                     <div className='invalid-feedback'>Xin vui lòng nhập Ngày bắt đầu!</div>
                                                                 </div>

@@ -191,6 +191,13 @@ const ReportRestaurants = (prop) => {
                     })
                 }
             },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    icon: 'success',
+                    text: `Nhà hàng ${name} đã bị cấm`
+                })
+            }
         });
     }
 

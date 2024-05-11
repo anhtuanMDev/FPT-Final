@@ -104,7 +104,7 @@ const OrderItemDetail = (props: OrderItemDetailProp) => {
             }}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Text style={[fonts.textBold, {color: Colors.orange}]}>
-                {value}k VNĐ
+                {value}.000 đ
               </Text>
               <Text style={[fonts.subline, {marginLeft: 5}]}>x {quantity}</Text>
             </View>
@@ -147,7 +147,7 @@ const OrderCard = (props: Prop) => {
         }}>
         <Text>
           Tổng giá tiền:{' '}
-          <Text style={fonts.textBold}>{totalValue?.toString()}k VNĐ</Text>
+          <Text style={fonts.textBold}>{totalValue?.toString()}.000 đ</Text>
         </Text>
         <Text>
           Ngày đặt: <Text style={fonts.textBold}>{orderDate}</Text>

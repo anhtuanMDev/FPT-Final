@@ -12,38 +12,30 @@ import Icons, {IconName} from '../../../assets/icons/Icons';
 import {Colors} from '../styles/ScreenStyle';
 import Icons2, {Icon2Name} from '../../../assets/icons/Icons2';
 import Linear_btn from '../buttons/Linear_btn';
+import { convertStatus } from '../../screen/app/Store/RestaurantOrders';
+import { useSelector } from 'react-redux';
+import { selectHost } from '../../../helpers/state/Global/globalSlice';
+
+type Items = {
+  Id: string;
+  Quantity: number;
+  Status: string;
+  Value: number;
+  Name: string;
+  Image: string;
+};
 
 type Prop = {
-  foodName: string;
-  quantity: number;
-  foodRate: number;
-  restaurantRate: number;
-  resImg?: string;
-  foodImg?: string;
-  status: string;
+  resImg: string;
   restaurantName: string;
-  price: number;
+  item: Items[];
   style?: ViewStyle | ViewStyle[];
-  onPress?: () => void;
-  showButton?: boolean;
 };
 
 const {width, height} = Dimensions.get('window');
 const OrderItems = (props: Prop) => {
-  const {
-    foodName,
-    quantity,
-    foodRate,
-    restaurantRate,
-    resImg,
-    foodImg,
-    status,
-    restaurantName,
-    price,
-    style,
-    onPress,
-    showButton,
-  } = props;
+  const {resImg, restaurantName, item, style} = props;
+  const host = useSelector(selectHost);
   return (
     <View
       style={{
@@ -54,7 +46,7 @@ const OrderItems = (props: Prop) => {
       }}>
       <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}>
         <Image
-          source={require('./../../../assets/images/baseImage.png')}
+          source={{uri: `${host}/uploads/${resImg}.jpg`}}
           style={{width: 35, height: 35, borderRadius: 20}}
         />
         <Text style={[fonts.captionBold, {marginHorizontal: 10}]}>
@@ -63,32 +55,35 @@ const OrderItems = (props: Prop) => {
         <Icons name={IconName.next} size={16} color={Colors.black} />
       </TouchableOpacity>
 
-      <TouchableOpacity style={{flexDirection: 'row', marginTop: 15}}>
-        <Image
-          source={require('./../../../assets/images/baseImage.png')}
-          style={{width: width * 0.25, height: width * 0.25}}
-        />
-        <View
-          style={{flex: 1, marginLeft: 10, justifyContent: 'space-between'}}>
-          <View>
-            <Text style={[fonts.captionBold, {color: Colors.slate}]}>
-              {foodName}
-            </Text>
-            {status === 'Đã giao' ? (
-              <Text style={[fonts.subline, {marginTop: 10}]}>{status}</Text>
-            ) : (
-              <Text style={[fonts.subline, {marginTop: 10}]}>{status}</Text>
-            )}
-          </View>
+      {item.map((_,index) => (
+        <TouchableOpacity key={item[index].Id} style={{flexDirection: 'row', marginTop: 15}}>
+          <Image
+            source={{uri: `${host}/uploads/${item[index].Image}.jpg`}}
+            style={{width: width * 0.25, height: width * 0.25}}
+          />
+          <View
+            style={{flex: 1, marginLeft: 10, justifyContent: 'space-between'}}>
+            <View>
+              <Text style={[fonts.captionBold, {color: Colors.slate}]}>
+                {item[index].Name}
+              </Text>
+              {convertStatus(item[index].Status) === 'Đã giao' ? (
+                <Text style={[fonts.subline, {marginTop: 10}]}>{convertStatus(item[index].Status)}</Text>
+              ) : (
+                <Text style={[fonts.subline, {marginTop: 10}]}>{convertStatus(item[index].Status)}</Text>
+              )}
+            </View>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={[fonts.captionBold]}>{price}.000 đ</Text>
-            <Text style={[fonts.captionBold, {marginTop: 10}]}>
-              x{quantity}
-            </Text>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={[fonts.captionBold]}>{item[index].Value}.000 đ</Text>
+              <Text style={[fonts.captionBold, {marginTop: 10}]}>
+                x{item[index].Quantity}
+              </Text>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      ))}
 
       <Linear_btn title="Hủy Đơn Hàng" style={{marginTop: 15}} />
     </View>

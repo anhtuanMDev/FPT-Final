@@ -1,13 +1,87 @@
-import {View, Text, ScrollView} from 'react-native';
-import React from 'react';
+import {View, Text, ScrollView, FlatList} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
 import TitleBar from '../../../custom/topbars/TitleBar';
 import {fonts} from '../../../custom/styles/ComponentStyle';
 import Icons, {IconName} from '../../../../assets/icons/Icons';
 import OrderItems from '../../../custom/cards/OrderItems';
 import Linear_btn from '../../../custom/buttons/Linear_btn';
+import {RouteProp, useIsFocused, useRoute} from '@react-navigation/native';
+import {ParamList} from '../../../navigation/RootNavigation';
+import AxiosInstance from '../../../../helpers/AxiosInstance';
+import OrderItemRow from '../../../custom/cards/OrderItemRow';
+
+type OrderDetail = {
+  Id: string;
+  TotalValue: number;
+  Status: string;
+  Delivery: number;
+  CreateAt: string;
+  UpdateAt: string | null;
+  PaymentMethod: string;
+  Address: string;
+  CouponID: string | null;
+  Discount: number | null;
+  Code: string | null;
+  Restaurant: Restaurant[];
+  Group: Items[];
+};
+
+type Restaurant = {
+  Id: string;
+  Name: string;
+  Image: string;
+  Items: Items[];
+};
+
+type Items = {
+  Id: string;
+  Quantity: number;
+  Status: string;
+  Value: number;
+  ArriveAt: string | null;
+  Name: string;
+  Image: string;
+  HasDiscount: number;
+};
 
 const US_OrderDetail = () => {
+  const route = useRoute<RouteProp<ParamList, 'US_OrderDetail'>>();
+  const id = route.params?.id;
+  const isFocused = useIsFocused();
+  const [infor, setInfor] = useState<OrderDetail>({
+    Id: '',
+    TotalValue: 0,
+    Status: '',
+    Delivery: 0,
+    CreateAt: '',
+    UpdateAt: null,
+    PaymentMethod: '',
+    Address: '',
+    CouponID: null,
+    Discount: null,
+    Code: null,
+    Restaurant: [],
+    Group: [],
+  });
+
+  const getDetail = async () => {
+    console.log(id);
+    const response = await AxiosInstance().post('/get-user-order-detail.php', {
+      id,
+    });
+    const data: OrderDetail = response.data;
+    if (response.status) {
+      const allItems = data.Restaurant.reduce<Items[]>((items, restaurant) => {
+        return items.concat(restaurant.Items);
+      }, []);
+      setInfor({...data, Group: allItems});
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) getDetail();
+  }, [isFocused]);
   return (
     <View style={{flex: 1}}>
       <TitleBar
@@ -29,20 +103,18 @@ const US_OrderDetail = () => {
           <Text style={[fonts.captionBold, {marginVertical: 5}]}>
             Địa chỉ giao hàng
           </Text>
-          <Text style={[fonts.subline]}>
-            115/15 Lê Văn Sỹ, Phường 13, Quận 3, TP.HCM
-          </Text>
+          <Text style={[fonts.subline, {lineHeight: 22}]}>{infor.Address}</Text>
         </View>
 
-        <OrderItems
-          foodName={'Há cảo'}
-          quantity={0}
-          foodRate={0}
-          restaurantRate={0}
-          status={'đang chờ'}
-          restaurantName={'Bà Năm'}
-          price={15}
-        />
+        {infor.Restaurant.map(item => (
+          <OrderItems
+            key={item.Id}
+            item={item.Items}
+            restaurantName={item.Name}
+            resImg={item.Image}
+            style={{marginBottom: 15}}
+          />
+        ))}
 
         <View
           style={{
@@ -55,19 +127,23 @@ const US_OrderDetail = () => {
           <Text style={[fonts.captionBold, {marginBottom: 10}]}>
             Tổng quan đơn hàng
           </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginVertical: 10,
-            }}>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              Tiền Há cảo
-            </Text>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              {15}.000 đ
-            </Text>
-          </View>
+
+          {infor.Group.map((item, index) => (
+            <View
+              key={item.Id}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginVertical: 10,
+              }}>
+              <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                {item.Name}
+              </Text>
+              <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                {item.Value}.000 đ
+              </Text>
+            </View>
+          ))}
 
           <View
             style={{
@@ -76,7 +152,12 @@ const US_OrderDetail = () => {
               marginVertical: 10,
             }}>
             <Text style={[fonts.sublineBold]}>Tổng</Text>
-            <Text style={[fonts.sublineBold]}>{15}.000 đ</Text>
+            <Text style={[fonts.sublineBold]}>
+              {infor.Group.reduce((n, n1) => {
+                return n + Number(n1.Value);
+              }, 0)}
+              .000 đ
+            </Text>
           </View>
         </View>
 
@@ -91,47 +172,11 @@ const US_OrderDetail = () => {
           <Text style={[fonts.captionBold, {marginBottom: 10}]}>
             Chi tiết đơn hàng
           </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginVertical: 10,
-            }}>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              Số đơn hàng
-            </Text>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              Mã đơn hàng
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginVertical: 10,
-            }}>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              Ngày đặt hàng
-            </Text>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              21/01/2021
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginVertical: 10,
-            }}>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              Phương thức thanh toán
-            </Text>
-            <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-              Thẻ ngân hàng
-            </Text>
-          </View>
+          <OrderItemRow title="Số đơn hàng" content={infor.Id} />
+          <OrderItemRow title="Ngày đặt hàng" content={infor.CreateAt.slice(0, -8)} />
+          <OrderItemRow title="Phương thức thanh toán" content={infor.PaymentMethod} />
+          <OrderItemRow title="Số đơn hàng" content={infor.Id} />
+          <OrderItemRow title="Mã giảm giá" content={infor.Code + " - " + infor.Discount + "%" || 'Không có'} />
 
           <View
             style={{
@@ -141,19 +186,22 @@ const US_OrderDetail = () => {
               Ngày giao hàng
             </Text>
             <View style={{marginLeft: 5, marginTop: 10}}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 10,
-                }}>
-                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-                  Món
-                </Text>
-                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
-                  Ngày
-                </Text>
-              </View>
+              {infor.Restaurant.map((item, index) => (
+                <View key={item.Id}>
+                  <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                    {item.Name}
+                  </Text>
+                  {item.Items.map((i, n) => {
+                    return (
+                      <OrderItemRow
+                        key={i.Id}
+                        title={i.Name}
+                        subValue={i.HasDiscount && infor.Discount ? i.Value * 100 / infor.Discount + '.000 đ' : undefined}
+                        content={i.ArriveAt || 'Chưa cập nhật'}/>
+                    )
+                  })}
+                </View>
+                ))}
             </View>
           </View>
         </View>

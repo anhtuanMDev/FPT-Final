@@ -2004,10 +2004,10 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@stripe/stripe-react-native@^0.37.1":
-  version "0.37.1"
-  resolved "https://registry.npmjs.org/@stripe/stripe-react-native/-/stripe-react-native-0.37.1.tgz"
-  integrity sha512-ABXsSCdPh3kXMZS5PhNdLpWNs9eyKLKTFR4OUk7xo5pq7waLv8iTUpG88Hm+8DmHRrK7k6ojRrwEKbfFm09dXQ==
+"@stripe/stripe-react-native@^0.37.3":
+  version "0.37.3"
+  resolved "https://registry.npmjs.org/@stripe/stripe-react-native/-/stripe-react-native-0.37.3.tgz"
+  integrity sha512-9OReixY4bP3ogHUoAmDs+FRKxTCCDz6APep6fn8LAzs5xG5IGDetFb7UlZkigFYqtJgbe3+n4kMS5wIcxKgnLQ==
 
 "@svgr/babel-plugin-add-jsx-attribute@8.0.0":
   version "8.0.0"

@@ -350,39 +350,49 @@ const Cart = () => {
   };
 
   const handleAfterPayment = async () => {
-    const body = {
-      orderID: data.Id,
-      userID: id as string,
-      addressID: data.AddressID,
-      paymentMethod: paymentMethods,
-    };
-
-    const response = await AxiosInstance().post(
-      '/post-handle-after-payment.php',
-      body,
-    );
-    if (response.status) {
+    try {
       await handleUpdateItemInPaymentPick();
-      setRefresh(true);
-      getCartItem(id as string);
-      setRefresh(false);
+
+      const body = {
+        orderID: data.Id,
+        userID: id as string,
+        addressID: data.AddressID,
+        paymentMethod: paymentMethods,
+      };
+
+      const response = await AxiosInstance().post(
+        '/post-handle-after-payment.php',
+        body,
+      );
+      if (response.status) {
+        setRefresh(true);
+        getCartItem(id as string);
+        setRefresh(false);
+        showMessage({
+          type: 'success',
+          icon: 'success',
+          message: response.statusText,
+        });
+        // setReady(false);
+        setRefresh(false);
+        return;
+      }
+
+      console.log('handlePayment', response.statusText);
       showMessage({
-        type: 'success',
-        icon: 'success',
-        message: response.statusText,
+        type: 'danger',
+        icon: 'danger',
+        message: "Thanh toán thất bại",
       });
-      // setReady(false);
-      setRefresh(false);
-      return;
+    } catch (error) {
+      console.log('handleAfterPayment', error);
+      showMessage({
+        type: 'danger',
+        icon: 'danger',
+        message: "Thanh toán thất bại",
+      });
+
     }
-
-    console.log('handlePayment', response.statusText);
-    showMessage({
-      type: 'danger',
-      icon: 'danger',
-      message: "Thanh toán thất bại",
-    });
-
   }
 
   const handleUpdateItemInPaymentPick = async () => {

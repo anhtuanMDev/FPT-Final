@@ -22,7 +22,7 @@ const {width, height} = Dimensions.get('window');
 const Notifications = () => {
   const isFocused = useIsFocused();
   const host = useSelector(selectHost);
-  const navigation = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigation = useNavigation<NavigationProp<ParamList, 'Notifications'>>();
   const id = useSelector(selectUserID);
   const [data, setData] = React.useState<NotifyDetail[]>([]);
 

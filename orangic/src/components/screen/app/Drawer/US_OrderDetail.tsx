@@ -6,7 +6,7 @@ import {fonts} from '../../../custom/styles/ComponentStyle';
 import Icons, {IconName} from '../../../../assets/icons/Icons';
 import OrderItems from '../../../custom/cards/OrderItems';
 import Linear_btn from '../../../custom/buttons/Linear_btn';
-import {RouteProp, useIsFocused, useRoute} from '@react-navigation/native';
+import {DrawerActions, NavigationProp, RouteProp, useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import {ParamList} from '../../../navigation/RootNavigation';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import OrderItemRow from '../../../custom/cards/OrderItemRow';
@@ -36,6 +36,7 @@ type Restaurant = {
 
 type Items = {
   Id: string;
+  FoodID: string;
   Quantity: number;
   Status: string;
   Value: number;
@@ -47,6 +48,7 @@ type Items = {
 
 const US_OrderDetail = () => {
   const route = useRoute<RouteProp<ParamList, 'US_OrderDetail'>>();
+  const navigate = useNavigation<NavigationProp<ParamList, "US_OrderDetail">>();
   const id = route.params?.id;
   const isFocused = useIsFocused();
   const [infor, setInfor] = useState<OrderDetail>({
@@ -86,8 +88,12 @@ const US_OrderDetail = () => {
     <View style={{flex: 1}}>
       <TitleBar
         value="Chi tiết đơn hàng"
-        onLeftPress={() => {}}
-        onRightPress={() => {}}
+        onLeftPress={() => {
+          navigate.dispatch(DrawerActions.openDrawer());
+        }}
+        onRightPress={() => {
+          navigate.navigate('Notifications');
+        }}
         style={{paddingHorizontal: 20}}
         notify={0}
       />
@@ -109,6 +115,7 @@ const US_OrderDetail = () => {
         {infor.Restaurant.map(item => (
           <OrderItems
             key={item.Id}
+            onResPress={() => navigate.navigate('US_Restaurant', {id: item.Id})}
             item={item.Items}
             restaurantName={item.Name}
             resImg={item.Image}
@@ -173,10 +180,20 @@ const US_OrderDetail = () => {
             Chi tiết đơn hàng
           </Text>
           <OrderItemRow title="Số đơn hàng" content={infor.Id} />
-          <OrderItemRow title="Ngày đặt hàng" content={infor.CreateAt.slice(0, -8)} />
-          <OrderItemRow title="Phương thức thanh toán" content={infor.PaymentMethod} />
-          <OrderItemRow title="Số đơn hàng" content={infor.Id} />
-          <OrderItemRow title="Mã giảm giá" content={infor.Code + " - " + infor.Discount + "%" || 'Không có'} />
+          <OrderItemRow
+            title="Ngày đặt hàng"
+            content={infor.CreateAt.slice(0, -8)}
+          />
+          <OrderItemRow
+            title="Phương thức thanh toán"
+            content={infor.PaymentMethod}
+          />
+          {infor.CouponID && (
+            <OrderItemRow
+              title="Mã giảm giá"
+              content={infor.Code + ' - ' + infor.Discount + '%' || 'Không có'}
+            />
+          )}
 
           <View
             style={{
@@ -188,7 +205,7 @@ const US_OrderDetail = () => {
             <View style={{marginLeft: 5, marginTop: 10}}>
               {infor.Restaurant.map((item, index) => (
                 <View key={item.Id}>
-                  <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                  <Text style={[fonts.sublineBold, {color: Colors.slate, marginTop: 20}]}>
                     {item.Name}
                   </Text>
                   {item.Items.map((i, n) => {
@@ -196,12 +213,18 @@ const US_OrderDetail = () => {
                       <OrderItemRow
                         key={i.Id}
                         title={i.Name}
-                        subValue={i.HasDiscount && infor.Discount ? i.Value * 100 / infor.Discount + '.000 đ' : undefined}
-                        content={i.ArriveAt || 'Chưa cập nhật'}/>
-                    )
+                        style={{marginLeft: 10}}
+                        subValue={
+                          i.HasDiscount && infor.Discount
+                            ? (i.Value * 100) / infor.Discount + '.000 đ'
+                            : undefined
+                        }
+                        content={i.ArriveAt || 'Chưa cập nhật'}
+                      />
+                    );
                   })}
                 </View>
-                ))}
+              ))}
             </View>
           </View>
         </View>

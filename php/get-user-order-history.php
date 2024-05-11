@@ -19,7 +19,7 @@ try {
 
     $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt
     FROM orders
-    WHERE orders.UserID = '$id' AND orders.Status = 'Done'";
+    WHERE orders.UserID = '$id' AND orders.Status = 'Done' ORDER BY orders.CreateAt DESC, orders.UpdateAt DESC";
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

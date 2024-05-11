@@ -1,4 +1,4 @@
-import {View, Text, Button, StatusBar, TextInput} from 'react-native';
+import {View, Text, Button, StatusBar, TextInput, Dimensions} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {ParamList} from '../../navigation/RootNavigation';
@@ -19,9 +19,15 @@ import {
   selectUserID,
   setUserID,
 } from '../../../helpers/state/Global/globalSlice';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IconName } from '../../../assets/icons/Icons';
+import {IconName} from '../../../assets/icons/Icons';
 
+const {width, height} = Dimensions.get('window');
 const Login = () => {
   const navigation = useNavigation<NavigationProp<ParamList, 'Login'>>();
   const dispatch = useDispatch();
@@ -35,15 +41,14 @@ const Login = () => {
   const [showPass, setShowPass] = useState(false);
 
   useEffect(() => {
-    console.log("useEffect login id", userID);
-    if(userID){
+    console.log('useEffect login id', userID);
+    if (userID) {
       dispatch(isLogin(true));
       const saveID = async () => {
         await AsyncStorage.setItem('userID', userID);
-      }
+      };
       saveID();
     }
-
   }, [userID]);
 
   const isValidEmail = () => {
@@ -68,16 +73,16 @@ const Login = () => {
       if (result.status) {
         dispatch(isLoading(false));
         const user = result.data.Id;
-        console.log("login user", user)
+        console.log('login user', user);
         dispatch(setUserID(user));
-        console.log(result.data)
-        
+        console.log(result.data);
+
         showMessage({
           message: 'Đăng nhập thành công',
           type: 'success',
           icon: 'success',
         });
-      }else {
+      } else {
         showMessage({
           message: 'Sai thông tin đăng nhập',
           type: 'warning',
@@ -95,6 +100,23 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '983393103441-cgl0980edrsk7semvhitq23qavfjgn6f.apps.googleusercontent.com',
+    });
+  }, []);
+
+  
+  async function signIn() {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log(userInfo);
+    } catch (error) {
+      console.log("The error:",error);
+    }
+  }
+
   return load ? (
     <Loading />
   ) : (
@@ -111,7 +133,6 @@ const Login = () => {
           Bạn chưa có tài khoản?
         </Text>
       </Text>
-
       <View
         style={{
           width: '100%',
@@ -143,8 +164,13 @@ const Login = () => {
           Bạn quên mật khẩu?
         </Text>
       </View>
-
       <Fluid_btn title="Đăng nhập" onPress={handleLogin} />
+      <GoogleSigninButton
+        size={GoogleSigninButton.Size.Wide}
+        style= {{width: width -40 , height: 50}}
+        color={GoogleSigninButton.Color.Dark}
+        onPress={async()=> await signIn()}
+      />
     </View>
   );
 };

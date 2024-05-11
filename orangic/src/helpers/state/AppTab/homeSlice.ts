@@ -105,7 +105,7 @@ export const fetchHomeItem = createAsyncThunk(
     const response = await AxiosInstance().post('/get-home-20-items.php', {
       id: userID,
     });
-    console.log('data in redux home', response.data);
+    // console.log('data in redux home', response.data);
     return response.data;
   },
 );

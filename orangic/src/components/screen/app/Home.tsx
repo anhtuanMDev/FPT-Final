@@ -5,6 +5,7 @@ import {
   FlatList,
   StatusBar,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import React, {useEffect, useReducer, useState} from 'react';
 import {Colors, screenStyles} from '../../custom/styles/ScreenStyle';
@@ -23,11 +24,6 @@ import {ParamList} from '../../navigation/RootNavigation';
 import SmallCart from '../../custom/cards/SmallCart';
 import {
   fetchHomeItem,
-  // fetchFeatureItems,
-  // fetchNewItems,
-  // fetchPopularItems,
-  // fetchRecommendedItems,
-  // fetchRestaurants,
   RestaurantDisplayType,
   selectEventArray,
   selectFeatureArray,
@@ -81,6 +77,7 @@ const Home = () => {
   const restaurantArray = useSelector(selectRestaurantsArray);
 
   const dispatched = useDispatch<AppDispatch>();
+  const [refreshing, setRefreshing] = useState(false);
 
   const searchFood = () => {
     if (search === '') {
@@ -94,13 +91,19 @@ const Home = () => {
     }
   };
 
+  const fetchAlldata = async () => {
+    await dispatched(fetchHomeItem(userID));
+  };
+
   useEffect(() => {
-    const fetchAlldata = async () => {
-      await dispatched(fetchHomeItem(userID));
-    };
     if (isFocused) fetchAlldata();
     else setSearch('');
   }, [isFocused]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchAlldata().then(() => setRefreshing(false));
+  }, []);
 
   return load ? (
     <Loading />
@@ -129,7 +132,11 @@ const Home = () => {
         textStyle={{color: Colors.black}}
       />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         {recommendArray && (
           <View
             style={{

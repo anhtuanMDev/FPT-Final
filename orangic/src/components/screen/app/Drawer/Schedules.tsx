@@ -63,7 +63,7 @@ const initialData: ScheduleItems = {
 const {width, height} = Dimensions.get('window');
 const Schedules = () => {
   const [data, setData] = useState<ScheduleItems>(initialData);
-  const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigate = useNavigation<NavigationProp<ParamList, 'Schedules'>>();
   const id = useSelector(selectUserID);
   const host = useSelector(selectHost);
   const isFocused = useIsFocused();

@@ -51,7 +51,7 @@ const BigCard = (props: Prop) => {
 
       <CardRate
         style={[{top: 20, left: 10}]}
-        rate={props?.rate || 0}
+        rate={props.rate}
         rateCount={props?.rateCount}
       />
       <View
@@ -87,7 +87,7 @@ const BigCard = (props: Prop) => {
               paddingHorizontal: 5,
             }}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Icons name={IconName.delivery} color={Colors.ember} size={16} />
+              <Icons name={IconName.cash} color={Colors.ember} size={16} />
               <Text
                 style={[
                   fonts.subline,
@@ -104,7 +104,7 @@ const BigCard = (props: Prop) => {
                         props?.price *
                           (1 - (props?.discount ? props?.discount : 0) / 100) *
                           0.1,
-                      ) + 'k VNĐ'
+                      ) + '.000 đ'
                   : 'Miễn phí'}
               </Text>
             </View>
@@ -116,7 +116,7 @@ const BigCard = (props: Prop) => {
                   fonts.subline,
                   {marginLeft: 5, textAlignVertical: 'center'},
                 ]}>
-                {props?.time || '10 - 15 mins'}
+                {props?.time || '10 - 15 phút'}
               </Text>
             </View>
           </View>

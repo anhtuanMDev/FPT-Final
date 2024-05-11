@@ -20,6 +20,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { StripeProvider, usePaymentSheet } from '@stripe/stripe-react-native';
 import AddressItemCart from '../../custom/cards/AddressItemCart';
 import { ScrollView } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 
 /** Declaring order's item data */
 
@@ -34,6 +35,12 @@ type Data = {
   Pick: boolean;
   Image: string[];
 };
+
+
+enum PaymentMethodsEnum {
+  COD = 'COD',
+  Stripe = 'Stripe',
+}
 
 /** Declare reducer state and action */
 
@@ -165,7 +172,7 @@ const Cart = () => {
           return { ...item, Pick: true };
         });
         setData({ type: 'data', payload: arr });
-      } 
+      }
     }
   }, [check]);
 
@@ -562,8 +569,8 @@ const Cart = () => {
             )}
           />
 
-          <View style={{ marginTop: 50, paddingHorizontal: 20 }}>
-            <View style={{ marginBottom: 30 }}>
+          <View style={{ marginTop: 10, paddingHorizontal: 20 }}>
+            <View style={{ marginBottom: 10 }}>
               <TouchableOpacity
                 onPress={() => {
                   // getAllAddress();
@@ -579,7 +586,7 @@ const Cart = () => {
                   height: 50,
                   borderWidth: 1,
                   borderColor: Colors.slate,
-                  marginTop: 5,
+                  // marginTop: 5,
                   padding: 10,
                   borderRadius: 10,
                   // marginHorizontal: 20,
@@ -593,6 +600,35 @@ const Cart = () => {
                     : data.Address}
                 </Text>
               </TouchableOpacity>
+
+              <View style={[ { paddingVertical: 10, paddingTop: 20 }]}>
+                <Text style={[fonts.captionBold]}>Phương thức thanh toán: </Text>
+                <Dropdown
+                  data={[
+                    { label: 'COD - Thanh toán khi nhận', value: PaymentMethodsEnum.COD},
+                    { label: 'Stripe - Thanh toán trực tuyến', value: PaymentMethodsEnum.Stripe },
+                  ]}
+                  maxHeight={200}
+                  placeholder="Chọn"
+                  labelField={'label'}
+                  valueField={'value'}
+                  value={PaymentMethodsEnum.COD}
+                  onChange={text => { }}
+                  selectedTextStyle={{ color: Colors.black   }}
+                  style={{
+                    height: 50,
+                    borderWidth: 1,
+                    borderColor: Colors.slate,
+                    marginTop: 5,
+                    padding: 10,
+                    borderRadius: 10,
+                    // marginHorizontal: 20,
+                    // flex: 1,
+                    backgroundColor: Colors.white,
+                  }}
+                />
+              </View>
+
               <View
                 style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
                 <View

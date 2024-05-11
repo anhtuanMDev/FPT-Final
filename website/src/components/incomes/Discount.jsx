@@ -2,6 +2,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/css/style.css';
 import '../assets/js/main.js'
+import { toggleErrorFeedback, checkEmptyValue, checkValidDate, checkValidDateRange, checkStringLength, checkValueInRange } from '../../utils/checkInputValue.ts'
+import '../assets/css/form-pseudo-classes.css';
 
 // SVG
 import logo from '../assets/img/images/logo.svg';
@@ -71,11 +73,6 @@ const Discounts = (prop) => {
             tabToSwitch.click();
         }
     }
-
-    const typeCouponsList = ["Times", "Count"];
-    const [typeCoupon, setTypeCoupon] = useState(typeCouponsList[0]);
-    const [typeCouponEdit, setTypeCouponEdit] = useState(typeCouponsList[0]);
-    const [typeCouponCouponEdit, setTypeCouponCouponEdit] = useState(typeCouponsList[0]);
 
     // image
     const [image, setImage] = useState(null);
@@ -222,6 +219,8 @@ const Discounts = (prop) => {
     }, [data.usersParticipantsPage, data.eventDetail])
 
 
+
+
     const generateID = (prefix) => {
         const chars =
             'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -237,8 +236,6 @@ const Discounts = (prop) => {
         let content = document.getElementById('eventContent-edit');
         let code = document.getElementById('couponCode-edit');
         let discount = document.getElementById('eventDiscount-edit');
-        let type = document.getElementById('typeCoupon-edit');
-        let amount = document.getElementById('couponAmount-edit');
         let start = document.getElementById('eventStart-edit');
         let end = document.getElementById('eventEnd-edit');
 
@@ -246,46 +243,492 @@ const Discounts = (prop) => {
         content.value = eventDe.Content;
         code.value = eventDe.CouponCode;
         discount.value = eventDe.Discount;
-        type.value = eventDe.Type;
-        setTypeCouponEdit(type.value);
-        amount.value = eventDe.Amount !== -1 ? eventDe.Amount : "";
         start.value = eventDe.Start;
         end.value = eventDe.End;
+    }
+
+    useEffect(() => {
+        setListenerCreateForm();
+        setListenerEditForm();
+    }, []);
+
+    const setListenerCreateForm = () => {
+        try {
+            document.getElementById('eventTitle').addEventListener('focusout', () => {
+                const title = document.getElementById('eventTitle').value;
+
+                if (!title) {
+                    let errorMsg = "Tiêu đề không được để trống";
+                    toggleErrorFeedback("eventTitle", "eventTitle-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("eventTitle", "eventTitle-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventContent').addEventListener('focusout', () => {
+                const content = document.getElementById('eventContent').value;
+
+                if (!content) {
+                    let errorMsg = "Nội dung không được để trống";
+                    toggleErrorFeedback("eventContent", "eventContent-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("eventContent", "eventContent-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('couponCode').addEventListener('focusout', () => {
+                const code = document.getElementById('couponCode').value;
+
+                if (!code) {
+                    let errorMsg = "Mã giảm giá không được để trống";
+                    toggleErrorFeedback("couponCode", "couponCode-invalid-feedback", errorMsg, true);
+                } else if (!checkStringLength(code, 6, 6)) {
+                    let errorMsg = "Mã giảm giá phải có 6 ký tự";
+                    toggleErrorFeedback("couponCode", "couponCode-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("couponCode", "couponCode-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventDiscount').addEventListener('focusout', () => {
+                const discount = document.getElementById('eventDiscount').value;
+
+                if (!discount) {
+                    let errorMsg = "Giảm giá không được để trống";
+                    toggleErrorFeedback("eventDiscount", "eventDiscount-invalid-feedback", errorMsg, true);
+                } else if (!checkValueInRange(discount, 0, 100)) {
+                    let errorMsg = "Giảm giá phải từ 0 đến 100";
+                    toggleErrorFeedback("eventDiscount", "eventDiscount-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("eventDiscount", "eventDiscount-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventStart').addEventListener('focusout', () => {
+                const start = document.getElementById('eventStart').value;
+                const end = document.getElementById('eventEnd').value;
+
+                if (!start) {
+                    let errorMsg = "Ngày bắt đầu không được để trống";
+                    toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorMsg, true);
+                } else if (!checkValidDate(start)) {
+                    let errorMsg = "Ngày bắt đầu phải từ hôm nay trở đi";
+                    toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorMsg, true);
+                } else {
+                    if (start && end && checkValidDate(start) && checkValidDate(end)) {
+                        if (!checkValidDateRange(start, end, 5)) {
+                            let errorStartMsg = "Ngày bắt đầu phải trước ngày kết thúc (ít nhất 5 ngày)";
+                            let errorEndMsg = "Ngày kết thúc phải sau ngày bắt đầu (ít nhất 5 ngày)";
+
+                            toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorStartMsg, true);
+                            toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorEndMsg, true);
+                        } else {
+                            toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", null, false);
+                            toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", null, false);
+                        }
+                    }
+                    toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventEnd').addEventListener('focusout', () => {
+                const end = document.getElementById('eventEnd').value;
+                const start = document.getElementById('eventStart').value;
+
+                toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", null, false);
+
+                if (!end) {
+                    let errorMsg = "Ngày kết thúc không được để trống";
+                    toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorMsg, true);
+                }
+
+                if (!checkValidDate(end)) {
+                    let errorMsg = "Ngày kết thúc phải từ hôm nay trở đi";
+                    toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorMsg, true);
+                }
+
+                if (start && end && checkValidDate(start) && checkValidDate(end)) {
+                    if (!checkValidDateRange(start, end, 5)) {
+                        let errorStartMsg = "Ngày bắt đầu phải trước ngày kết thúc (ít nhất 5 ngày)";
+                        let errorEndMsg = "Ngày kết thúc phải sau ngày bắt đầu (ít nhất 5 ngày)";
+
+                        toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorStartMsg, true);
+                        toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorEndMsg, true);
+                    } else {
+                        toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", null, false);
+                        toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", null, false);
+                    }
+                }
+            });
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const setListenerEditForm = () => {
+        try {
+            document.getElementById('eventTitle-edit').addEventListener('focusout', () => {
+                const title = document.getElementById('eventTitle-edit').value;
+
+                if (!title) {
+                    let errorMsg = "Tiêu đề không được để trống";
+                    toggleErrorFeedback("eventTitle-edit", "eventTitle-edit-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("eventTitle-edit", "eventTitle-edit-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventContent-edit').addEventListener('focusout', () => {
+                const content = document.getElementById('eventContent-edit').value;
+
+                if (!content) {
+                    let errorMsg = "Nội dung không được để trống";
+                    toggleErrorFeedback("eventContent-edit", "eventContent-edit-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("eventContent-edit", "eventContent-edit-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('couponCode-edit').addEventListener('focusout', () => {
+                const code = document.getElementById('couponCode-edit').value;
+
+                if (!code) {
+                    let errorMsg = "Mã giảm giá không được để trống";
+                    toggleErrorFeedback("couponCode-edit", "couponCode-edit-invalid-feedback", errorMsg, true);
+                } else if (!checkStringLength(code, 6, 6)) {
+                    let errorMsg = "Mã giảm giá phải có 6 ký tự";
+                    toggleErrorFeedback("couponCode-edit", "couponCode-edit-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("couponCode-edit", "couponCode-edit-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventDiscount-edit').addEventListener('focusout', () => {
+                const discount = document.getElementById('eventDiscount-edit').value;
+
+                if (!discount) {
+                    let errorMsg = "Giảm giá không được để trống";
+                    toggleErrorFeedback("eventDiscount-edit", "eventDiscount-edit-invalid-feedback", errorMsg, true);
+                } else if (!checkValueInRange(discount, 0, 100)) {
+                    let errorMsg = "Giảm giá phải từ 0 đến 100";
+                    toggleErrorFeedback("eventDiscount-edit", "eventDiscount-edit-invalid-feedback", errorMsg, true);
+                } else {
+                    toggleErrorFeedback("eventDiscount-edit", "eventDiscount-edit-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventStart-edit').addEventListener('focusout', () => {
+                const start = document.getElementById('eventStart-edit').value;
+                const end = document.getElementById('eventEnd-edit').value;
+
+                if (!start) {
+                    let errorMsg = "Ngày bắt đầu không được để trống";
+                    toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorMsg, true);
+                } else if (!checkValidDate(start)) {
+                    let errorMsg = "Ngày bắt đầu phải từ hôm nay trở đi";
+                    toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorMsg, true);
+                } else {
+                    if (start && end && checkValidDate(start) && checkValidDate(end)) {
+                        if (!checkValidDateRange(start, end, 5)) {
+                            let errorStartMsg = "Ngày bắt đầu phải trước ngày kết thúc (ít nhất 5 ngày)";
+                            let errorEndMsg = "Ngày kết thúc phải sau ngày bắt đầu (ít nhất 5 ngày)";
+
+                            toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorStartMsg, true);
+                            toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorEndMsg, true);
+                        } else {
+                            toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", null, false);
+                            toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", null, false);
+                        }
+                    }
+                    toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", null, false);
+                }
+            });
+
+            document.getElementById('eventEnd-edit').addEventListener('focusout', () => {
+                const end = document.getElementById('eventEnd-edit').value;
+                const start = document.getElementById('eventStart-edit').value;
+
+                toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", null, false);
+
+                if (!end) {
+                    let errorMsg = "Ngày kết thúc không được để trống";
+                    toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorMsg, true);
+                }
+
+                if (!checkValidDate(end)) {
+                    let errorMsg = "Ngày kết thúc phải từ hôm nay trở đi";
+                    toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorMsg, true);
+                }
+
+                if (start && end && checkValidDate(start) && checkValidDate(end)) {
+                    if (!checkValidDateRange(start, end, 5)) {
+                        let errorStartMsg = "Ngày bắt đầu phải trước ngày kết thúc (ít nhất 5 ngày)";
+                        let errorEndMsg = "Ngày kết thúc phải sau ngày bắt đầu (ít nhất 5 ngày)";
+
+                        toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorStartMsg, true);
+                        toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorEndMsg, true);
+                    } else {
+                        toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", null, false);
+                        toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", null, false);
+                    }
+                }
+            });
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const checkCreateForm = (event) => {
+        try {
+            let bool = true;
+
+            const title = document.getElementById('eventTitle').value;
+            const content = document.getElementById('eventContent').value;
+            const code = document.getElementById('couponCode').value;
+            const discount = document.getElementById('eventDiscount').value;
+            const start = document.getElementById('eventStart').value;
+            const end = document.getElementById('eventEnd').value;
+
+
+            if (!title) {
+                let errorMsg = "Tiêu đề không được để trống";
+                toggleErrorFeedback("eventTitle", "eventTitle-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                toggleErrorFeedback("eventTitle", "eventTitle-invalid-feedback", null, false);
+            }
+
+            if (!content) {
+                let errorMsg = "Nội dung không được để trống";
+                toggleErrorFeedback("eventContent", "eventContent-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                toggleErrorFeedback("eventContent", "eventContent-invalid-feedback", null, false);
+            }
+
+            if (!code) {
+                let errorMsg = "Mã giảm giá không được để trống";
+                toggleErrorFeedback("couponCode", "couponCode-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else if (!checkStringLength(code, 6, 6)) {
+                let errorMsg = "Mã giảm giá phải có 6 ký tự";
+                toggleErrorFeedback("couponCode", "couponCode-invalid-feedback", errorMsg, true);
+                bool = false;
+
+            } else {
+                toggleErrorFeedback("couponCode", "couponCode-invalid-feedback", null, false);
+            }
+
+            if (!discount) {
+                let errorMsg = "Giảm giá không được để trống";
+                toggleErrorFeedback("eventDiscount", "eventDiscount-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else if (!checkValueInRange(discount, 0, 100)) {
+                let errorMsg = "Giảm giá phải từ 0 đến 100";
+                toggleErrorFeedback("eventDiscount", "eventDiscount-invalid-feedback", errorMsg, true);
+                bool = false;
+
+            } else {
+                toggleErrorFeedback("eventDiscount", "eventDiscount-invalid-feedback", null, false);
+            }
+
+            if (!start) {
+                let errorMsg = "Ngày bắt đầu không được để trống";
+                toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                if (!checkValidDate(start)) {
+                    let errorMsg = "Ngày bắt đầu phải từ hôm nay trở đi";
+
+                    toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorMsg, true);
+                    bool = false;
+                } else {
+                    toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", null, false);
+                }
+            }
+
+            if (!end) {
+                let errorMsg = "Ngày kết thúc không được để trống";
+                toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                if (!checkValidDate(end)) {
+                    let errorMsg = "Ngày kết thúc phải từ hôm nay trở đi";
+
+                    toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorMsg, true);
+                    bool = false;
+                } else {
+                    toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", null, false);
+                }
+            }
+
+            if (!start || !end) return bool;
+
+            if (!checkValidDateRange(start, end, 5)) {
+                let errorStartMsg = "Ngày bắt đầu phải trước ngày kết thúc (ít nhất 5 ngày)";
+                let errorEndMsg = "Ngày kết thúc phải sau ngày bắt đầu (ít nhất 5 ngày)";
+
+                toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", errorStartMsg, true);
+                toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", errorEndMsg, true);
+                bool = false;
+            } else {
+                toggleErrorFeedback("eventStart", "eventStart-invalid-feedback", null, false);
+                toggleErrorFeedback("eventEnd", "eventEnd-invalid-feedback", null, false);
+            }
+
+
+            return bool;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    }
+
+    const checkEditForm = (event) => {
+        try {
+            let bool = true;
+
+            const title = document.getElementById('eventTitle-edit').value;
+            const content = document.getElementById('eventContent-edit').value;
+            const code = document.getElementById('couponCode-edit').value;
+            const discount = document.getElementById('eventDiscount-edit').value;
+            const start = document.getElementById('eventStart-edit').value;
+            const end = document.getElementById('eventEnd-edit').value;
+
+
+            if (!title) {
+                let errorMsg = "Tiêu đề không được để trống";
+                toggleErrorFeedback("eventTitle-edit", "eventTitle-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                toggleErrorFeedback("eventTitle-edit", "eventTitle-edit-invalid-feedback", null, false);
+            }
+
+            if (!content) {
+                let errorMsg = "Nội dung không được để trống";
+                toggleErrorFeedback("eventContent-edit", "eventContent-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                toggleErrorFeedback("eventContent-edit", "eventContent-edit-invalid-feedback", null, false);
+            }
+
+            if (!code) {
+                let errorMsg = "Mã giảm giá không được để trống";
+                toggleErrorFeedback("couponCode-edit", "couponCode-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else if (!checkStringLength(code, 6, 6)) {
+                let errorMsg = "Mã giảm giá phải có 6 ký tự";
+                toggleErrorFeedback("couponCode-edit", "couponCode-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+
+            } else {
+                toggleErrorFeedback("couponCode-edit", "couponCode-edit-invalid-feedback", null, false);
+            }
+
+            if (!discount) {
+                let errorMsg = "Giảm giá không được để trống";
+                toggleErrorFeedback("eventDiscount-edit", "eventDiscount-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else if (!checkValueInRange(discount, 0, 100)) {
+                let errorMsg = "Giảm giá phải từ 0 đến 100";
+                toggleErrorFeedback("eventDiscount-edit", "eventDiscount-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+
+            } else {
+                toggleErrorFeedback("eventDiscount-edit", "eventDiscount-edit-invalid-feedback", null, false);
+            }
+
+            if (!start) {
+                let errorMsg = "Ngày bắt đầu không được để trống";
+                toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                if (!checkValidDate(start)) {
+                    let errorMsg = "Ngày bắt đầu phải từ hôm nay trở đi";
+
+                    toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorMsg, true);
+                    bool = false;
+                } else {
+                    toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", null, false);
+                }
+            }
+
+            if (!end) {
+                let errorMsg = "Ngày kết thúc không được để trống";
+                toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorMsg, true);
+                bool = false;
+            } else {
+                if (!checkValidDate(end)) {
+                    let errorMsg = "Ngày kết thúc phải từ hôm nay trở đi";
+
+                    toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorMsg, true);
+                    bool = false;
+                } else {
+                    toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", null, false);
+                }
+            }
+
+            if (!start || !end) return bool;
+
+            if (!checkValidDateRange(start, end, 5)) {
+                let errorStartMsg = "Ngày bắt đầu phải trước ngày kết thúc (ít nhất 5 ngày)";
+                let errorEndMsg = "Ngày kết thúc phải sau ngày bắt đầu (ít nhất 5 ngày)";
+
+                toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorStartMsg, true);
+                toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", errorEndMsg, true);
+                bool = false;
+            } else {
+                toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", null, false);
+                toggleErrorFeedback("eventEnd-edit", "eventEnd-edit-invalid-feedback", null, false);
+            }
+
+
+            return bool;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
 
     const handleCreateEvent = async (event) => {
         event.preventDefault(); // prevent form submission
         console.log("press in")
-        let boole = true;
-        var needsValidation = document.querySelectorAll('.needs-validation.create-event');
+        // let boole = true;
+        // var needsValidation = document.querySelectorAll('.needs-validation.create-event');
 
-        Array.prototype.slice.call(needsValidation)
-            .forEach(function (form) {
-                if (!form.checkValidity()) {
-                    event.stopPropagation();
-                    form.classList.add('was-validated');
-                    boole = false;
-                }
-            });
+        // Array.prototype.slice.call(needsValidation)
+        //     .forEach(function (form) {
+        //         if (!form.checkValidity()) {
+        //             event.stopPropagation();
+        //             form.classList.add('was-validated');
+        //             boole = false;
+        //         }
+        //     });
 
-        if (!boole) return;
+        // if (!boole) return;
 
         const title = document.getElementById('eventTitle').value;
         const content = document.getElementById('eventContent').value;
         const code = document.getElementById('couponCode').value;
         const discount = document.getElementById('eventDiscount').value;
-        const type = document.getElementById('typeCoupon').value;
-        const amount = document.getElementById('couponAmount').value;
         const start = document.getElementById('eventStart').value;
         const end = document.getElementById('eventEnd').value;
 
-        const response = await AxiosInstance().post("create-event.php", { title, content, code, discount, type, amount, start, end, adminID });
+        if (!checkCreateForm(event)) {
+            return;
+        }
+
+        const response = await AxiosInstance().post("create-event.php", { title, content, code, discount, start, end, adminID });
 
         if (response.status) {
             console.log("success");
             Swal.fire({
-                title: 'Success',
-                text: 'Event successfully created',
+                title: 'Thành công',
+                text: 'Tạo sự kiện thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
@@ -295,8 +738,6 @@ const Discounts = (prop) => {
             document.getElementById('eventContent').value = '';
             document.getElementById('couponCode').value = '';
             document.getElementById('eventDiscount').value = 0;
-            document.getElementById('typeCoupon').value = typeCouponsList[0];
-            document.getElementById('couponAmount').value = '';
             document.getElementById('eventStart').value = '';
             document.getElementById('eventEnd').value = '';
 
@@ -318,9 +759,9 @@ const Discounts = (prop) => {
         } else {
             console.log("failed");
             Swal.fire({
-                title: 'Failed',
-                text: response.statusText,
-                // text: 'Event creation failed',
+                title: 'Thất bại',
+                // text: response.statusText,
+                text: 'Tạo sự kiện thất bại',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -344,13 +785,13 @@ const Discounts = (prop) => {
 
         if (!boole) return;
 
-        const eventId = eventInfo.Id;
-        const couponId = eventInfo.CouponID;
+        const eventId = eventInfo?.Id;
+        const couponId = eventInfo?.CouponID;
 
         if (!eventId) {
             Swal.fire({
-                title: 'Failed',
-                text: 'No Id',
+                title: 'Thất bại',
+                text: 'Không tìm thấy sự kiện',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -361,20 +802,20 @@ const Discounts = (prop) => {
         const content = document.getElementById('eventContent-edit').value;
         const code = document.getElementById('couponCode-edit').value;
         const discount = document.getElementById('eventDiscount-edit').value;
-        const type = document.getElementById('typeCoupon-edit').value;
-        const amount = document.getElementById('couponAmount-edit').value;
         const start = document.getElementById('eventStart-edit').value;
         const end = document.getElementById('eventEnd-edit').value;
 
+        if (!checkEditForm(event)) {
+            return;
+        }
 
-
-        const response = await AxiosInstance().post("update-event.php", { id: eventId, couponId: couponId, title, content, code, discount, type, amount, start, end, adminID });
+        const response = await AxiosInstance().post("update-event.php", { id: eventId, couponId: couponId, title, content, code, discount, start, end, adminID });
 
         if (response.status) {
             console.log("success");
             Swal.fire({
-                title: 'Success',
-                text: 'Event successfully updated',
+                title: 'Thành công',
+                text: 'Cập nhật sự kiện thành công',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
@@ -382,8 +823,9 @@ const Discounts = (prop) => {
         } else {
             console.log("failed");
             Swal.fire({
-                title: 'Failed',
-                text: 'Event updation failed',
+                title: 'Thất bại',
+                // text: response.statusText,
+                text: 'Cập nhật sự kiện thất bại',
                 icon: 'error',
                 confirmButtonText: 'OK'
             })
@@ -578,7 +1020,7 @@ const Discounts = (prop) => {
                                     style={{ width: '40px', height: '40px' }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = avatar }}
                                     alt="Error Profile" className="rounded-circle" />
-                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span> } </span>
+                                <span className="d-none d-md-block dropdown-toggle ps-2">{adminDetail?.Name || <span className='c-4'>No name</span>} </span>
                             </a>
                             {/* <!-- End Profile Iamge Icon --> */}
 
@@ -933,7 +1375,7 @@ const Discounts = (prop) => {
                                                             <ul className="pagination">
                                                                 <li className="page-item">
                                                                     <a className="page-link" aria-label="Previous" style={{ cursor: 'pointer' }} onClick={() => {
-                                                                        dispatchData({ type: 'SET_EVENT_PAGE', payload: 1 })
+                                                                        dispatchData({ type: 'SET_EVENTS_PAGE', payload: 1 })
                                                                     }}>
                                                                         <span aria-hidden="true">«</span>
                                                                     </a>
@@ -941,25 +1383,38 @@ const Discounts = (prop) => {
                                                                 {
                                                                     Array.from({ length: data.eventTotalPage }, (_, index) => {
                                                                         if (data.eventTotalPage > 10) {
-                                                                            if ((index >= data.eventPage - 2 && index <= data.eventPage + 1) || // 2 pages before and after current page
-                                                                                index >= data.eventTotalPage - 2) { // last 2 pages
+                                                                            if (index === 0 ||
+                                                                                index === data.eventTotalPage - 1 ||
+                                                                                (index >= data.eventPage - 2 && index <= data.eventPage) ||
+                                                                                (index === 1 && data.eventPage > 3) ||
+                                                                                (index >= data.eventTotalPage - 2 && data.eventPage <= data.eventTotalPage - 2)
+                                                                            ) {
+
                                                                                 return (
                                                                                     <li className={`page-item ${data.eventPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                        <a className="page-link" onClick={() => dispatchData({ type: 'SET_EVENT_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                        <a className="page-link" onClick={() => {
+                                                                                            dispatchData({ type: 'SET_EVENTS_PAGE', payload: index + 1 });
+
+                                                                                        }}>{index + 1}</a>
                                                                                     </li>
                                                                                 );
+                                                                            } else if ((index === 2 && data.eventPage >= 4) || (index >= data.eventTotalPage - 3 && data.eventPage <= data.eventTotalPage - 3)) {
+
+                                                                                return (
+                                                                                    <li key={index + 1} className={`page-item disabled`}><a className="page-link">...</a></li>
+                                                                                )
                                                                             }
                                                                         } else {
                                                                             return (
                                                                                 <li className={`page-item ${data.eventPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_EVENT_PAGE', payload: index + 1 })}>{index + 1}</a>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_EVENTS_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                 </li>
                                                                             );
                                                                         }
                                                                     })
                                                                 }
                                                                 <li className="page-item">
-                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_EVENT_PAGE', payload: data.eventTotalPage }) }}>
+                                                                    <a className="page-link" aria-label="Next" style={{ cursor: 'pointer' }} onClick={() => { dispatchData({ type: 'SET_EVENTS_PAGE', payload: data.eventTotalPage }) }}>
                                                                         <span aria-hidden="true">»</span>
                                                                     </a>
                                                                 </li>
@@ -1022,7 +1477,7 @@ const Discounts = (prop) => {
                                                             <div className='input-group'>
                                                                 <input type='text' className='form-control' id='eventTitle-edit' name='eventTitle-edit' required />
                                                             </div>
-                                                            <div className='invalid-feedback'>Xin vui lòng nhập Tiêu đề sự kiện!</div>
+                                                            <div className='invalid-feedback' id='eventTitle-edit-invalid-feedback'>Xin vui lòng nhập Tiêu đề sự kiện!</div>
                                                         </div>
 
                                                         <div className='col-12'>
@@ -1030,45 +1485,27 @@ const Discounts = (prop) => {
                                                             <div className='input-group'>
                                                                 <textarea type='text' className='form-control' id='eventContent-edit' name='eventContent-edit' rows="5" required />
                                                             </div>
-                                                            <div className='invalid-feedback'>Xin vui lòng nhập Nội dung sự kiện!</div>
+                                                            <div className='invalid-feedback' id='eventContent-edit-invalid-feedback'>Xin vui lòng nhập Nội dung sự kiện!</div>
                                                         </div>
 
                                                         <div className="col-12" >
                                                             <div className='row'>
-                                                                <div className="col-3" >
+                                                                <div className="col-5" >
                                                                     <label htmlFor="couponCode-edit" className="form-label">Mã phiếu mua hàng</label>
                                                                     <div className='input-group'>
                                                                         <input type='text' className='form-control' id='couponCode-edit' name='couponCode-edit' required maxLength={6} />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Mã phiếu mua hàng!</div>
+                                                                    <div className='invalid-feedback' id='couponCode-edit-invalid-feedback'>Xin vui lòng nhập Mã phiếu mua hàng!</div>
                                                                 </div>
 
-                                                                <div className="col-3" >
+                                                                <div className="col-5" >
                                                                     <label htmlFor="eventDiscount-edit" className="form-label">Giảm giá (%)</label>
                                                                     <div className='input-group'>
                                                                         <input type='number' className='form-control' id='eventDiscount-edit' name='eventDiscount-edit' required maxLength={2} min={0} max={100} />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Giảm giá!</div>
+                                                                    <div className='invalid-feedback' id='eventDiscount-edit-invalid-feedback'>Xin vui lòng nhập Giảm giá!</div>
                                                                 </div>
 
-                                                                <div className="col-3" >
-                                                                    <label htmlFor="typeCoupon-edit" className="form-label">Loại phiếu mua hàng</label>
-                                                                    <select className="form-select" id="typeCoupon-edit" required onChange={(event) => { setTypeCouponEdit(event.target.value) }}>
-                                                                        {
-                                                                            typeCouponsList.map((item, index) => (
-                                                                                <option key={index} value={item} defaultValue={index === 1}>{item}</option>
-                                                                            ))
-                                                                        }
-                                                                    </select>
-                                                                </div>
-
-                                                                <div className="col-3 " >
-                                                                    <label htmlFor="couponAmount-edit" className="form-label" >Số lượng phiếu mua hàng</label>
-                                                                    <div className='input-group'>
-                                                                        <input type='numcer' className='form-control' id='couponAmount-edit' name='couponAmount-edit' required disabled={typeCouponEdit !== "Count"} />
-                                                                    </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Số lượng phiếu mua hàng!</div>
-                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -1079,7 +1516,7 @@ const Discounts = (prop) => {
                                                                     <div className='input-group'>
                                                                         <input type='datetime-local' className='form-control' id='eventStart-edit' name='eventStart-edit' required />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Ngày bắt đầu!</div>
+                                                                    <div className='invalid-feedback' id='eventStart-edit-invalid-feedback'>Xin vui lòng nhập Ngày bắt đầu!</div>
                                                                 </div>
 
                                                                 <div className="col-6 " >
@@ -1087,7 +1524,7 @@ const Discounts = (prop) => {
                                                                     <div className='input-group'>
                                                                         <input type='datetime-local' className='form-control' id='eventEnd-edit' name='eventEnd-edit' required />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Ngày kết thúc!</div>
+                                                                    <div className='invalid-feedback' id='eventEnd-edit-invalid-feedback'>Xin vui lòng nhập Ngày kết thúc!</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1139,55 +1576,38 @@ const Discounts = (prop) => {
                                                         <div className='col-12'>
                                                             <label htmlFor="eventTitle" className="form-label">Tiêu đề sự kiện</label>
                                                             <div className='input-group'>
-                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required defaultValue={"Khuyến mãi mùa hè"}/>
+                                                                <input type='text' className='form-control' id='eventTitle' name='eventTitle' required defaultValue={"Khuyến mãi mùa hè"} />
                                                             </div>
-                                                            <div className='invalid-feedback'>Xin vui lòng nhập Tiêu đề sự kiện!</div>
+                                                            <div className='invalid-feedback' id='eventTitle-invalid-feedback'>Xin vui lòng nhập Tiêu đề sự kiện!</div>
                                                         </div>
 
                                                         <div className='col-12'>
                                                             <label htmlFor="eventContent" className="form-label">Nội dung sự kiện</label>
                                                             <div className='input-group'>
-                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required defaultValue={"Giảm giá lên đến 30%"}/>
+                                                                <textarea type='text' className='form-control' id='eventContent' name='eventContent' rows="5" required defaultValue={"Giảm giá lên đến 30%"} />
                                                             </div>
-                                                            <div className='invalid-feedback'>Xin vui lòng nhập Nội dung sự kiện!</div>
+                                                            <div className='invalid-feedback' id='eventContent-invalid-feedback'>Xin vui lòng nhập Nội dung sự kiện!</div>
                                                         </div>
 
                                                         <div className="col-12" >
                                                             <div className='row'>
-                                                                <div className="col-3" >
+                                                                <div className="col-5" >
                                                                     <label htmlFor="couponCode" className="form-label">Mã phiếu mua hàng</label>
                                                                     <div className='input-group'>
-                                                                        <input type='text' className='form-control' id='couponCode' name='couponCode' required maxLength={6} defaultValue={"AHDUD6"}/>
+                                                                        <input type='text' className='form-control' id='couponCode' name='couponCode' required maxLength={6} defaultValue={"AHDUD6"} />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Mã phiếu mua hàng!</div>
+                                                                    <div className='invalid-feedback' id='couponCode-invalid-feedback'>Xin vui lòng nhập Mã phiếu mua hàng!</div>
                                                                 </div>
 
-                                                                <div className="col-3" >
+                                                                <div className="col-5" >
                                                                     <label htmlFor="eventDiscount" className="form-label">Giảm giá (%)</label>
                                                                     <div className='input-group'>
                                                                         <input type='number' className='form-control' id='eventDiscount' name='eventDiscount' required maxLength={2} min={0} max={100} defaultValue={20} />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Giảm giá!</div>
+                                                                    <div className='invalid-feedback' id='eventDiscount-invalid-feedback'>Xin vui lòng nhập Giảm giá!</div>
                                                                 </div>
 
-                                                                <div className="col-3" >
-                                                                    <label htmlFor="typeCoupon" className="form-label">Loại phiếu mua hàng</label>
-                                                                    <select className="form-select" id="typeCoupon" required onChange={(event) => { setTypeCoupon(event.target.value) }}>
-                                                                        {
-                                                                            typeCouponsList.map((item, index) => (
-                                                                                <option key={index} value={item} defaultValue={index === 1}>{item}</option>
-                                                                            ))
-                                                                        }
-                                                                    </select>
-                                                                </div>
 
-                                                                <div className="col-3 " >
-                                                                    <label htmlFor="couponAmount" className="form-label" >Số lượng phiếu mua hàng</label>
-                                                                    <div className='input-group'>
-                                                                        <input type='numcer' className='form-control' id='couponAmount' name='couponAmount' required disabled={typeCoupon !== "Count"} />
-                                                                    </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Số lượng phiếu mua hàng!</div>
-                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -1196,9 +1616,9 @@ const Discounts = (prop) => {
                                                                 <div className="col-6" >
                                                                     <label htmlFor="eventStart" className="form-label">Ngày bắt đầu</label>
                                                                     <div className='input-group'>
-                                                                        <input type='datetime-local' className='form-control' id='eventStart' name='eventStart' required/>
+                                                                        <input type='datetime-local' className='form-control' id='eventStart' name='eventStart' required />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Ngày bắt đầu!</div>
+                                                                    <div className='invalid-feedback' id='eventStart-invalid-feedback'>Xin vui lòng nhập Ngày bắt đầu!</div>
                                                                 </div>
 
                                                                 <div className="col-6 " >
@@ -1206,7 +1626,7 @@ const Discounts = (prop) => {
                                                                     <div className='input-group'>
                                                                         <input type='datetime-local' className='form-control' id='eventEnd' name='eventEnd' required />
                                                                     </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Ngày kết thúc!</div>
+                                                                    <div className='invalid-feedback' id='eventEnd-invalid-feedback'>Xin vui lòng nhập Ngày kết thúc!</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1222,85 +1642,6 @@ const Discounts = (prop) => {
                                                     </form>
                                                 </div>
                                                 {/*End Create event*/}
-
-                                                {/*Coupon edit*/}
-                                                <div className="tab-pane fade" id="coupon-edit">
-                                                    <div className="pt-4 pb-2 tab-title">
-                                                        <h5 className="card-title text-center pb-0 fs-4">Chỉnh sửa Phiếu mua hàng</h5>
-                                                        {/* <p className="text-center small">Enter information to create</p> */}
-                                                    </div>
-
-                                                    <form className='row g-3 needs-validation'>
-                                                        <div className='col-12'>
-                                                            <label htmlFor="couponCode-editCoupon" className="form-label">Mã phiếu mua hàng</label>
-                                                            <div className='input-group'>
-                                                                <input type='text' className='form-control' id='couponCode-editCoupon' name='couponCode-editCoupon' required />
-                                                            </div>
-                                                            <div className='invalid-feedback'>Xin vui lòng nhập Mã phiếu mua hàng!</div>
-                                                        </div>
-
-                                                        <div className="col-12" >
-                                                            <div className='row'>
-                                                                <div className="col-6" >
-                                                                    <label htmlFor="couponDiscount-editCoupon" className="form-label">Giảm giá (%)</label>
-                                                                    <div className='input-group'>
-                                                                        <input type='number' className='form-control' id='couponDiscount-editCoupon' name='couponDiscount-editCoupon' required min={0} max={100} />
-                                                                    </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Giảm giá!</div>
-                                                                </div>
-
-                                                                <div className="col-3" >
-                                                                    <label htmlFor="typeCoupon-editCoupon" className="form-label">Loại</label>
-                                                                    <select className="form-select" id="typeCoupon-editCoupon" required onChange={(event) => { setTypeCouponCouponEdit(event.target.value) }}>
-                                                                        {
-                                                                            typeCouponsList.map((item, index) => (
-                                                                                <option key={index} value={item} defaultValue={index === 1}>{item}</option>
-                                                                            ))
-                                                                        }
-                                                                    </select>
-                                                                </div>
-
-                                                                <div className="col-3 " >
-                                                                    <label htmlFor="couponAmount-editCoupon" className="form-label" >Số lượng phiếu mua hàng</label>
-                                                                    <div className='input-group'>
-                                                                        <input type='numcer' className='form-control' id='couponAmount-editCoupon' name='couponAmount-editCoupon' required disabled={typeCouponEdit !== "Count"} />
-                                                                    </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Số lượng phiếu mua hàng!</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="col-12" >
-                                                            <div className='row'>
-                                                                <div className="col-6" >
-                                                                    <label htmlFor="couponStart-editCoupon" className="form-label">Ngày bắt đầu</label>
-                                                                    <div className='input-group'>
-                                                                        <input type='datetime-local' className='form-control' id='couponStart-editCoupon' name='couponStart-editCoupon' required />
-                                                                    </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Ngày bắt đầu</div>
-                                                                </div>
-
-                                                                <div className="col-6 " >
-                                                                    <label htmlFor="couponEnd-editCoupon" className="form-label">Ngày kết thúc</label>
-                                                                    <div className='input-group'>
-                                                                        <input type='datetime-local' className='form-control' id='couponEnd-editCoupon' name='couponEnd-editCoupon' required />
-                                                                    </div>
-                                                                    <div className='invalid-feedback'>Xin vui lòng nhập Ngày kết thúc!</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="col-12">
-                                                            <button className="btn btn-primary w-100" type="button" style={{ background: '#fd7e14', marginTop: 50, borderWidth: 0 }}
-                                                                onClick={(event) => {
-                                                                    console.log("press create admin");
-                                                                    // handleCreateAccount(event);
-
-                                                                }}>Cập nhật</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                {/*End Coupon edit*/}
 
                                             </div>
                                             {/* <!-- End Bordered Tabs --> */}
@@ -1344,7 +1685,7 @@ const Discounts = (prop) => {
                                                             setInfoEventEdit(data?.eventDetail);
                                                             setEventEdit(data?.eventDetail);
                                                             selectEventEditTab();
-                                                        }}>Edit</button></li>
+                                                        }}>Chỉnh sửa</button></li>
                                                 </ul>
                                             </div>
 

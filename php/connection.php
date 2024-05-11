@@ -2,7 +2,7 @@
 $databaseHost = '127.0.0.1:3306';
 $databaseName = 'orangic';
 $databaseUsername = 'root';
-$databasePassword = 'Tuan@123';
+$databasePassword = 'WASERE12345@';
 
 try {
 	$dbConn = new PDO("mysql:host={$databaseHost};dbname={$databaseName}", 

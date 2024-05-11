@@ -17,12 +17,10 @@ try {
     $content = $data->content;
     $code = $data->code;
     $discount = $data->discount;
-    $type = $data->type;
-    $amount = $data->amount;
     $start = $data->start;
     $end = $data->end;
 
-    $amount = $type == "Count" ? $amount : -1;
+    $type = "Times" ;
 
     // Begin transaction
     $dbConn->beginTransaction();
@@ -30,7 +28,7 @@ try {
 
     // Update coupon
     $query = "UPDATE coupons 
-                    SET Code = '$code', Discount = $discount, Type = '$type', Amount = $amount, 
+                    SET Code = '$code', Discount = $discount, 
                         Start = '$start', End = '$end', UpdateAt = NOW(), UpdateBy = '$adminID' 
                     WHERE Id = '$idCpn'";
     $stmt = $dbConn->prepare($query);

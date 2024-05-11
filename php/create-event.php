@@ -28,12 +28,10 @@ try {
     $content = $data->content;
     $code = $data->code;
     $discount = $data->discount;
-    $type = $data->type;
-    $amount = $data->amount;
     $start = $data->start;
     $end = $data->end;
 
-    $amount = $type == "Count" ? $amount : -1;
+    $type = "Times"; 
     // Begin transaction
     $dbConn->beginTransaction();
 
@@ -63,8 +61,8 @@ try {
         }
     }
 
-    $query = "INSERT INTO coupons (Id, Code, Discount, Type, Amount, Start, End, CreateAt, UpdateAt, CreateBy, UpdateBy) 
-    VALUES('$idCpn', '$code', $discount, '$type', $amount, '$start', '$end', NOW(), null, '$adminID', null);";
+    $query = "INSERT INTO coupons (Id, Code, Discount, Start, End, CreateAt, UpdateAt, CreateBy, UpdateBy) 
+    VALUES('$idCpn', '$code', $discount, '$start', '$end', NOW(), null, '$adminID', null);";
     // error_log($query);
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

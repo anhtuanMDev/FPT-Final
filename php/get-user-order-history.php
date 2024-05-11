@@ -15,7 +15,7 @@ try {
     // address.Address, address.Phone, address.City, address.District, address.Ward
     // FROM orders
     // INNER JOIN address ON orders.AddressID = address.Id
-    // WHERE orders.UserID = '$id' AND orders.Status = 'Done'";
+    // WHERE orders.UserID = '$id' AND orders.Status = 'Done' ORDER BY orders.CreateAt DESC, orders.UpdateAt DESC ";
 
     $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt
     FROM orders

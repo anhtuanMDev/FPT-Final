@@ -99,6 +99,12 @@ const Cart = () => {
     Address: '',
   });
 
+  const [paymentMethods, setPaymentMethods] = useState(PaymentMethodsEnum.COD);
+
+  const changePaymentMethods = (value: PaymentMethodsEnum) => {
+    setPaymentMethods(value);
+  }
+
   /** Delete item in order */
 
   const deleteItem = async (foodID: string, orderItemID: string) => {
@@ -190,16 +196,22 @@ const Cart = () => {
         return !item.Pick;
       })
     ) {
-      const item = data.data
-        .filter(item => {
-          if (item.Pick) return item;
-        })
-        .map(item => ({
-          id: item.Id,
-          quantity: item.Quantity,
-        }));
+      // const item = data.data
+      //   .filter(item => {
+      //     if (item.Pick) return item;
+      //   })
+      //   .map(item => ({
+      //     id: item.Id,
+      //     quantity: item.Quantity,
+      //   }));
       // await updateItemInPaymentPick(data.Id, item);
-      handlePayment();
+      if (paymentMethods === PaymentMethodsEnum.COD) {
+        console.log('COD');
+        handleAfterPayment();
+      } else if (paymentMethods === PaymentMethodsEnum.Stripe) {
+        console.log('Stripe')
+        handlePayment();
+      }
     } else {
       showMessage({
         type: 'warning',
@@ -228,7 +240,7 @@ const Cart = () => {
         type: 'success',
         icon: 'success',
       });
-      handlePayment();
+      // handlePayment();
     } else {
       showMessage({
         message: response.statusText,
@@ -321,6 +333,7 @@ const Cart = () => {
   };
 
   const handlePayment = async () => {
+    console.log("handlePayment");
     if (!ready) {
       await initialisePaymentSheet();
     }
@@ -332,38 +345,64 @@ const Cart = () => {
       );
     } else {
       // setReady(false);
-      const body = {
-        orderID: data.Id,
-        userID: id as string,
-        addressID: data.AddressID,
-      };
-
-      const response = await AxiosInstance().post(
-        '/post-handle-after-payment.php',
-        body,
-      );
-      if (response.status) {
-        setRefresh(true);
-        getCartItem(id as string);
-        setRefresh(false);
-        showMessage({
-          type: 'success',
-          icon: 'success',
-          message: response.statusText,
-        });
-        setReady(false);
-        setRefresh(false);
-        return;
-      }
-
-      showMessage({
-        type: 'danger',
-        icon: 'danger',
-        message: response.statusText,
-      });
-
+      handleAfterPayment();
     }
   };
+
+  const handleAfterPayment = async () => {
+    const body = {
+      orderID: data.Id,
+      userID: id as string,
+      addressID: data.AddressID,
+      paymentMethod: paymentMethods,
+    };
+
+    const response = await AxiosInstance().post(
+      '/post-handle-after-payment.php',
+      body,
+    );
+    if (response.status) {
+      await handleUpdateItemInPaymentPick();
+      setRefresh(true);
+      getCartItem(id as string);
+      setRefresh(false);
+      showMessage({
+        type: 'success',
+        icon: 'success',
+        message: response.statusText,
+      });
+      // setReady(false);
+      setRefresh(false);
+      return;
+    }
+
+    console.log('handlePayment', response.statusText);
+    showMessage({
+      type: 'danger',
+      icon: 'danger',
+      message: "Thanh toán thất bại",
+    });
+
+  }
+
+  const handleUpdateItemInPaymentPick = async () => {
+    if (
+      /** if no item got check */
+      !data.data.every((item: Data) => {
+        return !item.Pick;
+      })
+    ) {
+      const item = data.data
+        .filter(item => {
+          if (item.Pick) return item;
+        })
+        .map(item => ({
+          id: item.Id,
+          quantity: item.Quantity,
+        }));
+      await updateItemInPaymentPick(data.Id, item);
+    }
+  }
 
   const ModalProcess = () => {
     return (
@@ -390,7 +429,7 @@ const Cart = () => {
     if (id) {
       getMainAddress(id as string);
     }
-  }, [id]);
+  }, [id, isFocused]);
 
   const getAllAddress = async () => {
     const response = await AxiosInstance().post('/get-user-all-address.php', { id: id });
@@ -601,11 +640,11 @@ const Cart = () => {
                 </Text>
               </TouchableOpacity>
 
-              <View style={[ { paddingVertical: 10, paddingTop: 20 }]}>
+              <View style={[{ paddingVertical: 10, paddingTop: 20 }]}>
                 <Text style={[fonts.captionBold]}>Phương thức thanh toán: </Text>
                 <Dropdown
                   data={[
-                    { label: 'COD - Thanh toán khi nhận', value: PaymentMethodsEnum.COD},
+                    { label: 'COD - Thanh toán khi nhận', value: PaymentMethodsEnum.COD },
                     { label: 'Stripe - Thanh toán trực tuyến', value: PaymentMethodsEnum.Stripe },
                   ]}
                   maxHeight={200}
@@ -613,8 +652,10 @@ const Cart = () => {
                   labelField={'label'}
                   valueField={'value'}
                   value={PaymentMethodsEnum.COD}
-                  onChange={text => { }}
-                  selectedTextStyle={{ color: Colors.black   }}
+                  onChange={(item) => {
+                    changePaymentMethods(item.value as PaymentMethodsEnum);
+                  }}
+                  selectedTextStyle={{ color: Colors.black }}
                   style={{
                     height: 50,
                     borderWidth: 1,
@@ -676,7 +717,7 @@ const Cart = () => {
             <Fluid_btn
               style={{ marginBottom: 25 }}
               title="Thanh toán"
-              enable={loading || !ready}
+              // enable={loading || !ready}
               onPress={async () => {
                 // setRefresh(true);
                 await checkingItemInPayment();

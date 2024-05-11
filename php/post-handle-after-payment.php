@@ -23,6 +23,7 @@ try {
     $orderID = $data->orderID;
     $userID = $data->userID;
     $addressID = $data->addressID;
+    $paymentMethod = $data->paymentMethod;
     $query = "SELECT * FROM orderitems WHERE OrderID = '$orderID' AND Pick = 0";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
@@ -36,8 +37,8 @@ try {
         ));
     } else {
         $id = generateID('ORD');
-        $query = "INSERT INTO orders(Id,Status, UserID, AddressID) 
-        VALUES('$id','Waiting','$userID','$addressID')";
+        $query = "INSERT INTO orders(Id,Status, UserID, AddressID, PaymentMethod)
+        VALUES('$id','Waiting','$userID','$addressID', '$paymentMethod')";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
 
@@ -57,6 +58,6 @@ try {
 } catch (Exception $e) {
     echo json_encode(array(
         "status" => false,
-        "message" => "Lỗi cập xác nhận thanh toán bởi vì $e"
+        "statusText" => "Lỗi cập xác nhận thanh toán bởi vì $e"
     ));
 }

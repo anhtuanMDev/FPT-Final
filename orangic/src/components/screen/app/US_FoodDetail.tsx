@@ -125,9 +125,9 @@ function converTime(time: string): string {
   if (secs > 30) minutes++;
 
   if (hours === 0) {
-    return `${minutes} mins`;
+    return `${minutes} phút`;
   } else {
-    return `${hours}hr ${minutes} mins`;
+    return `${hours}h ${minutes} phút`;
   }
 }
 
@@ -261,6 +261,7 @@ const US_FoodDetail = (props: Props) => {
 
   useEffect(() => {
     dispatch(isLoading(true));
+    console.log(id)
     if (id !== '') getFoodDetail();
     dispatch(isLoading(false));
   }, [id]);
@@ -420,7 +421,7 @@ const US_FoodDetail = (props: Props) => {
                 />
                 <Text>
                   {Math.round(state.Price * (1 - state.Discount / 100) * 0.1) +
-                    'k VNĐ'}
+                    '.000 đ'}
                 </Text>
               </View>
               <View
@@ -447,7 +448,7 @@ const US_FoodDetail = (props: Props) => {
               },
             ]}>
             <Text style={[fonts.captionBold, { color: Colors.green }]}>
-              {Math.round(state.Price * (1 - state.Discount / 100))}k VNĐ
+              {Math.round(state.Price * (1 - state.Discount / 100))}.000 đ
             </Text>
             <View
               style={[
@@ -456,7 +457,7 @@ const US_FoodDetail = (props: Props) => {
               <Quantity_btn
                 type="minus"
                 onPress={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
-                style={{ width: 20 }}
+                style={{ width: 25 }}
               />
               <Text style={[fonts.sublineBold, { color: Colors.black }]}>
                 {quantity}
@@ -464,7 +465,7 @@ const US_FoodDetail = (props: Props) => {
               <Quantity_btn
                 type="plus"
                 onPress={() => setQuantity(quantity <= 10 ? quantity + 1 : 10)}
-                style={{ width: 20 }}
+                style={{ width: 25 }}
               />
             </View>
           </View>

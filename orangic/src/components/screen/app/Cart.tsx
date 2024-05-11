@@ -719,7 +719,7 @@ const Cart = () => {
                             );
                         })
                         .reduce((acc: number, item) => acc + (item || 0), 0) +
-                      ' $'}
+                      ' .000 đ'}
                   </Text>
                 </View>
               </View>

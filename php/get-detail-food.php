@@ -114,7 +114,7 @@ try {
             $stmtFeatureRate->execute();
             $rate = $stmtFeatureRate->fetch(PDO::FETCH_ASSOC);
             $food['FeatureList'][$key]['ReviewCount'] = $rate ? $rate['ReviewCount'] : 0;
-            $food['FeatureList'][$key]['Ratinng'] = $rate ? $rate['Rating'] : 0;
+            $food['FeatureList'][$key]['Rating'] = $rate ? $rate['Rating'] : 0;
         }
 
         foreach ($other as $key => $value) {

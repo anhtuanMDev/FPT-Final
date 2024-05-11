@@ -78,7 +78,7 @@ const Profile = () => {
     React.useState<Information>(initialState);
   const isFocused = useIsFocused();
 
-  const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigate = useNavigation<NavigationProp<ParamList, 'Profile'>>();
 
   const logOut = async () => {
     try {

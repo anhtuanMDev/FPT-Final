@@ -63,7 +63,7 @@ const OrderManagement = () => {
   useEffect(() => {
     getOrders();
   }, []);
-  const navigation = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigation = useNavigation<NavigationProp<ParamList, 'OrderManagement'>>();
   const {width, height} = Dimensions.get('window');
 
   return (

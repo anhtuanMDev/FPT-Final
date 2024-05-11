@@ -20,7 +20,7 @@ try {
     LEFT JOIN address ON address.Id = orders.AddressID
     LEFT JOIN coupons ON coupons.Id = orders.CouponID
     INNER JOIN orderitems ON orderitems.OrderID = orders.Id
-    WHERE orders.Id = '$id'";
+    WHERE orders.Id = '$id' ORDER BY orders.CreateAt DESC"  ;
     $stmt = $dbConn->prepare($query);
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
@@ -43,7 +43,7 @@ try {
     foreach ($orders['Restaurant'] as $key => $value) {
         $resID = $value['Id'];
         $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Status, 
-        orderitems.Value, orderitems.ArriveAt, foods.Name, images.Id AS Image,
+        orderitems.Value, orderitems.ArriveAt, foods.Id AS FoodID, foods.Name, images.Id AS Image,
         CASE WHEN '$cp' IS NOT NULL AND foods.Id IN (SELECT FoodID FROM 
         couponitems WHERE CouponID = '$cp') THEN 1 ELSE 0 END AS HasDiscount
         FROM orderitems

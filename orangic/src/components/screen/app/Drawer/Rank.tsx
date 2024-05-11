@@ -47,7 +47,7 @@ const Rank = () => {
   const [numberOne, setNumberOne] = useState<Infor>(initialState);
   const userID = useSelector(selectUserID);
   const [userIndex, setUserIndex] = useState({index: 0, image: ''});
-  const navigation = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigation = useNavigation<NavigationProp<ParamList, 'Rank'>>();
 
   const getRank = async () => {
     const response = await AxiosInstance().get('/get-rank-user.php');

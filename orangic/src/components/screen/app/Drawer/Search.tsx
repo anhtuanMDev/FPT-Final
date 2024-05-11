@@ -71,7 +71,7 @@ const Search = () => {
     Foods: [],
     Restaurants: [],
   });
-  const navigation = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigation = useNavigation<NavigationProp<ParamList, 'Search'>>();
 
   const searching = async () => {
     const body = {

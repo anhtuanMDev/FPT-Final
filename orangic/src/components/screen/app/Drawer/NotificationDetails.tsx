@@ -17,7 +17,7 @@ type Prop = {
 
 const NotificationDetails = (props: Prop) => {
   const context = props.route.params?.context;
-  const navigation = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
+  const navigation = useNavigation<NavigationProp<ParamList, 'NotificationDetails'>>();
   // console.log(context);
 
   return (

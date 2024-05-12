@@ -38,7 +38,7 @@ type FoodDetailType = {
   Discount: number;
   userFavorite: number;
   ReviewCount: number;
-  Ratinng: number;
+  Rating: number;
   Images: string[];
 };
 
@@ -110,8 +110,7 @@ const US_Restaurant = (props: Props) => {
   const userID = useSelector(selectUserID);
   const host = useSelector(selectHost);
   const isFocused = useIsFocused();
-  const naviagtion =
-    useNavigation<NavigationProp<ParamList, 'US_Restaurant'>>();
+  const naviagtion = useNavigation<NavigationProp<ParamList, 'US_Restaurant'>>();
   let id = props.route?.params?.id;
   const dispatch = useDispatch();
 
@@ -383,7 +382,7 @@ const US_Restaurant = (props: Props) => {
               onPress={async () => {
                 naviagtion.navigate('US_FoodDetail', {id: item.Id});
               }}
-              rate={item.Ratinng}
+              rate={item.Rating}
               rateCount={item.ReviewCount}
               time={converTime(item.TimeMade)}
               key={item.Id}
@@ -435,7 +434,7 @@ const US_Restaurant = (props: Props) => {
               onPress={async () => {
                 naviagtion.navigate('US_FoodDetail', {id: item.Id});
               }}
-              rate={item.Ratinng}
+              rate={item.Rating}
               rateCount={item.ReviewCount}
               time={converTime(item.TimeMade)}
               key={item.Id}

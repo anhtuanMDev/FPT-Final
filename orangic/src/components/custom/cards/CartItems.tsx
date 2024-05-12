@@ -121,8 +121,7 @@ const CartItems = (props: Prop) => {
               },
             ]}>
             <Text style={[fonts.subline, { color: Colors.orange }]}>
-              {props?.price || '0'}k VNĐ
-            </Text>
+              {props?.price || '0'}.000 đ</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Quantity_btn
                 type="minus"

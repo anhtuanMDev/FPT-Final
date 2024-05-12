@@ -93,7 +93,7 @@ const ScheduleItems = (props: Prop) => {
             <Icons name={IconName.star} size={10} color={Colors.orange} />
             <Text style={[fonts.textBold, {marginLeft: 4}]}>{rate}</Text>
           </View>
-          <Text style={[fonts.textBold]}>{price}k VNĐ</Text>
+          <Text style={[fonts.textBold]}>{price}.000 đ</Text>
         </View>
 
         <View

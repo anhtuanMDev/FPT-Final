@@ -367,6 +367,8 @@ const Home = () => {
                 image={
                   item.Image ? `${host}/uploads/${item.Image}.jpg` : undefined
                 }
+                rate={item.Point}
+                rateCount={item.TotalReview}
                 name={item.Name}
                 intro={item.Introduction.slice(0, 80) + '...'}
                 favorite={item.UserFavorite}

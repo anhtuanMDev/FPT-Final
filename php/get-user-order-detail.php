@@ -29,7 +29,7 @@ try {
 
 
 
-    $query = "SELECT restaurants.Id, restaurants.Name, images.Id as Image
+    $query = "SELECT DISTINCT  restaurants.Id, restaurants.Name, images.Id as Image
     FROM restaurants
     INNER JOIN images ON images.OwnerID = restaurants.Id
     INNER JOIN orderitems ON orderitems.OrderID = '$id'

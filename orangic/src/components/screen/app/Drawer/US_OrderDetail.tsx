@@ -72,12 +72,14 @@ const US_OrderDetail = () => {
     const response = await AxiosInstance().post('/get-user-order-detail.php', {
       id,
     });
+    console.log(id)
     const data: OrderDetail = response.data;
     if (response.status) {
       const allItems = data.Restaurant.reduce<Items[]>((items, restaurant) => {
         return items.concat(restaurant.Items);
       }, []);
       setInfor({...data, Group: allItems});
+      console.log("ord",data)
     }
   };
 

@@ -1,5 +1,5 @@
 import {View, Text, ScrollView, FlatList} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
 import TitleBar from '../../../custom/topbars/TitleBar';
 import {fonts} from '../../../custom/styles/ComponentStyle';
@@ -10,6 +10,8 @@ import {DrawerActions, NavigationProp, RouteProp, useIsFocused, useNavigation, u
 import {ParamList} from '../../../navigation/RootNavigation';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import OrderItemRow from '../../../custom/cards/OrderItemRow';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 type OrderDetail = {
   Id: string;
@@ -66,6 +68,12 @@ const US_OrderDetail = () => {
     Restaurant: [],
     Group: [],
   });
+  const CreatebottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => [0, '90%'], []);
+
+  const handlePresentCommentModalPress = useCallback(() => {
+    CreatebottomSheetModalRef.current?.present();
+  }, []);
 
   const getDetail = async () => {
     console.log(id);
@@ -87,6 +95,7 @@ const US_OrderDetail = () => {
     if (isFocused) getDetail();
   }, [isFocused]);
   return (
+    <GestureHandlerRootView style={screenStyles.parent_container}>
     <View style={{flex: 1}}>
       <TitleBar
         value="Chi tiết đơn hàng"
@@ -218,10 +227,10 @@ const US_OrderDetail = () => {
                         style={{marginLeft: 10}}
                         subValue={
                           i.HasDiscount && infor.Discount
-                            ? (i.Value * 100) / infor.Discount + '.000 đ'
+                            ? (Math.round((i.Value * 100) / infor.Discount)) + '.000 đ'
                             : undefined
                         }
-                        content={i.ArriveAt || 'Chưa cập nhật'}
+                        content={i.Status == 'Denied' || i.Status == 'Cancled' ? 'Bị hủy' : i.ArriveAt || 'Chưa cập nhật'}
                       />
                     );
                   })}
@@ -238,7 +247,29 @@ const US_OrderDetail = () => {
           style={{borderColor: Colors.silver}}
         />
       </View>
+
+      <BottomSheetModalProvider>
+        <View style={{flex: 1}}>
+        <BottomSheetModal
+            ref={CreatebottomSheetModalRef}
+            index={1}
+            style={{
+              flex: 1,
+            }}
+            snapPoints={snapPoints}>
+            <Text
+              style={[
+                fonts.captionBold,
+                { marginVertical: 10, textAlign: 'center' },
+              ]}>
+              Thanh toán
+            </Text>
+          </BottomSheetModal>
+        </View>
+      </BottomSheetModalProvider>
+
     </View>
+    </GestureHandlerRootView>
   );
 };
 

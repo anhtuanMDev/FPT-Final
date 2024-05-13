@@ -37,7 +37,7 @@ type ItemData = {
 
 export const convertStatus = (status: string) => {
   switch (status) {
-    case 'Canceled':
+    case 'Cancled':
       return 'Đã hủy';
     case 'Waiting':
       return 'Chờ xác nhận';

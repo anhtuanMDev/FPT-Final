@@ -51,24 +51,6 @@ CREATE TABLE `foods` (
   KEY `RestaurantID` (`RestaurantID`),
   CONSTRAINT `foods_ibfk_1` FOREIGN KEY (`RestaurantID`) REFERENCES `restaurants` (`Id`),
   CONSTRAINT `foods_chk_1` CHECK (((`Discount` >= 0) and (`Discount` <= 100)))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `foods` (
-  `Id` varchar(20) NOT NULL,
-  `Name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `Description` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `TimeMade` time DEFAULT NULL,
-  `CreateAt` datetime DEFAULT NULL,
-  `FeatureItem` tinyint(1) DEFAULT NULL,
-  `Price` decimal(10,2) DEFAULT NULL,
-  `Status` varchar(20) DEFAULT NULL,
-  `Discount` int DEFAULT NULL,
-  `RestaurantID` varchar(20) NOT NULL,
-  `UpdateAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `RestaurantID` (`RestaurantID`),
-  CONSTRAINT `foods_ibfk_1` FOREIGN KEY (`RestaurantID`) REFERENCES `restaurants` (`Id`),
-  CONSTRAINT `foods_chk_1` CHECK (((`Discount` >= 0) and (`Discount` <= 100)))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 CREATE TABLE `favlist` (
@@ -93,6 +75,18 @@ CREATE TABLE `address` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `admin` (
+  `Id` varchar(20) NOT NULL,
+  `Name` varchar(25) NOT NULL,
+  `Email` varchar(60) NOT NULL,
+  `Password` varchar(30) NOT NULL,
+  `Job` varchar(20) NOT NULL,
+  `Status` varchar(20) DEFAULT NULL,
+  `CreateAt` datetime DEFAULT NULL,
+  `UpdateAt` datetime DEFAULT NULL,
+  `DeleteAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 CREATE TABLE `coupons` (
   `Id` varchar(20) NOT NULL,

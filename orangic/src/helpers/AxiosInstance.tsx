@@ -4,7 +4,7 @@ const AxiosInstance = (contentType: string = 'application/json'): AxiosInstanceT
     //This is the base issue you are dealing with
     const axiosInstance: AxiosInstanceType = axios.create({
         // baseURL: 'http://127.0.0.1:8686/'
-        baseURL: 'http://172.16.70.228:8686/'
+        baseURL: 'http://172.16.105.67:8686/'
     });
 
     axiosInstance.interceptors.request.use(

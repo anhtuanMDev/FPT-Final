@@ -23,6 +23,19 @@ try {
     $target = $data->target;
     $user = $data->user;
 
+    $query = "SELECT * FROM favlist WHERE TargetID = '$target' AND UserID = '$user'";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (count($result) > 0) {
+        echo json_encode(
+            array(
+                'status' => false,
+                'statusText' => 'Favorite already exists'
+            )
+        );
+        return;
+    }
 
     $query = "INSERT INTO favlist (Id, TargetID, UserID) VALUES ('$id', '$target', '$user')";
     $stmt = $dbConn->prepare($query);

@@ -64,12 +64,13 @@ const DishFavoriteScreen = () => {
     if (response.status) setFood(response.data);
   };
 
+  const getFavorite = async () => {
+    dispatched(isLoading(true));
+    await getFavoriteFoods();
+    dispatched(isLoading(false));
+  };
+
   useEffect(() => {
-    const getFavorite = async () => {
-      dispatched(isLoading(true));
-      await getFavoriteFoods();
-      dispatched(isLoading(false));
-    }
     getFavorite();
   }, []);
 
@@ -84,6 +85,10 @@ const DishFavoriteScreen = () => {
   return (
     <FlatList
       data={food}
+      refreshing={refresh}
+      onRefresh={async () => {
+        await getFavorite();
+      }}
       numColumns={2}
       style={screenStyles.parent_container}
       columnWrapperStyle={{
@@ -106,9 +111,7 @@ const DishFavoriteScreen = () => {
             <Text
               style={[fonts.sublineBold, {color: Colors.orange, marginTop: 5}]}
               onPress={async () => {
-                setRefresh(true);
-                await getFavoriteFoods();
-                setRefresh(false);
+                await getFavorite();
               }}>
               Tìm lại lần nữa ?
             </Text>
@@ -127,6 +130,17 @@ const DishFavoriteScreen = () => {
           onPress={() => {
             dispatched(isLoading(true));
             navigation.navigate('US_FoodDetail', {id: item.Id});
+          }}
+          onFavoritePress={async () => {
+            const body = {
+              target: item.Id,
+              user: userID,
+            };
+            const response = await AxiosInstance().post(
+              '/post-remove-favorite.php',
+              body,
+            );
+            await getFavorite();
           }}
           style={{
             marginLeft: 20,

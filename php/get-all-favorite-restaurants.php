@@ -32,7 +32,7 @@ try {
         }
 
         foreach ($res as $key => $ress) {
-            $queryReview = "SELECT COUNT(Id) as TotalReview, AVG(Point) as AverageRating FROM reviews WHERE TargetID = :id";
+            $queryReview = "SELECT COUNT(Id) as TotalReview, COALESCE(ROUND(AVG(Point),1), 0) as AverageRating FROM reviews WHERE TargetID = :id";
             $stmtReview = $dbConn->prepare($queryReview);
             $stmtReview->bindParam(':id', $ress['Id']);
             $stmtReview->execute();

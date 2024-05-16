@@ -31,6 +31,11 @@ import {
   selectPopularItemsArray,
   selectRecommendedItemsArray,
   selectRestaurantsArray,
+  setFeatureArray,
+  setNewItemsArray,
+  setPopularItemsArray,
+  setRecommendedItemsArray,
+  setRestaurantsArray,
 } from '../../../helpers/state/AppTab/homeSlice';
 // import {set} from 'mongoose';
 import BigCard from '../../custom/cards/BigCard';
@@ -42,6 +47,7 @@ import {
 } from '../../../helpers/state/Global/globalSlice';
 import {showMessage} from 'react-native-flash-message';
 import {fonts} from '../../custom/styles/ComponentStyle';
+import AxiosInstance from '../../../helpers/AxiosInstance';
 
 export function converTime(time: string): string {
   const parts = time.split(':');
@@ -78,6 +84,27 @@ const Home = () => {
 
   const dispatched = useDispatch<AppDispatch>();
   const [refreshing, setRefreshing] = useState(false);
+
+  const addFavorite = async (target: string) => {
+    const body = {
+      target,
+      user: userID,
+    };
+    const response = await AxiosInstance().post('/post-add-favorite.php', body);
+    console.log('add favorite', response);
+  };
+
+  const removeFavorite = async (target: string) => {
+    const body = {
+      target,
+      user: userID,
+    };
+    const response = await AxiosInstance().post(
+      '/post-remove-favorite.php',
+      body,
+    );
+    console.log('remove favorite', response);
+  };
 
   const searchFood = () => {
     if (search === '') {
@@ -183,6 +210,33 @@ const Home = () => {
                 <SmallCart
                   time={converTime(item.TimeMade)}
                   rate={item.Point}
+                  onFavoritePress={() => {
+                    if (item.UserFavorite == 1) {
+                      removeFavorite(item.Id);
+                      dispatched(
+                        setRecommendedItemsArray(
+                          recommendArray.map(value => {
+                            if (value.Id == item.Id) {
+                              return {...value, UserFavorite: 0};
+                            }
+                            return value;
+                          }),
+                        ),
+                      );
+                    } else {
+                      addFavorite(item.Id);
+                      dispatched(
+                        setRecommendedItemsArray(
+                          recommendArray.map(value => {
+                            if (value.Id == item.Id) {
+                              return {...value, UserFavorite: 1};
+                            }
+                            return value;
+                          }),
+                        ),
+                      );
+                    }
+                  }}
                   rateCount={item.TotalReview}
                   name={item.Name.slice(0, 10) + '...'}
                   favorite={item.UserFavorite == 1}
@@ -235,6 +289,33 @@ const Home = () => {
               rateCount={item.TotalReview}
               name={item.Name.slice(0, 10) + '...'}
               favorite={item.UserFavorite == 1}
+              onFavoritePress={() => {
+                if (item.UserFavorite == 1) {
+                  removeFavorite(item.Id);
+                  dispatched(
+                    setFeatureArray(
+                      featureArray.map(value => {
+                        if (value.Id == item.Id) {
+                          return {...value, UserFavorite: 0};
+                        }
+                        return value;
+                      }),
+                    ),
+                  );
+                } else {
+                  addFavorite(item.Id);
+                  dispatched(
+                    setFeatureArray(
+                      featureArray.map(value => {
+                        if (value.Id == item.Id) {
+                          return {...value, UserFavorite: 1};
+                        }
+                        return value;
+                      }),
+                    ),
+                  );
+                }
+              }}
               onPress={() => {
                 dispatched(isLoading(true));
                 navigation.navigate('US_FoodDetail', {id: item.Id});
@@ -283,6 +364,33 @@ const Home = () => {
               time={converTime(item.TimeMade)}
               rate={item.Point}
               favorite={item.UserFavorite == 1}
+              onFavoritePress={() => {
+                if (item.UserFavorite == 1) {
+                  removeFavorite(item.Id);
+                  dispatched(
+                    setPopularItemsArray(
+                      popularArray.map(value => {
+                        if (value.Id == item.Id) {
+                          return {...value, UserFavorite: 0};
+                        }
+                        return value;
+                      }),
+                    ),
+                  );
+                } else {
+                  addFavorite(item.Id);
+                  dispatched(
+                    setPopularItemsArray(
+                      popularArray.map(value => {
+                        if (value.Id == item.Id) {
+                          return {...value, UserFavorite: 1};
+                        }
+                        return value;
+                      }),
+                    ),
+                  );
+                }}
+              }
               rateCount={item.TotalReview}
               onPress={() => {
                 dispatched(isLoading(true));
@@ -331,6 +439,33 @@ const Home = () => {
               rate={item.Point}
               rateCount={item.TotalReview}
               favorite={item.UserFavorite == 1}
+              onFavoritePress={() => {
+                if (item.UserFavorite == 1) {
+                  removeFavorite(item.Id);
+                  dispatched(
+                    setNewItemsArray(
+                      newArray.map(value => {
+                        if (value.Id == item.Id) {
+                          return {...value, UserFavorite: 0};
+                        }
+                        return value;
+                      }),
+                    ),
+                  );
+                } else {
+                  addFavorite(item.Id);
+                  dispatched(
+                    setNewItemsArray(
+                      newArray.map(value => {
+                        if (value.Id == item.Id) {
+                          return {...value, UserFavorite: 1};
+                        }
+                        return value;
+                      }),
+                    ),
+                  );
+                }
+              }}
               onPress={() => {
                 dispatched(isLoading(true));
                 navigation.navigate('US_FoodDetail', {id: item.Id});
@@ -372,6 +507,33 @@ const Home = () => {
                 name={item.Name}
                 intro={item.Introduction.slice(0, 80) + '...'}
                 favorite={item.UserFavorite}
+                onFavoritePress={() => {
+                  if (item.UserFavorite == 1) {
+                    removeFavorite(item.Id);
+                    dispatched(
+                      setRestaurantsArray(
+                        restaurantArray.map(value => {
+                          if (value.Id == item.Id) {
+                            return {...value, UserFavorite: 0};
+                          }
+                          return value;
+                        }),
+                      ),
+                    );
+                  } else {
+                    addFavorite(item.Id);
+                    dispatched(
+                      setRestaurantsArray(
+                        restaurantArray.map(value => {
+                          if (value.Id == item.Id) {
+                            return {...value, UserFavorite: 1};
+                          }
+                          return value;
+                        }),
+                      ),
+                    );
+                  }
+                }}
                 style={{
                   marginLeft: 20,
                   marginRight: 20,

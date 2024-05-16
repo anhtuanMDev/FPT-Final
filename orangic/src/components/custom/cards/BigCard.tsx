@@ -1,4 +1,11 @@
-import {View, Text, ViewStyle, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  ViewStyle,
+  Image,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import React, {useState} from 'react';
 import {cards, fonts} from '../styles/ComponentStyle';
 import CardRate from './CardRate';
@@ -17,6 +24,7 @@ type Prop = {
   price?: number;
   discount?: number;
   favorite?: number;
+  onFavoritePress?: () => void;
   onLongPress?: () => void;
   onPress?: () => void;
   type?: 'Restaurant' | 'Food';
@@ -54,26 +62,31 @@ const BigCard = (props: Prop) => {
         rate={props.rate}
         rateCount={props?.rateCount}
       />
-      <View
-        style={{
-          width: 45,
-          height: 45,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 25,
-          elevation: 5,
-          position: 'absolute',
-          backgroundColor: Colors.white,
-          top: 10,
-          right: 20,
-          zIndex: 1,
-        }}>
-        {props?.favorite == 1 ? (
-          <Icons2 name={Icon2Name.love} color={Colors.orange} size={18} />
-        ) : (
-          <Icons name={IconName.like} color={Colors.black} size={18} />
-        )}
-      </View>
+      <TouchableWithoutFeedback>
+        <TouchableOpacity
+          onPress={() => {
+            props?.onFavoritePress && props?.onFavoritePress();
+          }}
+          style={{
+            width: 45,
+            height: 45,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 25,
+            elevation: 5,
+            position: 'absolute',
+            backgroundColor: Colors.white,
+            top: 10,
+            right: 20,
+            zIndex: 1,
+          }}>
+          {props?.favorite == 1 ? (
+            <Icons2 name={Icon2Name.love} color={Colors.orange} size={18} />
+          ) : (
+            <Icons name={IconName.like} color={Colors.black} size={18} />
+          )}
+        </TouchableOpacity>
+      </TouchableWithoutFeedback>
 
       {props?.type && props?.type == 'Food' ? (
         <View style={[cards.small_NameCont]}>

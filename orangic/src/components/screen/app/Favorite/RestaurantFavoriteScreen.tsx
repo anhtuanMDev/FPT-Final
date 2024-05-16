@@ -12,8 +12,9 @@ import {fonts} from '../../../custom/styles/ComponentStyle';
 import BigCard from '../../../custom/cards/BigCard';
 import {FlatList} from 'react-native';
 import WaitingModal from '../../../custom/ui/WaitingModal';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { ParamList } from '../../../navigation/RootNavigation';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {ParamList} from '../../../navigation/RootNavigation';
+import {set} from 'mongoose';
 
 type RestaurantType = {
   Id: string;
@@ -44,12 +45,12 @@ const RestaurantFavoriteScreen = () => {
     if (response.status) setRestaurant(response.data);
   };
 
+  const getFavorites = async () => {
+    setRefresh(true);
+    await getFavoriteRestaurants();
+    setRefresh(false);
+  };
   useEffect(() => {
-    const getFavorites = async () => {
-      setRefresh(true);
-      await getFavoriteRestaurants();
-      setRefresh(false);
-    };
     getFavorites();
   }, []);
 
@@ -65,6 +66,10 @@ const RestaurantFavoriteScreen = () => {
     <FlatList
       data={restaurant}
       style={screenStyles.container}
+      refreshing={refresh}
+      onRefresh={async () => {
+        await getFavorites();
+      }}
       ItemSeparatorComponent={() => <View style={{height: 15}} />}
       ListEmptyComponent={
         <View
@@ -83,9 +88,7 @@ const RestaurantFavoriteScreen = () => {
                   {color: Colors.orange, lineHeight: 20},
                 ]}
                 onPress={async () => {
-                  setRefresh(true);
-                  await getFavoriteRestaurants();
-                  setRefresh(false);
+                  await getFavorites();
                 }}>
                 Tìm lại lần nữa ?
               </Text>
@@ -102,6 +105,18 @@ const RestaurantFavoriteScreen = () => {
           onPress={() => navigation.navigate('US_Restaurant', {id: item.Id})}
           rateCount={item.TotalReview}
           favorite={1}
+          onFavoritePress={async () => {
+            const body = {
+              target: item.Id,
+              user: userID,
+            };
+            const response = await AxiosInstance().post(
+              '/post-remove-favorite.php',
+              body,
+            );
+            console.log(response)
+            await getFavorites();
+          }}
           style={{
             marginLeft: 20,
             marginRight: 20,

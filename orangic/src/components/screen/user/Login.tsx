@@ -68,6 +68,7 @@ const Login = () => {
     if (isValidEmail() && password !== '') {
       dispatch(isLoading(true));
       const body = {email, password};
+      console.log('login body', body)
       const result = await AxiosInstance().post('/login-user.php', body);
       console.log(result);
       if (result.status) {
@@ -100,22 +101,22 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: '983393103441-cgl0980edrsk7semvhitq23qavfjgn6f.apps.googleusercontent.com',
-    });
-  }, []);
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId: '983393103441-cgl0980edrsk7semvhitq23qavfjgn6f.apps.googleusercontent.com',
+  //   });
+  // }, []);
 
   
-  async function signIn() {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-    } catch (error) {
-      console.log("The error:",error);
-    }
-  }
+  // async function signIn() {
+  //   try {
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
+  //     console.log(userInfo);
+  //   } catch (error) {
+  //     console.log("The error:",error);
+  //   }
+  // }
 
   return load ? (
     <Loading />
@@ -165,12 +166,12 @@ const Login = () => {
         </Text>
       </View>
       <Fluid_btn title="Đăng nhập" onPress={handleLogin} />
-      <GoogleSigninButton
+      {/* <GoogleSigninButton
         size={GoogleSigninButton.Size.Wide}
         style= {{width: width -40 , height: 50}}
         color={GoogleSigninButton.Color.Dark}
         onPress={async()=> await signIn()}
-      />
+      /> */}
     </View>
   );
 };

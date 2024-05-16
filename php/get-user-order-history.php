@@ -27,8 +27,8 @@ try {
 
     foreach ($orders as $key => $order) {
     $ordID = $order["Id"];
-    $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Value,
-    orderitems.ArriveAt, orderitems.Status, foods.Name AS FoodName, images.Id AS Image
+    $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.FoodID, orderitems.Value,
+    orderitems.ArriveAt, orderitems.OrderID, orderitems.Status, foods.Name AS FoodName, images.Id AS Image
     FROM orderitems
     INNER JOIN foods ON foods.Id = orderitems.FoodID
     INNER JOIN images ON images.OwnerID = orderitems.FoodID

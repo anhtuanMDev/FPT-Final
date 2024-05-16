@@ -13,19 +13,22 @@ import {fonts} from '../styles/ComponentStyle';
 import {Colors} from '../styles/ScreenStyle';
 import {Image} from 'react-native';
 import Avatar from '../../../assets/images/avatar.svg';
+import { useSelector } from 'react-redux';
+import { selectHost, selectImage } from '../../../helpers/state/Global/globalSlice';
 
 type Prop = {
   value: string;
   onLeftPress: () => void;
   onRightPress: () => void;
   notify: number;
-  avatar?: string;
   style?: ViewStyle | ViewStyle[];
   textStyle?: TextStyle | TextStyle[];
 };
 
 const TitleBar = (props: Prop) => {
-  const {onLeftPress, onRightPress, value, style, avatar, textStyle} = props;
+  const {onLeftPress, onRightPress, value, style, textStyle} = props;
+  const avatar = useSelector(selectImage);
+  const host = useSelector(selectHost);
   return (
     <View
       style={[
@@ -59,8 +62,8 @@ const TitleBar = (props: Prop) => {
         onPress={() => {
           onRightPress && onRightPress();
         }}>
-        {avatar ? (
-          <Image source={{uri: 'uri'}} style={{width: 20, height: 20}} />
+        {avatar.length>0 ? (
+          <Image source={{uri: `${host}/uploads/${avatar}.jpg`}} style={{width: 40, height: 40, borderRadius: 20, marginVertical: 5}} />
         ) : (
           <Avatar width={50} height={50} />
         )}

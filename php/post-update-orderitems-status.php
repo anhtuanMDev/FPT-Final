@@ -37,6 +37,9 @@ try {
         case 'Done':
             $content .= " hoàn thành.";
             break;
+            case 'Cancled':
+                $content .= " bị hủy.";
+                break;
         case 'Denied':
             $content .= " đã bị từ chối.";
             break;
@@ -76,7 +79,7 @@ try {
 
         $notifyID = generateID('NOT');
         $query  = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, TargetID, Creator)
-        SELECT '$notifyID', 'Đơn hàng của bạn đã được cập nhật', '$content', 1, NOW(), orders.UserID, 'ADM7GMWH7JWBZ1YDBFRS'
+        SELECT '$notifyID', 'Đơn hàng của bạn đã được cập nhật', '$content', 1, NOW(), orders.UserID, 'ADM00000000000000001'
            FROM orders
            INNER JOIN orderitems ON orders.Id = orderitems.OrderID
            WHERE orderitems.Id = '$id'";
@@ -90,7 +93,7 @@ try {
 
         $notifyID = generateID('NOT');
         $query  = "INSERT INTO notifications (Id, Title, Content, IsRead, CreateAt, TargetID, Creator)
-        SELECT '$notifyID', 'Đơn hàng của bạn đã được cập nhật', '$content', 1, NOW(), orders.UserID, 'ADM7GMWH7JWBZ1YDBFRS'
+        SELECT '$notifyID', 'Đơn hàng của bạn đã được cập nhật', '$content', 1, NOW(), orders.UserID, 'ADM00000000000000001'
            FROM orders
            INNER JOIN orderitems ON orders.Id = orderitems.OrderID
            WHERE orderitems.Id = '$id'";
@@ -98,7 +101,7 @@ try {
         $stmt->execute();
     }
 
-    echo json_encode(array("message" => "Cập nhật trạng thái đơn hàng thành công", "status" => true));
+    echo json_encode(array("statusText" => "Cập nhật trạng thái đơn hàng thành công", "status" => true));
 } catch (Exception $e) {
-    echo json_encode(array("message" => "Cập nhật trạng thái đơn hàng thất bại bởi vị $e", "status" => false));
+    echo json_encode(array("statusText" => "Cập nhật trạng thái đơn hàng thất bại bởi vị $e", "status" => false));
 }

@@ -110,7 +110,8 @@ const US_Restaurant = (props: Props) => {
   const userID = useSelector(selectUserID);
   const host = useSelector(selectHost);
   const isFocused = useIsFocused();
-  const naviagtion = useNavigation<NavigationProp<ParamList, 'US_Restaurant'>>();
+  const naviagtion =
+    useNavigation<NavigationProp<ParamList, 'US_Restaurant'>>();
   let id = props.route?.params?.id;
   const dispatch = useDispatch();
 
@@ -377,6 +378,23 @@ const US_Restaurant = (props: Props) => {
               type="Food"
               discount={item.Discount}
               favorite={item.userFavorite}
+              onFavoritePress={() => {
+                item.userFavorite
+                  ? removeFavorite(item.Id, userID)
+                  : addFavorite(item.Id, userID);
+
+                const newItems = state.FeatureList.map(currentItem => {
+                  if (currentItem.Id === item.Id) {
+                    return {
+                      ...currentItem,
+                      userFavorite: currentItem.userFavorite ? 0 : 1,
+                    };
+                  } else {
+                    return currentItem;
+                  }
+                });
+                setState({...state, FeatureList: newItems});
+              }}
               name={item.Name}
               price={item.Price}
               onPress={async () => {
@@ -429,6 +447,23 @@ const US_Restaurant = (props: Props) => {
               type="Food"
               discount={item.Discount}
               favorite={item.userFavorite}
+              onFavoritePress={() => {
+                item.userFavorite
+                  ? removeFavorite(item.Id, userID)
+                  : addFavorite(item.Id, userID);
+
+                const newItems = state.OtherList.map(currentItem => {
+                  if (currentItem.Id === item.Id) {
+                    return {
+                      ...currentItem,
+                      userFavorite: currentItem.userFavorite ? 0 : 1,
+                    };
+                  } else {
+                    return currentItem;
+                  }
+                });
+                setState({...state, OtherList: newItems});
+              }}
               name={item.Name}
               price={item.Price}
               onPress={async () => {

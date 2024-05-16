@@ -52,6 +52,8 @@ export enum IconName {
   lock = 'lock',
   door = 'door-open',
   cash = 'money-bill',
+  tag = 'tag',
+  percent = 'percent',
 }
 const Icons = ({name, color, size}: IconProps) => {
   return <FontAwesome name={name} size={size || 20} color={color} />;

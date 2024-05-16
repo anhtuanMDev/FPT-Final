@@ -48,7 +48,7 @@ import { convertPoint } from '../../navigation/AppTabNavigation';
 import TextArea from '../../custom/textinput/TextArea';
 import CustomRating from '../../custom/ui/CustomRating';
 import WaitingModal from '../../custom/ui/WaitingModal';
-import {set} from 'mongoose';
+// import {set} from 'mongoose';
 /** Type access data */
 
 type SideFoodType = {

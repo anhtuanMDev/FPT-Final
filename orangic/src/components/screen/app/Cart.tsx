@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
-import React, { useEffect, useReducer, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, Modal, TouchableWithoutFeedback, RefreshControl } from 'react-native';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   isLoading,
@@ -14,13 +14,20 @@ import { fonts } from '../../custom/styles/ComponentStyle';
 import { Colors, screenStyles } from '../../custom/styles/ScreenStyle';
 import CartBar from '../../custom/cards/CartBar';
 import CartItems from '../../custom/cards/CartItems';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import WaitingModal from '../../custom/ui/WaitingModal';
-import { useIsFocused } from '@react-navigation/native';
+import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
 import { StripeProvider, usePaymentSheet } from '@stripe/stripe-react-native';
 import AddressItemCart from '../../custom/cards/AddressItemCart';
 import { ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import Icons, { IconName } from '../../../assets/icons/Icons';
+import { ParamList } from '../../navigation/RootNavigation';
+import CouponUserList from '../../custom/cards/CouponUserList';
+import ViewShot from 'react-native-view-shot';
+import { Image } from 'react-native';
+import axios from 'axios';
+
 
 /** Declaring order's item data */
 
@@ -36,6 +43,14 @@ type Data = {
   Image: string[];
 };
 
+type CouponFood = {
+  FoodID: string;
+  Quantity: number;
+  Name: string;
+  Price: number;
+  FoodDiscount: number;
+};
+
 
 enum PaymentMethodsEnum {
   COD = 'COD',
@@ -45,11 +60,17 @@ enum PaymentMethodsEnum {
 /** Declare reducer state and action */
 
 type CartState = {
-  data: Data[];
-  Id: string;
-  AddressID: string;
-  Address: string;
-  Status: string;
+  data: Data[],
+  selectedCouponFood: CouponFood[],
+  Id: string,
+  AddressID: string,
+  Address: string,
+  AddressDetail: string,
+  Status: string,
+
+  CouponID: string,
+  CouponDiscount: number,
+  CouponDetail: string
 };
 
 type CartAction = {
@@ -77,12 +98,14 @@ function handleCartItem(state: CartState, payload: CartAction) {
 }
 
 const Cart = () => {
+  const navigation = useNavigation<NavigationProp<ParamList>>();
+
   const host = useSelector(selectHost);
   const id = useSelector(selectUserID);
   const load = useSelector(selectLoading);
 
   const dispatch = useDispatch();
-  const [check, setCheck] = useState(false);
+  const [check, setCheck] = useState(true);
   const [locate, setLocate] = useState('');
   const [refresh, setRefresh] = useState(false);
   const isFocused = useIsFocused();
@@ -90,20 +113,175 @@ const Cart = () => {
   const [allAddress, setAllAddress] = useState<AddressItem[]>([]);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [couponModalVisible, setCouponModalVisible] = useState(false);
+
+
+  const [exchangeRate, setExchangeRate] = useState<number>();
+
+
+
+  useEffect(() => {
+    fetchExchangeRate();
+  }, []);
+
+  const fetchExchangeRate = async () => {
+    try {
+      const response = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
+      const rate = response.data.rates.VND;
+      setExchangeRate(rate);
+    } catch (error) {
+      console.error('Error fetching the exchange rate:', error);
+    }
+  };
+
+  const convertVNDtoUSD = (amountVND: number) => {
+    if (!exchangeRate) return -1;
+
+    return (amountVND / exchangeRate);
+  };
 
   const [data, setData] = useReducer(handleCartItem, {
     data: [],
+    selectedCouponFood: [],
     AddressID: '',
     Id: '',
     Status: '',
     Address: '',
+    AddressDetail: "",
+
+    CouponID: '',
+    CouponDiscount: 0,
+    CouponDetail: ""
   });
 
-  const [paymentMethods, setPaymentMethods] = useState(PaymentMethodsEnum.COD);
+  const viewShotRef = useRef<ViewShot>(null);
+
+  const generateID = (prefix: string) => {
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let id = prefix;
+    for (let i = 0; i < 17; i++) {
+      id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+  };
+
+  const captureScreen = async () => {
+    try {
+      if (viewShotRef.current) {
+        const uri = await viewShotRef.current?.capture?.();
+        if (uri) {
+          console.log('Image captured:', uri);
+          // Lưu trữ hoặc chia sẻ hình ảnh ở đây
+          uploadImage(uri);
+        } else {
+          console.error('Failed to capture image');
+        }
+      } else {
+        console.error('viewShotRef is not defined');
+      }
+    } catch (error) {
+      console.error('Capture failed:', error);
+    }
+
+  };
+
+  const uploadImage = async (uri: string) => {
+    // lấy uri của hình ảnh và gửi nó lên server
+    const id = generateID('IMG');
+
+    const formData = new FormData();
+    formData.append('image', {
+      uri: uri,
+      name: `${id}.jpg`,
+      type: 'image/jpg',
+    });
+    const response = await AxiosInstance('multipart/form-data').post(
+      '/upload-file.php',
+      formData,
+    );
+
+    // const response = await AxiosInstance().post('/upload-file.php', formData, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // });
+
+    if (response.status) {
+      console.log('Upload image success:', response.data);
+
+      // const body = {
+      //   id: id,
+      //   ownerID: data.Id
+      // };
+
+      // const upload: any = await AxiosInstance().post('/insert-image.php', body);
+    } else {
+      console.error('Upload image failed:', response.statusText);
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefresh(true);
+    getCartItem(id as string).then(() => setRefresh(false));
+  }, []);
+
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodsEnum>();
 
   const changePaymentMethods = (value: PaymentMethodsEnum) => {
     setPaymentMethods(value);
   }
+
+  const [subtotal, setSubtotal] = useState(0);
+  const [restaurantReduction, setRestaurantReduction] = useState(0);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    if (Array.isArray(data.data) && data.data.length != 0) {
+      const total = data.data.map(item => {
+        if (item.Pick)
+          return (Math.round(item.Price) * item.Quantity);
+      }).reduce((prev: number, current) => prev + (current || 0), 0);
+
+      setSubtotal(total);
+    }
+  }, [data.data]);
+
+  useEffect(() => {
+    if (Array.isArray(data.data) && data.data.length != 0) {
+      const total = data.data.map(item => {
+        if (item.Pick)
+          return (Math.round(item.Price * (item.Discount / 100)) * item.Quantity);
+      }).reduce((prev: number, current) => prev + (current || 0), 0);
+
+      setRestaurantReduction(total);
+    }
+  }, [data.data]);
+
+  useEffect(() => {
+    if (Array.isArray(data.data) && data.data.length != 0) {
+      const total = data.data.map(item => {
+        if (item.Pick)
+          if (data.selectedCouponFood.find(i => i.FoodID === item.FoodID))
+            return (Math.round(item.Price * (data.CouponDiscount / 100)) * item.Quantity)
+          else
+            return (Math.round(item.Price * (item.Discount / 100)) * item.Quantity);
+      }).reduce((prev: number, current) => prev + (current || 0), 0);
+      setCouponDiscount(total);
+    }
+  }, [data.data, data.selectedCouponFood]);
+
+  useEffect(() => {
+    if (data.CouponID.length === 0) {
+      setCouponDiscount(0);
+    }
+
+    const discount = data.CouponID.length !== 0 ? couponDiscount : restaurantReduction;
+    const total = subtotal - discount;
+    setTotal(total);
+
+  }, [subtotal, restaurantReduction, couponDiscount, data.CouponID]);
 
   /** Delete item in order */
 
@@ -141,21 +319,19 @@ const Cart = () => {
       if (response.status) {
         if (infor.length != 0) {
           const item: Data[] = infor.data.map((item: Data) => {
-            return { ...item, Pick: !!item.Pick };
+            return { ...item, Pick: !item.Pick };
           });
           setData({ type: 'data', payload: item });
           setData({ type: 'Id', payload: response.data.Id });
-          setData({ type: 'AddressID', payload: response.data.AddressID });
+          // setCheck(true);
           console.log(response.data)
         } else {
           setData({ type: 'data', payload: [] });
           setData({ type: 'Id', payload: '' });
-          setData({ type: 'AddressID', payload: [] });
         }
       } else {
         setData({ type: 'data', payload: [] });
         setData({ type: 'Id', payload: '' });
-        setData({ type: 'AddressID', payload: [] });
       }
     } catch (error) {
       showMessage({
@@ -191,34 +367,48 @@ const Cart = () => {
 
   const checkingItemInPayment = () => {
     if (
-      /** if no item got check */
-      !data.data.every((item: Data) => {
+      data.data.every((item: Data) => {
         return !item.Pick;
       })
     ) {
-      // const item = data.data
-      //   .filter(item => {
-      //     if (item.Pick) return item;
-      //   })
-      //   .map(item => ({
-      //     id: item.Id,
-      //     quantity: item.Quantity,
-      //   }));
-      // await updateItemInPaymentPick(data.Id, item);
-      if (paymentMethods === PaymentMethodsEnum.COD) {
-        console.log('COD');
-        handleAfterPayment();
-      } else if (paymentMethods === PaymentMethodsEnum.Stripe) {
-        console.log('Stripe')
-        handlePayment();
-      }
-    } else {
       showMessage({
         type: 'warning',
         message: 'Bạn phải chọn ít nhất 1 món ăn để thanh toán',
         icon: 'warning',
       });
+      return false;
     }
+
+    if (data.AddressID.length === 0) {
+      showMessage({
+        type: 'warning',
+        message: 'Bạn phải chọn địa chỉ giao hàng',
+        icon: 'warning',
+      });
+      return false;
+    }
+
+    if (!paymentMethods) {
+      showMessage({
+        type: 'warning',
+        message: 'Bạn phải chọn phương thức thanh toán',
+        icon: 'warning',
+      });
+      return false;
+    }
+
+    if (paymentMethods === PaymentMethodsEnum.COD) {
+      console.log('COD');
+      handleAfterPayment();
+      return true;
+
+    } else if (paymentMethods === PaymentMethodsEnum.Stripe) {
+      console.log('Stripe')
+      handlePayment();
+      return true;
+
+    }
+    return false;
   };
 
   const updateItemInPaymentPick = async (
@@ -256,70 +446,49 @@ const Cart = () => {
 
   const publicKey =
     'pk_test_51OsaA1AFTGMMMmVwNrZ2DZJ0yFvXYpW16C4oaCwwuVROBuJMgoFCefRGy77C8YMlFpIAx02m6Uaq8EYcpb52GgUR006Tg9Wjh6';
-  const { initPaymentSheet, presentPaymentSheet, loading } = usePaymentSheet();
-
-  useEffect(() => {
-    initialisePaymentSheet();
-  }, []);
+  const { initPaymentSheet, presentPaymentSheet, loading , confirmPaymentSheetPayment} = usePaymentSheet();
 
   const initialisePaymentSheet = async () => {
-    const { paymentIntent, emphermeralKey, customer } =
-      await fetchPaymentIntentClientSecret();
+    try {
+      const { paymentIntent, emphermeralKey, customer } =
+        await fetchPaymentIntentClientSecret();
 
-    const { error } = await initPaymentSheet({
-      customerId: customer,
-      customerEphemeralKeySecret: emphermeralKey,
-      paymentIntentClientSecret: paymentIntent,
-      allowsDelayedPaymentMethods: true,
-      returnURL: 'stripe-example://stripe-redirect',
-      merchantDisplayName: 'Example Inc.',
-    });
+      const { error } = await initPaymentSheet({
+        customerId: customer,
+        customerEphemeralKeySecret: emphermeralKey,
+        paymentIntentClientSecret: paymentIntent,
+        allowsDelayedPaymentMethods: true,
+        returnURL: 'stripe-example://stripe-redirect',
+        merchantDisplayName: 'Example Inc.',
+        // customFlow: true,
+      });
 
-    if (error) {
-      console.log('initialisePaymentSheet', error);
-    } else {
-      setReady(true);
-      console.log('Initialize payment success');
-      // const body = {
-      //   orderID: data.Id,
-      //   userID: id as string,
-      //   addressID: data.AddressID,
-      // };
-
-      // const response = await AxiosInstance().post(
-      //   '/post-handle-after-payment.php',
-      //   body,
-      // );
-      // if (response.status) {
-      //   setRefresh(true);
-      //   getCartItem(id as string);
-      //   setRefresh(false);
-      //   showMessage({
-      //     type: 'success',
-      //     icon: 'success',
-      //     message: response.statusText,
-      //   });
-      //   setReady(false);
-      //   setRefresh(false);
-      //   return;
-      // }
-
-      // showMessage({
-      //   type: 'danger',
-      //   icon: 'danger',
-      //   message: response.statusText,
-      // });
+      if (error) {
+        setReady(false);
+        console.log('initialisePaymentSheet', error);
+      } else {
+        setReady(true);
+        console.log('Initialize payment success');
+      }
+    } catch (error) {
+      setReady(false);
+      console.log("initialisePaymentSheet Error:", error);
     }
   };
 
   const fetchPaymentIntentClientSecret = async () => {
     try {
+      const amount = Math.floor(convertVNDtoUSD(total*1000)*100);
       const response = await fetch(`${host}/index.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          amount: amount,
+        }),
       });
+
       const { paymentIntent, emphermeralKey, customer } = await response.json();
       return {
         paymentIntent,
@@ -327,31 +496,58 @@ const Cart = () => {
         customer,
       };
     } catch (error) {
-      console.error('fetchPaymentIntentClientSecret Error:', error);
+      console.log('fetchPaymentIntentClientSecret Error:', error);
       throw error;
     }
   };
 
   const handlePayment = async () => {
-    console.log("handlePayment");
+
     if (!ready) {
       await initialisePaymentSheet();
     }
 
-    const { error } = await presentPaymentSheet();
-    if (error) {
+
+    const { error: presentError } = await presentPaymentSheet();
+
+    if (presentError) {
+      setReady(false);
       console.log(
-        `handlePayment error: ${error.code}, Error message: ${error.message}`,
+        `handlePayment presentError: ${presentError.code}, presentError message: ${presentError.message}`,
       );
     } else {
       // setReady(false);
-      handleAfterPayment();
+      // captureScreen();
+      setReady(false);
+      console.log(
+        `handlePayment present susscess`,
+      );
+      // handleAfterPayment();
     }
+
+
+    // captureScreen();
+    // const { error: confirmError } = await confirmPaymentSheetPayment();  
+
+    // if (confirmError) {
+    //   setReady(false);
+    //   console.log(
+    //     `handlePayment confirmError: ${confirmError.code}, confirmError message: ${confirmError.message}`,
+    //   );
+    // } else {
+    //   // setReady(false);
+    //   captureScreen();
+    //   setReady(false);
+    //   // handleAfterPayment();
+    // }
+
   };
 
   const handleAfterPayment = async () => {
     try {
+
       await handleUpdateItemInPaymentPick();
+      // captureScreen();
 
       const body = {
         orderID: data.Id,
@@ -428,8 +624,15 @@ const Cart = () => {
     });
     if (response.status) {
       if (response.data[0]) {
+        let addressDeatil = response.data[0].Phone + " - " + response.data[0].Ward + ", " + response.data[0].District + ", " + response.data[0].City;
+
         setData({ type: 'Address', payload: response.data[0].Address });
         setData({ type: 'AddressID', payload: response.data[0].Id });
+        setData({ type: 'AddressDetail', payload: addressDeatil });
+      } else {
+        setData({ type: 'Address', payload: '' });
+        setData({ type: 'AddressID', payload: '' });
+        setData({ type: 'AddressDetail', payload: '' });
       }
 
     }
@@ -464,6 +667,24 @@ const Cart = () => {
     }
   }, [isFocused])
 
+  const getSelectedCouponFoodsInCart = async (couponID: string) => {
+    const response = await AxiosInstance().post('/get-selected-coupon-foods-in-cart.php', {
+      couponId: couponID,
+      userId: id
+    });
+
+    // console.log(id, couponID)
+    // console.log('response', response);
+
+    if (response.status) {
+      const data = response.data;
+      if (data.length !== 0) {
+        setData({ type: 'selectedCouponFood', payload: data });
+        // console.log('selectedCouponFood', data.selectedCouponFood);
+      }
+    }
+  }
+
   const ChooseAddressModal = () => {
     return (
       <Modal
@@ -491,9 +712,11 @@ const Cart = () => {
                     style={{ marginVertical: 6, backgroundColor: item.Id == data.AddressID ? Colors.unselected : Colors.white, borderRadius: 10 }}
                     detail={`${item.Ward}, ${item.District}, ${item.City}`}
                     onPress={() => {
-                      // setLocate(item.Address);
+                      let addressDeatil = item.Phone + " - " + item.Ward + ", " + item.District + ", " + item.City;
+
                       setData({ type: 'Address', payload: item.Address })
                       setData({ type: 'AddressID', payload: item.Id })
+                      setData({ type: 'AddressDetail', payload: addressDeatil });
 
                       setModalVisible(!modalVisible);
                     }}
@@ -508,234 +731,467 @@ const Cart = () => {
     )
   }
 
+  const ChooseCouponModal = () => {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={couponModalVisible}
+        style={{ borderRadius: 10 }}
+        onRequestClose={() => {
+          setCouponModalVisible(!couponModalVisible);
+        }}
+      >
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+          <TouchableWithoutFeedback onPress={() => setCouponModalVisible(!couponModalVisible)}>
+            <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)' }} />
+          </TouchableWithoutFeedback>
+          <View style={{ maxHeight: 500, width: '90%', backgroundColor: '#fff', borderRadius: 20, padding: 20 }}>
+            <Text style={[fonts.captionBold, { marginVertical: 20, textAlign: "center" }]}>Chọn phiếu mua hàng</Text>
+            <CouponUserList
+              itemsStyle={{ elevation: 5, shadowColor: Colors.black }}
+              selectedItem={{ Id: data.CouponID }}
+              selectedItemStyle={{ backgroundColor: Colors.unselected }}
+              onItemPress={(item) => {
+                let couponDetail = item.Code + ", Giảm: " + item.Discount + "%";
 
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StripeProvider publishableKey={publicKey}>
-        <View style={screenStyles.parent_container}>
-          {/* <ModalProcess /> */}
-          {modalVisible && (
-            <View
-              style={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-              <View style={{ maxHeight: 300, backgroundColor: "#000" }}>
-                <ChooseAddressModal />
-              </View>
-            </View>
-          )}
-          <CartBar
-            value={check}
-            title="Cart"
-            style={{ paddingHorizontal: 20, marginTop: 10 }}
-            onPress={() => {
-              setCheck(!check);
-              if (check) {
-                const arr = data.data.map((item: Data) => {
-                  return { ...item, Pick: false };
-                });
-                setData({ type: 'data', payload: arr });
-              }
-            }}
-          />
+                item.CouponID && getSelectedCouponFoodsInCart(item.CouponID);
+                // setData({ type: 'Coupon', payload: item.Coupon })
+                setData({ type: 'CouponID', payload: item.Id })
+                setData({ type: 'CouponDetail', payload: couponDetail });
+                setData({ type: 'CouponDiscount', payload: item.Discount });
 
-          <FlatList
-            refreshing={refresh}
-            onRefresh={() => {
-              getCartItem(id as string);
-            }}
-            ItemSeparatorComponent={() => {
-              return <View style={{ height: 10 }} />;
-            }}
-            data={data.data}
-            showsVerticalScrollIndicator={false}
-            style={{ paddingHorizontal: 20, marginTop: 20, marginBottom: 20 }}
-            renderItem={({ item }) => (
-              <CartItems
-                image={
-                  item.Image.length > 0
-                    ? { uri: `${host}/uploads/${item.Image}.jpg` }
-                    : undefined
-                }
-                onDel={async () => {
-                  setRefresh(true);
-                  await deleteItem(item.FoodID, item.Id);
-                  await getCartItem(id as string);
-                  setRefresh(false);
-                }}
-                key={item.Id}
-                name={
-                  item.Name.length > 16
-                    ? item.Name.slice(0, 16) + '...'
-                    : item.Name
-                }
-                price={Math.round(item.Price * (1 - item.Discount / 100))}
-                quantity={item.Quantity}
-                intro={
-                  item.Description.length > 50
-                    ? item.Description.slice(0, 50) + '...'
-                    : item.Description
-                }
-                value={item.Pick}
-                onPress={() => {
-                  setData({
-                    type: 'data',
-                    payload: data.data.map(i => {
-                      if (i.Id === item.Id) i.Pick = !i.Pick;
-                      return i;
-                    }),
-                  });
-                }}
-                add={() => {
-                  data.data &&
-                    setData({
-                      type: 'data',
-                      payload: data.data.map(i => {
-                        if (i.Id === item.Id) i.Quantity++;
-                        return i;
-                      }),
-                    });
-                }}
-                minus={() => {
-                  data.data &&
-                    setData({
-                      type: 'data',
-                      payload: data.data.map(i => {
-                        if (i.Id === item.Id && i.Quantity > 1) i.Quantity--;
-                        return i;
-                      }),
-                    });
-                }}
-              />
-            )}
-          />
 
-          <View style={{ marginTop: 10, paddingHorizontal: 20 }}>
-            <View style={{ marginBottom: 10 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  // getAllAddress();
-                  setModalVisible(true);
-                }}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  // justifyContent: 'space-between',
-                  paddingVertical: 10,
-                  paddingHorizontal: 10,
-                  height: 50,
-                  borderWidth: 1,
-                  borderColor: Colors.slate,
-                  // marginTop: 5,
-                  padding: 10,
-                  borderRadius: 10,
-                  // marginHorizontal: 20,
-                  // flex: 1,
-                  backgroundColor: Colors.white,
-                }}>
-                <Text style={[fonts.captionBold]}>Địa chỉ: </Text>
-                <Text style={[fonts.caption]}>
-                  {data.Address.length > 25
-                    ? data.Address.slice(0, 25) + '...'
-                    : data.Address}
-                </Text>
-              </TouchableOpacity>
-
-              <View style={[{ paddingVertical: 10, paddingTop: 20 }]}>
-                <Text style={[fonts.captionBold]}>Phương thức thanh toán: </Text>
-                <Dropdown
-                  data={[
-                    { label: 'COD - Thanh toán khi nhận', value: PaymentMethodsEnum.COD },
-                    { label: 'Stripe - Thanh toán trực tuyến', value: PaymentMethodsEnum.Stripe },
-                  ]}
-                  maxHeight={200}
-                  placeholder="Chọn"
-                  labelField={'label'}
-                  valueField={'value'}
-                  value={PaymentMethodsEnum.COD}
-                  onChange={(item) => {
-                    changePaymentMethods(item.value as PaymentMethodsEnum);
-                  }}
-                  selectedTextStyle={{ color: Colors.black }}
-                  style={{
-                    height: 50,
-                    borderWidth: 1,
-                    borderColor: Colors.slate,
-                    marginTop: 5,
-                    padding: 10,
-                    borderRadius: 10,
-                    // marginHorizontal: 20,
-                    // flex: 1,
-                    backgroundColor: Colors.white,
-                  }}
-                />
-              </View>
-
-              <View
-                style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: 20,
-                    paddingHorizontal: 10,
-                  }}>
-                  <Text style={[fonts.captionBold]}>Tổng vật phẩm: </Text>
-                  <Text style={[fonts.caption]}>
-                    {Array.isArray(data.data)
-                      ? data.data
-                        .map(item => {
-                          if (item.Pick) return item.Quantity;
-                        })
-                        .reduce((acc: number, item) => acc + (item || 0), 0)
-                      : 0}
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: 20,
-                    paddingHorizontal: 10,
-                  }}>
-                  <Text style={[fonts.captionBold]}>Tổng tiền: </Text>
-                  <Text style={[fonts.caption]}>
-                    {Array.isArray(data.data) &&
-                      data.data
-                        .map(item => {
-                          if (item.Pick)
-                            return (
-                              Math.round(
-                                item.Price * (1 - item.Discount / 100),
-                              ) * item.Quantity
-                            );
-                        })
-                        .reduce((acc: number, item) => acc + (item || 0), 0) +
-                      ' .000 đ'}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <Fluid_btn
-              style={{ marginBottom: 25 }}
-              title="Thanh toán"
-              // enable={loading || !ready}
-              onPress={async () => {
-                // setRefresh(true);
-                await checkingItemInPayment();
-                // handlePayment();
+                setCouponModalVisible(!couponModalVisible);
               }}
             />
           </View>
         </View>
+      </Modal>
+    )
+  }
+
+  const rightAction = (onDel: () => void) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          onDel && onDel();
+        }}
+        style={{
+          width: 110,
+          backgroundColor: Colors.ember,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={[
+            fonts.titleBold,
+            {
+              color: Colors.white,
+            },
+          ]}>
+          Xóa
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
+      <StripeProvider publishableKey={publicKey}>
+        <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }} style={{ flex: 1 }}>
+          <View style={[screenStyles.parent_container, { backgroundColor: "#54545411" }]}>
+            {/* <ModalProcess /> */}
+            {modalVisible && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  zIndex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                <View style={{ maxHeight: 300 }}>
+                  <ChooseAddressModal />
+                </View>
+              </View>
+            )}
+
+            {couponModalVisible && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  zIndex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                <View style={{ maxHeight: 500 }}>
+                  <ChooseCouponModal />
+                </View>
+              </View>
+            )}
+            <CartBar
+              value={check}
+              title="Cart"
+              style={{ padding: 20, backgroundColor: Colors.white }}
+              onPress={() => {
+                setCheck(!check);
+                if (check) {
+                  const arr = data.data.map((item: Data) => {
+                    return { ...item, Pick: false };
+                  });
+                  setData({ type: 'data', payload: arr });
+                }
+              }}
+            />
+            <ScrollView style={{ flex: 1, gap: 10 }}
+              refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />}
+              showsVerticalScrollIndicator={false}
+            >
+              <Swipeable renderRightActions={() => rightAction(
+                () => {
+                  setData({ type: 'Address', payload: '' });
+                  setData({ type: 'AddressID', payload: '' });
+                  setData({ type: 'AddressDetail', payload: '' });
+                }
+              )}>
+                <TouchableOpacity
+                  onPress={() => {
+                    data.AddressID.length === 0 && allAddress.length === 0 ?
+                      navigation.navigate("Address")
+                      : setModalVisible(true);
+                  }}
+
+                  style={{
+                    padding: 20,
+                    backgroundColor: Colors.white,
+                    paddingTop: 15,
+                  }}>
+                  <View style={[{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }]}>
+                    <View style={[{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10 }]}>
+                      <Icons name={IconName.delivery} size={16} color={Colors.orange} />
+                      <Text style={[fonts.captionBold, { marginVertical: 5 }]}>
+                        Địa chỉ giao hàng
+                      </Text>
+                    </View>
+                    <Icons name={IconName.next} size={20} color={Colors.orange} />
+                  </View>
+                  {
+                    data.AddressID.length == 0 ?
+                      <Text style={[fonts.subline, { lineHeight: 22, opacity: 0.5 }]}>(Chưa có địa chỉ)</Text>
+                      :
+                      <View>
+                        <Text style={[fonts.subline, { lineHeight: 22 }]}>{data.Address}</Text>
+                        <Text style={[fonts.subline, { lineHeight: 22 }]}>{data.AddressDetail}</Text>
+                      </View>
+                  }
+                </TouchableOpacity>
+              </Swipeable>
+
+              {/* <View style={{ borderColor: Colors.orange, borderWidth: 2, borderStyle: "dotted", marginVertical: 20 }} /> */}
+
+              <View style={{ padding: 20, backgroundColor: Colors.white, marginVertical: 10 }}>
+                <Text style={[fonts.captionBold, { marginVertical: 5 }]}>
+                  Đanh sách món
+                </Text>
+
+                <FlatList
+                  scrollEnabled={false}
+                  ItemSeparatorComponent={() => {
+                    return <View style={{ height: 10 }} />;
+                  }}
+                  data={data.data}
+                  showsVerticalScrollIndicator={false}
+                  style={{ marginTop: 20, marginBottom: 20 }}
+                  renderItem={({ item }) => (
+                    <CartItems
+                      image={
+                        item.Image.length > 0
+                          ? { uri: `${host}/uploads/${item.Image}.jpg` }
+                          : undefined
+                      }
+                      onDel={async () => {
+                        setRefresh(true);
+                        await deleteItem(item.FoodID, item.Id);
+                        await getCartItem(id as string);
+                        setRefresh(false);
+                      }}
+                      key={item.Id}
+                      name={
+                        item.Name.length > 16
+                          ? item.Name.slice(0, 16) + '...'
+                          : item.Name
+                      }
+                      originalPrice={Math.round(item.Price)}
+                      price={Math.round(item.Price * (1 - item.Discount / 100))}
+                      quantity={item.Quantity}
+                      intro={
+                        item.Description.length > 50
+                          ? item.Description.slice(0, 50) + '...'
+                          : item.Description
+                      }
+                      value={item.Pick}
+                      onPress={() => {
+                        setData({
+                          type: 'data',
+                          payload: data.data.map(i => {
+                            if (i.Id === item.Id) i.Pick = !i.Pick;
+                            return i;
+                          }),
+                        });
+                      }}
+                      add={() => {
+                        data.data &&
+                          setData({
+                            type: 'data',
+                            payload: data.data.map(i => {
+                              if (i.Id === item.Id) i.Quantity++;
+                              return i;
+                            }),
+                          });
+                      }}
+                      minus={() => {
+                        data.data &&
+                          setData({
+                            type: 'data',
+                            payload: data.data.map(i => {
+                              if (i.Id === item.Id && i.Quantity > 1) i.Quantity--;
+                              return i;
+                            }),
+                          });
+                      }}
+                    />
+                  )}
+                />
+              </View>
+
+              <View style={{ gap: 10 }}>
+                <Swipeable renderRightActions={() => rightAction(
+                  () => {
+                    setData({ type: 'CouponID', payload: '' })
+                    setData({ type: 'CouponDetail', payload: '' });
+                    setData({ type: 'CouponDiscount', payload: '' });
+                  }
+                )}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      setCouponModalVisible(!couponModalVisible);
+                    }}
+
+                    style={{
+                      padding: 20,
+                      backgroundColor: Colors.white
+                    }}>
+                    <View style={[{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }]}>
+                      <View style={[{ display: "flex", flexDirection: "row", alignItems: "center", gap: 10 }]}>
+                        <Text style={[fonts.captionBold, { marginVertical: 5 }]}>
+                          Phiếu mua hàng
+                        </Text>
+                      </View>
+                      <Icons name={IconName.next} size={20} color={Colors.orange} />
+                    </View>
+
+                    {
+                      data.CouponID.length !== 0 &&
+                      <View
+                        style={[{
+                          flexDirection: 'row',
+                          paddingHorizontal: 10,
+                          alignItems: 'center',
+                          gap: 5
+                        }]}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: 10,
+                            position: 'relative'
+                          }}>
+                          <Icons name={IconName.tag} size={30} color={Colors.orange} />
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 10,
+                              position: 'absolute',
+                              left: 0, right: 0,
+                              top: 0, bottom: 0,
+                              justifyContent: 'center',
+                            }}>
+                            <Icons name={IconName.percent} size={12} color={Colors.white} />
+                          </View>
+                        </View>
+
+                        <View style={[{ gap: 10, paddingHorizontal: 10 }]}>
+
+                          <Text style={[fonts.sublineBold, { color: Colors.slate }]}>Phiếu: {data.CouponID}</Text>
+                          <Text style={[fonts.sublineBold]}>{data.CouponDetail}</Text>
+
+                        </View>
+                      </View>
+                    }
+
+                  </TouchableOpacity>
+                </Swipeable>
+
+                <View style={[{ paddingVertical: 10, paddingTop: 20, gap: 10, padding: 20, backgroundColor: Colors.white }]}>
+                  <Text style={[fonts.captionBold]}>Tóm tắt yêu cầu</Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingHorizontal: 10,
+                      justifyContent: "space-between",
+                      paddingBottom: 8,
+                      borderBottomWidth: 1,
+                      borderColor: Colors.slate,
+                    }}>
+                    <Text style={[fonts.sublineBold, { color: Colors.slate }]}>Tổng vật phẩm: </Text>
+                    <Text style={[fonts.subline, { color: Colors.slate }]}>
+                      {Array.isArray(data.data)
+                        ? data.data
+                          .map(item => {
+                            if (item.Pick) return item.Quantity;
+                          })
+                          .reduce((acc: number, item) => acc + (item || 0), 0)
+                        : 0}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingHorizontal: 10,
+                      justifyContent: 'space-between'
+                    }}>
+                    <Text style={[fonts.sublineBold, { color: Colors.slate }]}>Tổng phụ: </Text>
+                    <Text style={[fonts.subline, { color: Colors.slate }]}>
+                      {
+                        subtotal ? subtotal + '.000 đ' : 0 + ' đ'
+                      }
+                    </Text>
+                  </View>
+
+                  {
+                    data.CouponID.length === 0 &&
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        paddingHorizontal: 10,
+                        justifyContent: 'space-between',
+                        // textDecorationLine: 'line-through'
+                      }}>
+                      <Text style={[fonts.sublineBold, { color: Colors.slate }]}>Giảm giá của các nhà hàng: </Text>
+                      <Text style={[fonts.subline, { color: Colors.slate }]}>
+                        {restaurantReduction ? "- " + restaurantReduction + '.000 đ' : 0 + ' đ'}
+                      </Text>
+                    </View>
+                  }
+                  {
+                    data.CouponID.length !== 0 &&
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        paddingHorizontal: 10,
+                        justifyContent: 'space-between'
+                      }}>
+                      <Text style={[fonts.sublineBold, { color: Colors.slate }]}>Giảm giá của phiếu MH: </Text>
+                      <Text style={[fonts.subline, { color: Colors.slate }]}>
+                        {
+                          couponDiscount ? "- " + couponDiscount + '.000 đ' : 0 + ' đ'
+                        }
+                      </Text>
+                    </View>
+                  }
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      paddingHorizontal: 10,
+                      justifyContent: 'space-between',
+                      paddingTop: 10,
+                      borderTopWidth: 1,
+                      borderColor: Colors.slate,
+                    }}>
+                    <Text style={[fonts.captionBold]}>Tổng: </Text>
+                    <Text style={[fonts.captionBold]}>
+                      {
+                        total ? total + '.000 đ' : 0 + ' đ'
+                      }
+                    </Text>
+                  </View>
+
+
+                </View>
+
+                <View style={[{ paddingVertical: 10, paddingTop: 20, padding: 20, backgroundColor: Colors.white }]}>
+                  <Text style={[fonts.captionBold]}>Phương thức thanh toán </Text>
+                  <Dropdown
+                    data={[
+                      { label: 'COD - Thanh toán khi nhận', value: PaymentMethodsEnum.COD },
+                      { label: 'Stripe - Thanh toán trực tuyến', value: PaymentMethodsEnum.Stripe },
+                    ]}
+                    maxHeight={200}
+                    placeholder="Chọn"
+                    labelField={'label'}
+                    valueField={'value'}
+                    value={paymentMethods}
+                    onChange={(item) => {
+                      changePaymentMethods(item.value as PaymentMethodsEnum);
+                    }}
+                    selectedTextStyle={{ color: Colors.black }}
+                    style={{
+                      height: 50,
+                      borderWidth: 1,
+                      borderColor: Colors.slate,
+                      marginTop: 5,
+                      padding: 10,
+                      borderRadius: 10,
+                      // marginHorizontal: 20,
+                      // flex: 1,
+                      backgroundColor: Colors.white,
+                    }}
+                  />
+                </View>
+
+              </View>
+            </ScrollView>
+            <View style={{ paddingHorizontal: 20, backgroundColor: Colors.white }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  paddingVertical: 20,
+                  paddingHorizontal: 10,
+                  justifyContent: 'space-between'
+                }}>
+                <Text style={[fonts.captionBold]}>Tổng:</Text>
+                <Text style={[fonts.caption]}>
+                  {
+                    total ? total + '.000 đ' : 0 + ' đ'
+                  }
+                </Text>
+              </View>
+              <Fluid_btn
+                style={{ marginBottom: 25 }}
+                title="Thanh toán"
+                // enable={loading || !ready}
+                onPress={async () => {
+                  await checkingItemInPayment();
+                }}
+              />
+            </View>
+
+          </View>
+        </ViewShot>
       </StripeProvider>
     </GestureHandlerRootView>
   );

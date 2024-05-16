@@ -37,8 +37,8 @@ try {
         ));
     } else {
         $id = generateID('ORD');
-        $query = "INSERT INTO orders(Id,Status, UserID, AddressID, PaymentMethod)
-        VALUES('$id','Waiting','$userID','$addressID', '$paymentMethod')";
+        $query = "INSERT INTO orders(Id,Status, UserID)
+        VALUES('$id','Waiting','$userID')";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
 
@@ -52,7 +52,7 @@ try {
         ));
     }
 
-    $query = "UPDATE orders SET Status = 'Done', CreateAt = Now() WHERE Id = '$orderID'";
+    $query = "UPDATE orders SET Status = 'Done', CreateAt = Now(), AddressID = '$addressID', PaymentMethod = '$paymentMethod' WHERE Id = '$orderID'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
 } catch (Exception $e) {

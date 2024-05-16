@@ -112,7 +112,8 @@ const RootNavigation = () => {
   const id = useSelector(selectUserID);
 
   useEffect(() => {
-    dispatch(setHost('http://172.16.70.228:8686'));
+    // dispatch(setHost('http://127.0.0.1:8686'));
+    dispatch(setHost('http://172.16.71.205:8686'));
   }, []);
 
   const getInfor = async () => {

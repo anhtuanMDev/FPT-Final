@@ -13,6 +13,7 @@ type Prop = {
   intro?: string;
   price?: number;
   quantity?: number;
+  originalPrice?: number;
   onPress?: () => void;
   onDel?: () => void;
   add?: () => void;
@@ -95,7 +96,7 @@ const CartItems = (props: Prop) => {
             <Text
               style={[fonts.titleBold]}
 
-            >{(props?.name && props.name.length > 12 ? props.name.slice(0,12) + "..." : props.name )|| 'CartItems'}</Text>
+            >{(props?.name && props.name.length > 12 ? props.name.slice(0, 12) + "..." : props.name) || 'CartItems'}</Text>
             <CheckBox
               value={typeof props?.value != undefined ? props?.value : false}
               onChange={() => {
@@ -111,6 +112,16 @@ const CartItems = (props: Prop) => {
             ]}>
             {props?.intro || 'This is a description'}
           </Text>
+          {
+            (props?.originalPrice && props?.price) &&
+            (props?.originalPrice > props?.price) &&
+
+            <Text style={[fonts.text, { color: Colors.slate, textDecorationLine: "line-through" }]}>
+              {props?.originalPrice || '0'}.000 đ
+            </Text>
+          }
+
+
           <View
             style={[
               {
@@ -120,16 +131,16 @@ const CartItems = (props: Prop) => {
                 paddingBottom: 5,
               },
             ]}>
-            <Text style={[fonts.subline, { color: Colors.orange }]}>
+            <Text style={[fonts.sublineBold, { color: Colors.orange }]}>
               {props?.price || '0'}.000 đ</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
               <Quantity_btn
                 type="minus"
                 onPress={() => {
                   props?.minus && props?.minus();
                 }}
               />
-              <Text style={[fonts.subline, { marginHorizontal: 10 }]}>
+              <Text style={[fonts.subline, { marginHorizontal: 8 }]}>
                 {props?.quantity || '0'}
               </Text>
               <Quantity_btn

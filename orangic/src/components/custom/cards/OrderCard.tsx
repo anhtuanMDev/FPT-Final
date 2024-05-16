@@ -142,8 +142,35 @@ const OrderCard = (props: Prop) => {
       );
     };
 
+    const leftRender = () => {
+      return (
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => {
+             addToCart();
+          }}
+          style={{
+            width: 110,
+            backgroundColor: actionColors,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text
+            style={[
+              fonts.textBold,
+              {
+                color: Colors.white,
+                textAlign: 'center',
+              },
+            ]}>
+              Thêm vào giỏ hàng
+          </Text>
+        </TouchableOpacity>
+      );
+    };
+
     return (
-      <Swipeable ref={swipeRef} renderRightActions={rightRender}>
+      <Swipeable ref={swipeRef} renderLeftActions={leftRender} renderRightActions={rightRender}>
         <View
           style={{
             backgroundColor: Colors.white,

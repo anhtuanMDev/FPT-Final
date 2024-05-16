@@ -73,17 +73,6 @@ const ChangePass = () => {
       return false;
     }
 
-    for (const field of fields) {
-      if (field.length === 0) {
-        showMessage({
-          message: 'Xin hãy điền đầy đủ thông tin',
-          type: 'danger',
-          icon: 'warning',
-        });
-        return false;
-      }
-    }
-
     return true;
   };
 
@@ -115,7 +104,7 @@ const ChangePass = () => {
       });
     } else {
       showMessage({
-        message: response.statusText,
+        message: "Xin lỗi, đã có lỗi xảy ra, vui lòng thử lại sau",
         type: 'danger',
         icon: 'warning',
       });

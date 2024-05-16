@@ -57,9 +57,9 @@ const Rank = () => {
         index: data.findIndex(item => item.Id === userID),
         image: data.find(item => item.Id === userID)?.Image || '',
       });
-      console.log('user index', userIndex)
+      console.log('user index', userIndex);
       setNumberOne(data.shift() as Infor);
-      setList(data.slice(0,19));
+      setList(data.slice(0, 19));
     }
   };
 
@@ -95,7 +95,11 @@ const Rank = () => {
           justifyContent: 'center',
         }}>
         <Image
-          source={{uri: `${host}/uploads/${userIndex.image}.jpg`}}
+          source={
+            userIndex.image.length > 0
+              ? {uri: `${host}/uploads/${userIndex.image}.jpg`}
+              : require('../../../../assets/images/baseImage.png')
+          }
           style={{
             width: width * 0.3,
             height: width * 0.3,

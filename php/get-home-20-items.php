@@ -23,7 +23,7 @@ try {
     } else {
             $evtID = $home['eventArray'][0]['Id'];
             $query = "SELECT foods.Id, foods.TimeMade, foods.Price, foods.Name, foods.FeatureItem, 
-            foods.Discount, COUNT(favlist.Id) as UserFavorite,
+            foods.Discount, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
             images.Id AS Image,
             COUNT(reviews.Id) as TotalReview,
             COALESCE(ROUND(AVG(Point),1), 0) AS Point
@@ -33,7 +33,8 @@ try {
             LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
             INNER JOIN images ON foods.Id = images.OwnerID
             LEFT JOIN reviews ON foods.Id = reviews.`TargetID`
-            WHERE Start <= NOW() AND End >= NOW() GROUP BY coupons.`Id`, foods.`Id`, images.Id ORDER BY `Start` desc LIMIT 5";
+            WHERE Start <= NOW() AND End >= NOW() 
+            GROUP BY coupons.`Id`, foods.`Id`, images.Id, favlist.Id ORDER BY `Start` desc LIMIT 5";
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
             $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -43,7 +44,7 @@ try {
 
 
     $query = "SELECT foods.Id, foods.TimeMade, foods.Price, foods.Name, foods.FeatureItem, 
-    foods.Discount, COUNT(favlist.Id) as UserFavorite,
+    foods.Discount, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
     images.Id AS Image,
     COUNT(reviews.Id) as TotalReview,
     COALESCE(ROUND(AVG(Point),1), 0) AS Point
@@ -52,14 +53,15 @@ try {
     INNER JOIN images ON foods.Id = images.OwnerID
     LEFT JOIN reviews ON foods.Id = reviews.TargetID
     WHERE foods.FeatureItem = 1 AND foods.Status = 'Sale'
-    GROUP BY foods.Id, images.Id limit 10";
+    GROUP BY foods.Id, images.Id
+    , favlist.Id limit 10";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $home['featureArray'] = $foods;
 
-    $query = "SELECT foods.*, COUNT(favlist.Id) as UserFavorite,
+    $query = "SELECT foods.*, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
     images.Id AS Image,
     COUNT(reviews.Id) as TotalReview,
     COALESCE(ROUND(AVG(Point),1), 0) AS Point
@@ -68,7 +70,7 @@ try {
     INNER JOIN images ON foods.Id = images.OwnerID
     LEFT JOIN reviews ON foods.Id = reviews.TargetID
     WHERE foods.Status = 'Sale' 
-    GROUP BY foods.Id, images.Id
+    GROUP BY foods.Id, images.Id, favlist.Id
     ORDER BY CreateAt DESC, TimeMade DESC 
     LIMIT 10";
     $stmt = $dbConn->prepare($query);
@@ -77,7 +79,7 @@ try {
 
     $home['newItemsArray'] = $foods;
 
-    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold, COUNT(favlist.Id) as UserFavorite,
+    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
     images.Id AS Image,
     COUNT(reviews.Id) as TotalReview,
     COALESCE(ROUND(AVG(Point),1), 0) AS Point
@@ -87,7 +89,7 @@ try {
     INNER JOIN images ON foods.Id = images.OwnerID
     LEFT JOIN reviews ON foods.Id = reviews.TargetID
     WHERE foods.Status = 'Sale' 
-    GROUP BY foods.Id, images.Id
+    GROUP BY foods.Id, images.Id, favlist.Id
     ORDER BY Sold DESC, TimeMade DESC, Price ASC 
     LIMIT 10";
     $stmt = $dbConn->prepare($query);

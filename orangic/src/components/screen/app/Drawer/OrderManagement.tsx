@@ -19,6 +19,7 @@ import OrderCard from '../../../custom/cards/OrderCard';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import AlertConfirm from '../../../custom/alerts/AlertConfirm';
 import { showMessage } from 'react-native-flash-message';
+import AlertMessage from '../../../custom/alerts/AlertMessage';
 
 // const Tab = createMaterialTopTabNavigator();
 export type Items = {
@@ -74,7 +75,6 @@ const OrderManagement = () => {
     });
     // console.log("Response:",response)
     if (response.status){
-      console.log(response.status)
       const newOrder = order.map((orderItem) => {
         if (orderItem.Id === item.OrderID){
           orderItem.Items.map((items) => {
@@ -87,6 +87,7 @@ const OrderManagement = () => {
       });
       // console.log("newOrder:",newOrder[5].Items)
       setOrder(newOrder);
+      setVisible(true);
       showMessage({
         message: 'Hủy đơn hàng thành công',
         type: 'success',
@@ -103,10 +104,11 @@ const OrderManagement = () => {
   const {width, height} = Dimensions.get('window');
   const [action, setAction] = useState(false);
   const [orderAction, setOrderAction] = useState<Items>({} as Items);
+  const [visible, setVisible] = useState(false);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <View style={[screenStyles.parent_container, {flexGrow: 1}]}>
+      <View style={[screenStyles.parent_container, {flexGrow: 1,}]}>
         <StatusBar backgroundColor={Colors.orange} barStyle="dark-content" />
         <TitleBar
           value="Quản lý đơn hàng"
@@ -128,6 +130,12 @@ const OrderManagement = () => {
             cancelOrder(orderAction);
             setAction(false);
           }}
+        />
+        <AlertMessage
+          visible={visible}
+          title="Bạn muốn hủy đơn hàng ?"
+          content={`Bạn sẽ được hoàn lại ${orderAction.Value}.000 đ giá tiền cho đơn hàng ${orderAction.FoodName} với số lượng ${orderAction.Quantity}`}
+          onPress={setVisible}
         />
         <ModalLoad />
         <FlatList

@@ -29,12 +29,16 @@ type Items = {
   Value: number;
   Name: string;
   Image: string;
+  HasDiscount: number;
+  ArriveAt: string | null;
 };
 
 type Prop = {
   resImg: string;
   restaurantName: string;
   onResPress: () => void;
+  getOrder: (item: Items) => void;
+  setAction: (action: boolean) => void;
   item: Items[];
   style?: ViewStyle | ViewStyle[];
 };
@@ -42,7 +46,7 @@ type Prop = {
 const {width, height} = Dimensions.get('window');
 
 const OrderItems = (props: Prop) => {
-  const {resImg, restaurantName, item, style, onResPress} = props;
+  const {resImg, restaurantName, item, style, onResPress, getOrder, setAction} = props;
   const host = useSelector(selectHost);
   const userID = useSelector(selectUserID);
   const [items, setItems] = React.useState<Items[]>(item);
@@ -75,27 +79,29 @@ const OrderItems = (props: Prop) => {
       {items.map(i => {
         const swipeRef = useRef<Swipeable>(null);
         async function cancel() {
-          const response = await AxiosInstance().post(
-            '/post-update-orderitems-status.php',
-            {
-              id: i.Id,
-              status: 'Cancled',
-            },
-          );
-          if (response.status) {
-            const newItem = item.map(item => {
-              if (item.Id === i.Id) {
-                item.Status = 'Cancled';
-              }
-              return item;
-            });
-            setItems(newItem);
-            showMessage({
-              message: 'Hủy đơn hàng thành công',
-              type: 'success',
-              icon: 'info',
-            });
-          }
+          getOrder(i);
+          setAction(true);
+          // const response = await AxiosInstance().post(
+          //   '/post-update-orderitems-status.php',
+          //   {
+          //     id: i.Id,
+          //     status: 'Cancled',
+          //   },
+          // );
+          // if (response.status) {
+          //   const newItem = item.map(item => {
+          //     if (item.Id === i.Id) {
+          //       item.Status = 'Cancled';
+          //     }
+          //     return item;
+          //   });
+          //   setItems(newItem);
+          //   showMessage({
+          //     message: 'Hủy đơn hàng thành công',
+          //     type: 'success',
+          //     icon: 'info',
+          //   });
+          // }
           swipeRef.current?.close();
         }
         async function addToCart() {
@@ -140,8 +146,36 @@ const OrderItems = (props: Prop) => {
             </TouchableOpacity>
           );
         };
+
+        const leftRender = () => {
+          return (
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => {
+               addToCart();
+              }}
+              style={{
+                width: 110,
+                backgroundColor:
+                  i.Status == 'Waiting' ? Colors.orange : Colors.green,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text
+                style={[
+                  fonts.textBold,
+                  {
+                    color: Colors.white,
+                    textAlign: 'center',
+                  },
+                ]}>
+                Thêm vào giỏ hàng
+              </Text>
+            </TouchableOpacity>
+          );
+        };
         return (
-          <Swipeable ref={swipeRef} key={i.Id} renderRightActions={rightRender}>
+          <Swipeable ref={swipeRef} key={i.Id} renderLeftActions={leftRender} renderRightActions={rightRender}>
             <TouchableOpacity
               onPress={() => navigate.navigate('US_FoodDetail', {id: i.FoodID})}
               style={{

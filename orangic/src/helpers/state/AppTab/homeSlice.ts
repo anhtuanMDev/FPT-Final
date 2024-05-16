@@ -82,6 +82,7 @@ const homeSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(fetchHomeItem.fulfilled, (state, action: PayloadAction<HomeState>) => {
       if(action.payload) {
+        console.log('action.payload', action.payload.recommendedItemsArray)
         state.eventArray = action.payload.eventArray as EventState[];
         state.recommendedItemsArray = action.payload.recommendedItemsArray as FoodDisplayType[];
         state.featureArray = action.payload.featureArray as FoodDisplayType[];

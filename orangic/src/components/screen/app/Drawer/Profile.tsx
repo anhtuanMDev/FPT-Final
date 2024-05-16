@@ -1,6 +1,13 @@
-import { View, Text, Button, Image, TouchableOpacity } from 'react-native';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  View,
+  Text,
+  Button,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   isLogin,
   selectHost,
@@ -8,10 +15,10 @@ import {
   setUserID,
 } from '../../../../helpers/state/Global/globalSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
+import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
 import TitleBar from '../../../custom/topbars/TitleBar';
 import Fluid_btn from '../../../custom/buttons/Fluid_btn';
-import Icons, { IconName } from '../../../../assets/icons/Icons';
+import Icons, {IconName} from '../../../../assets/icons/Icons';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import {
   DrawerActions,
@@ -19,8 +26,10 @@ import {
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
-import { TextInput } from 'react-native-gesture-handler';
-import { ParamList } from '../../../navigation/RootNavigation';
+import {ParamList} from '../../../navigation/RootNavigation';
+import Input from '../../../custom/textinput/Input';
+import {showMessage} from 'react-native-flash-message';
+import Linear_btn from '../../../custom/buttons/Linear_btn';
 
 export type Information = {
   Name: string;
@@ -74,25 +83,23 @@ const Profile = () => {
   const dispatch = useDispatch();
   const userID = useSelector(selectUserID);
   const host = useSelector(selectHost);
-  const [information, setInformation] =
-    React.useState<Information>(initialState);
+  const [information, setInformation] = useState<Information>(initialState);
+  const [email, setEmail] = useState('');
+  const [confirm, setConfirm] = useState('');
   const isFocused = useIsFocused();
 
   const navigate = useNavigation<NavigationProp<ParamList, 'Profile'>>();
 
   const logOut = async () => {
     try {
-      // dispatch(isLogin(false));
-      await AsyncStorage.removeItem('userID', err => console.log('userID', err));
-      // dispatch(setUserID(''));
+      await AsyncStorage.removeItem('userID', err =>
+        console.log('userID', err),
+      );
       dispatch(isLogin(false));
-
       console.log('log out');
     } catch (error) {
       console.error('Failed to remove the item', error);
     }
-    // dispatch(isLogin(false));
-    // dispatch(setUserID(''));
   };
 
   const getInfor = async () => {
@@ -101,8 +108,73 @@ const Profile = () => {
     });
     if (response.status) {
       setInformation(response.data);
+      setEmail(response.data.Email);
     } else {
       setInformation(initialState);
+    }
+  };
+
+  const isEmailValid = (email: string) => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return regex.test(email);
+  };
+
+  const createOTP = async () => {
+    showMessage({
+      message: 'Đang gửi mã xác thực',
+      type: 'info',
+      icon: 'info',
+    });
+    if (!isEmailValid(email))
+      return showMessage({
+        message: 'Email không hợp lệ',
+        type: 'danger',
+        icon: 'warning',
+      });
+    const response = await AxiosInstance().post('post-send-email.php', {
+      email,
+      token: '757346',
+      type: 'Xác thực tài khoản',
+    });
+    if (response.status) {
+      showMessage({
+        message: 'Mã xác thực đã được gửi',
+        type: 'success',
+        icon: 'info',
+      });
+    } else {
+      showMessage({
+        message: 'Xin lỗi, đã có lỗi xảy ra, vui lòng thử lại sau',
+        type: 'danger',
+        icon: 'warning',
+      });
+    }
+  };
+
+  const validateUser = async () => {
+    if (email.length == 0 || confirm.length == 0)
+      return showMessage({
+        message: 'Vui lòng nhập đầy đủ thông tin',
+        type: 'danger',
+        icon: 'warning',
+      });
+    const response = await AxiosInstance().post('post-verify-user.php', {
+      email,
+      otp: confirm,
+    });
+    if (response.status) {
+      showMessage({
+        message: 'Xác nhận thành công',
+        type: 'success',
+        icon: 'success',
+      });
+      getInfor();
+    } else {
+      showMessage({
+        message: 'Xác nhận thất bại',
+        type: 'danger',
+        icon: 'warning',
+      });
     }
   };
 
@@ -111,97 +183,130 @@ const Profile = () => {
   }, [isFocused]);
 
   return (
-    <View style={screenStyles.parent_container}>
-      <TitleBar
-        value="Thông tin người dùng"
-        style={{ paddingHorizontal: 20, backgroundColor: 'transparent' }}
-        textStyle={{ color: 'black' }}
-        notify={0}
-        onLeftPress={() => {
-          navigate.dispatch(DrawerActions.openDrawer());
-        }}
-        onRightPress={() => {
-          navigate.navigate('Notifications');
-        }}
-      />
+    <ScrollView style={screenStyles.parent_container}>
+      <View style={screenStyles.parent_container}>
+        <TitleBar
+          value="Thông tin người dùng"
+          style={{paddingHorizontal: 20, backgroundColor: 'transparent'}}
+          textStyle={{color: 'black'}}
+          notify={0}
+          onLeftPress={() => {
+            navigate.dispatch(DrawerActions.openDrawer());
+          }}
+          onRightPress={() => {
+            navigate.navigate('Notifications');
+          }}
+        />
 
-      <View
-        style={{
-          width: 150,
-          padding: 20,
-          marginVertical: 15,
-          borderWidth: 2,
-          borderColor: Colors.ember,
-          borderRadius: 100,
-          alignSelf: 'center',
-        }}>
-        <Image
-          source={
-            information.Image.length != 0
-              ? { uri: `${host}/uploads/${information.Image}.jpg` }
-              : require('../../../../assets/images/baseImage.png')
-          }
+        <View
           style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
+            width: 150,
+            padding: 20,
+            marginVertical: 15,
+            borderWidth: 2,
+            borderColor: Colors.ember,
+            borderRadius: 100,
             alignSelf: 'center',
-          }}
-        />
-      </View>
-
-      <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>
-        {information.Name}
-      </Text>
-
-      <Text style={{ textAlign: 'center', fontSize: 16, color: Colors.ember }}>
-        Rank: {convertPoint(information.Rank)}
-      </Text>
-
-      <View
-        style={{
-          backgroundColor: Colors.white,
-          margin: 20,
-          position: 'relative',
-          padding: 5,
-        }}>
-        <Text style={{ padding: 10 }}>Email: {information.Email}</Text>
-        <Text style={{ padding: 10 }}>Số điện thoại: {information.Phone}</Text>
-        <Text style={{ padding: 10 }}>Địa chỉ: {information.Address}</Text>
-        <Text style={{ padding: 10 }}>Điểm: {information.Rank}</Text>
-        <Text style={{ padding: 10 }}>Tạo ngày: {information.CreateAt}</Text>
-        <Text style={{ padding: 10 }}>Cập nhật ngày: {information.UpdateAt}</Text>
-        <Text style={{ padding: 10 }}>
-          Nhà hàng: {information.RestaurantName}
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
-            navigate.navigate('ChangeInformation', { infor: information });
-          }}
-          style={{
-            backgroundColor: Colors.orange,
-            width: 50,
-            height: 50,
-            borderRadius: 25,
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'absolute',
-            right: 0,
-            top: -70,
           }}>
-          <Icons name={IconName.edit} color={Colors.white} size={20} />
-        </TouchableOpacity>
-      </View>
+          <Image
+            source={
+              information.Image.length != 0
+                ? {uri: `${host}/uploads/${information.Image}.jpg`}
+                : require('../../../../assets/images/baseImage.png')
+            }
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              alignSelf: 'center',
+            }}
+          />
+        </View>
 
-      <View style={{ padding: 20 }}>
-        <Fluid_btn
-          title="Đăng xuất"
-          onPress={async () => {
-            await logOut();
-          }}
-        />
+        <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>
+          {information.Name}
+        </Text>
+
+        <Text style={{textAlign: 'center', fontSize: 16, color: Colors.ember}}>
+          Hạng: {convertPoint(information.Rank)}
+        </Text>
+
+        <View
+          style={{
+            backgroundColor: Colors.white,
+            margin: 20,
+            position: 'relative',
+            padding: 5,
+          }}>
+          <Text style={{padding: 10}}>Email: {information.Email}</Text>
+          <Text style={{padding: 10}}>Số điện thoại: {information.Phone}</Text>
+          <Text style={{padding: 10}}>Địa chỉ: {information.Address}</Text>
+          <Text style={{padding: 10}}>Điểm: {information.Rank}</Text>
+          <Text style={{padding: 10}}>Tạo ngày: {information.CreateAt}</Text>
+          <Text style={{padding: 10}}>
+            Cập nhật ngày: {information.UpdateAt}
+          </Text>
+          <Text style={{padding: 10}}>
+            Nhà hàng: {information.RestaurantName}
+          </Text>
+          {information.Status == 'Not Confirm' && (
+            <View>
+              <Text style={{padding: 10, color: Colors.orange}}>
+                Chưa xác nhận
+              </Text>
+              <Input
+                placeholder="Email của bạn"
+                onChange={text => {
+                  setEmail(text);
+                }}
+                value={email}
+                showButton
+                SVG={IconName.send}
+                onPress={() => {
+                  createOTP();
+                }}
+              />
+
+              <Input
+                placeholder="Mã xác thực"
+                onChange={text => {
+                  setConfirm(text);
+                }}
+                value={confirm}
+              />
+
+              <Linear_btn title="Xác nhận" onPress={async() => await validateUser() } />
+            </View>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              navigate.navigate('ChangeInformation', {infor: information});
+            }}
+            style={{
+              backgroundColor: Colors.orange,
+              width: 50,
+              height: 50,
+              borderRadius: 25,
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'absolute',
+              right: 0,
+              top: -70,
+            }}>
+            <Icons name={IconName.edit} color={Colors.white} size={20} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={{padding: 20}}>
+          <Fluid_btn
+            title="Đăng xuất"
+            onPress={async () => {
+              await logOut();
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

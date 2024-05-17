@@ -11,14 +11,11 @@ $data = json_decode(file_get_contents("php://input"));
 try {
     $id = $data->id;
     $result = array();
-    $query = "SELECT COUNT(orderitems.Id) AS TotalOrders, 
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Canceled' 
-    OR orderitems.Status = 'Denied') AS CancelOrders,
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Done') 
-    AS CompletedOrders,
-    (SELECT COUNT(Id) FROM orderitems WHERE orderitems.Status = 'Canceled' 
-    AND orderitems.Status = 'Denied' AND orderitems.Status != 'Done') AS
-    PendingOrders 
+    $query = "SELECT 
+    COUNT(orderitems.Id) AS TotalOrders,
+    COALESCE(SUM(CASE WHEN orderitems.Status IN ('Canceled', 'Denied') THEN 1 ELSE 0 END), 0) AS CancelOrders,
+    COALESCE(SUM(CASE WHEN orderitems.Status = 'Done' THEN 1 ELSE 0 END), 0) AS CompletedOrders,
+    COALESCE(SUM(CASE WHEN orderitems.Status NOT IN ('Canceled', 'Denied', 'Done') THEN 1 ELSE 0 END), 0) AS PendingOrders
     FROM orderitems 
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
@@ -30,7 +27,7 @@ try {
 
     $result['OrderStatistic'] = $row;
 
-    $query = "SELECT foods.Name, SUM(Quantity) AS TotalQuantity
+    $query = "SELECT foods.Name, COALESCE(SUM(Quantity),0) AS TotalQuantity
     FROM orderitems
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
@@ -42,9 +39,13 @@ try {
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $result['BestSeller'] = $row;
+    if ($row === false) {
+        $result['BestSeller'] = array("Name" => "Không có", "TotalQuantity" => 0);
+    } else {
+        $result['BestSeller'] = $row;
+    }
 
-    $totalQuery = "SELECT SUM(Quantity) AS TotalSell
+    $totalQuery = "SELECT COALESCE(SUM(Quantity),0) AS TotalSell
     FROM orderitems
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
@@ -57,7 +58,7 @@ try {
 
     // Get revenue on month
 
-    $query = "SELECT SUM(`Value`) AS TotalRevenue 
+    $query = "SELECT COALESCE(SUM(`Value`),0) AS TotalRevenue 
     FROM orderitems
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
@@ -69,7 +70,7 @@ try {
 
     $result['MonthRevenue'] = $row ? $row['TotalRevenue']: 0;
 
-    $query = "SELECT SUM(`Value`) AS TotalRevenue 
+    $query = "SELECT COALESCE(SUM(`Value`),0) AS TotalRevenue 
     FROM orderitems
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
@@ -84,7 +85,7 @@ try {
     // Get revenue on year
 
 
-    $query = "SELECT SUM(`Value`) AS TotalRevenue 
+    $query = "SELECT COALESCE(SUM(`Value`),0) AS TotalRevenue 
     FROM orderitems
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id
@@ -96,7 +97,7 @@ try {
 
     $result['YearRevenue'] = $row ? $row['TotalRevenue']: 0;
 
-    $query = "SELECT SUM(`Value`) AS TotalRevenue 
+    $query = "SELECT COALESCE(SUM(`Value`),0) AS TotalRevenue 
     FROM orderitems
     INNER JOIN foods ON orderitems.FoodID = foods.Id
     INNER JOIN restaurants ON foods.RestaurantID = restaurants.Id

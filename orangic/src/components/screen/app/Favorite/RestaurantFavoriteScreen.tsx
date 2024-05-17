@@ -35,6 +35,7 @@ const RestaurantFavoriteScreen = () => {
   const host = useSelector(selectHost);
   const userID = useSelector(selectUserID);
   const getFavoriteRestaurants = async () => {
+    setRefresh(true);
     if (!userID) return;
     const response = await AxiosInstance().post(
       '/get-all-favorite-restaurants.php',
@@ -42,16 +43,13 @@ const RestaurantFavoriteScreen = () => {
         id: userID,
       },
     );
+    console.log(response)
     if (response.status) setRestaurant(response.data);
-  };
-
-  const getFavorites = async () => {
-    setRefresh(true);
-    await getFavoriteRestaurants();
     setRefresh(false);
   };
+
   useEffect(() => {
-    getFavorites();
+    getFavoriteRestaurants();
   }, []);
 
   const ModalLoad = () => {
@@ -68,7 +66,7 @@ const RestaurantFavoriteScreen = () => {
       style={screenStyles.container}
       refreshing={refresh}
       onRefresh={async () => {
-        await getFavorites();
+        await getFavoriteRestaurants();
       }}
       ItemSeparatorComponent={() => <View style={{height: 15}} />}
       ListEmptyComponent={
@@ -88,7 +86,7 @@ const RestaurantFavoriteScreen = () => {
                   {color: Colors.orange, lineHeight: 20},
                 ]}
                 onPress={async () => {
-                  await getFavorites();
+                  await getFavoriteRestaurants();
                 }}>
                 Tìm lại lần nữa ?
               </Text>
@@ -105,17 +103,19 @@ const RestaurantFavoriteScreen = () => {
           onPress={() => navigation.navigate('US_Restaurant', {id: item.Id})}
           rateCount={item.TotalReview}
           favorite={1}
+          intro={item.Introduction.length > 50 ? item.Introduction.slice(0, 50) + '...' : item.Introduction}
           onFavoritePress={async () => {
             const body = {
               target: item.Id,
               user: userID,
             };
+            console.log(body)
             const response = await AxiosInstance().post(
               '/post-remove-favorite.php',
               body,
             );
             console.log(response)
-            await getFavorites();
+            await getFavoriteRestaurants();
           }}
           style={{
             marginLeft: 20,

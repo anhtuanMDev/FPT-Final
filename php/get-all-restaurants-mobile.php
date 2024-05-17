@@ -47,7 +47,8 @@ try {
                 "status" => true,
                 "statusText" => "Lấy danh sách nhà hàng thành công!",
                 "data" => $restaurants,
-            )
+            ),
+            JSON_UNESCAPED_UNICODE
         );
     } else {
         echo json_encode(
@@ -56,6 +57,7 @@ try {
                 "statusText" => "Không có nhà hàng trong hệ thống!",
                 "data" => [],
             ),
+            JSON_UNESCAPED_UNICODE
         );
     }
 } catch (Exception $e) {

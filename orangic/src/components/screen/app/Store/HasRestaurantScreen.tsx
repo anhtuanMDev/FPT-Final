@@ -239,7 +239,7 @@ const HasRestaurantScreen = () => {
                   </Text>
                   <Text
                     style={[fonts.text, {marginTop: 10, textAlign: 'center'}]}>
-                    Bạn có chắc chắn muốn đóng cửa cửa hàng không?
+                    Bạn có chắc chắn muốn đóng cửa hàng không?
                   </Text>
                   <View
                     style={{
@@ -427,7 +427,9 @@ const HasRestaurantScreen = () => {
                 marginBottom: 5,
               }}
               actionStyle={{color: Colors.green}}
-              onPress={() => {}}
+              onPress={() => {
+              naviagtion.navigate('AllFood');
+              }}
             />
             <FlatList
               data={infor.Foods}

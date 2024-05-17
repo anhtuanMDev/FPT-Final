@@ -10,6 +10,7 @@ include_once 'connection.php';
 try {
     $data = json_decode(file_get_contents("php://input"));
     $id = $data->id;
+    $couponID = $data->couponID;
 
     $query = "SELECT foods.*, COALESCE(SUM(orderitems.Quantity),0) as Sold, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
     images.Id AS Image,
@@ -20,10 +21,10 @@ try {
     LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
     INNER JOIN images ON foods.Id = images.OwnerID
     LEFT JOIN reviews ON foods.Id = reviews.TargetID
+    INNER JOIN couponitems ON foods.Id = couponitems.FoodID AND couponitems.CouponID = '$couponID'
     WHERE foods.Status = 'Sale' 
     GROUP BY foods.Id, images.Id, favlist.Id
-    ORDER BY Sold DESC, TimeMade DESC, Price ASC 
-    LIMIT 30";
+    ORDER BY Sold DESC, TimeMade DESC, Price ASC";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -32,17 +33,18 @@ try {
     echo json_encode(
         array(
             "status" => true,
-            "statusText" => "Lấy danh sách món ăn đặc biệt thành công!",
+            "statusText" => "Lấy danh sách món ăn giảm giá thành công!",
             "data" => $foods,
         ),
         JSON_UNESCAPED_UNICODE
 
+         
     );
 } catch (Exception $e) {
     echo json_encode(
         array(
             "status" => false,
-            "statusText" => "Lấy danh sách món ăn nổi tiếng thất bại bởi vì $e!",
+            "statusText" => "Lấy danh sách món ăn giảm giá thất bại bởi vì $e!",
             "data" => [],
         ),
         JSON_UNESCAPED_UNICODE

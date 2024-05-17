@@ -200,6 +200,9 @@ const Home = () => {
                 {eventArray.map((item, index) => {
                   return (
                     <TouchableOpacity
+                    onPress={()=>{
+                      navigation.navigate('AllEvent', {id: item.CouponID, name: item.Title})
+                    }}
                       key={item.Id}
                       style={{paddingHorizontal: 10, paddingVertical: 5}}>
                       <Text style={[fonts.button, {color: Colors.green}]}>
@@ -282,7 +285,9 @@ const Home = () => {
                 marginBottom: 5,
               }}
               actionStyle={{color: Colors.green}}
-              onPress={() => {}}
+              onPress={() => {
+                navigation.navigate('AllFeature');
+              }}
             />
           </View>
         )}
@@ -355,7 +360,9 @@ const Home = () => {
                 marginBottom: 5,
               }}
               actionStyle={{color: Colors.green}}
-              onPress={() => {}}
+              onPress={() => {
+                navigation.navigate('AllPopular');
+              }}
             />
           </View>
         )}
@@ -429,7 +436,9 @@ const Home = () => {
                 marginBottom: 5,
               }}
               actionStyle={{color: Colors.green}}
-              onPress={() => {}}
+              onPress={() => {
+                navigation.navigate('AllNew');
+              }}
             />
           </View>
         )}

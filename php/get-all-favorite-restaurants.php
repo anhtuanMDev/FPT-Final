@@ -50,7 +50,7 @@ try {
     } else {
         echo json_encode(
             array(
-                "status" => false,
+                "status" => true,
                 "statusText" => "Không có nhà hàng trong hệ thống!",
                 "data" => [],
             ),

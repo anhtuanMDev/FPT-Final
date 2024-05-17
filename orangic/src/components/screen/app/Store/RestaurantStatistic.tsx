@@ -61,6 +61,8 @@ const RestaurantStatistic = () => {
       {id: resID},
     );
 
+    console.log("statistic response", response)
+
     if (response.status) {
       setStatistic(response.data);
     } else {
@@ -75,7 +77,7 @@ const RestaurantStatistic = () => {
     }
   },[isFocused])
   return (
-    <View style={[screenStyles.container, {alignContent: 'center'}]}>
+    <View style={[screenStyles.parent_container, {alignContent: 'center'}]}>
       <StatusBar backgroundColor={Colors.orange} barStyle="dark-content" />
 
       <View
@@ -114,6 +116,7 @@ const RestaurantStatistic = () => {
             elevation: 5,
             alignItems: 'center',
             marginVertical: 15,
+            marginHorizontal: 20
           }}>
           <View
             style={{
@@ -134,21 +137,21 @@ const RestaurantStatistic = () => {
             data={[
               {
                 name: 'Bị Hủy',
-                population: statistic.OrderStatistic.CancelOrders,
+                population: Number(statistic.OrderStatistic.CancelOrders),
                 color: Colors.orange,
                 legendFontColor: Colors.black,
                 legendFontSize: 13,
               },
               {
                 name: 'Đang làm',
-                population: statistic.OrderStatistic.PendingOrders,
+                population: Number(statistic.OrderStatistic.PendingOrders),
                 color: Colors.blue,
                 legendFontColor: Colors.black,
                 legendFontSize: 13,
               },
               {
                 name: 'Hoàn thành',
-                population: statistic.OrderStatistic.CompletedOrders,
+                population: Number(statistic.OrderStatistic.CompletedOrders),
                 color: Colors.green,
                 legendFontColor: Colors.black,
                 legendFontSize: 13,
@@ -181,6 +184,7 @@ const RestaurantStatistic = () => {
             elevation: 5,
             alignItems: 'center',
             marginVertical: 15,
+            marginHorizontal: 20
           }}>
           <View
             style={{
@@ -199,7 +203,8 @@ const RestaurantStatistic = () => {
                   labels: ['Món ăn khác', statistic.BestSeller.Name],
                   datasets: [
                     {
-                      data: [statistic.TotalSell, statistic.BestSeller.TotalQuantity],
+                      // data: [Number(statistic.TotalSell), 0],
+                      data: [Number(statistic.TotalSell), Number(statistic.BestSeller.TotalQuantity)],
                     },
                   ],
                 }}
@@ -230,6 +235,7 @@ const RestaurantStatistic = () => {
             elevation: 5,
             alignItems: 'center',
             marginVertical: 15,
+            marginHorizontal: 20
           }}>
           <View
             style={{
@@ -248,7 +254,7 @@ const RestaurantStatistic = () => {
                   labels: [ 'Tháng trước', 'Tháng này'],
                   datasets: [
                     {
-                      data: [statistic.PreMonthRevenue, statistic.MonthRevenue],
+                      data: [Number(statistic.PreMonthRevenue), Number(statistic.MonthRevenue)],
                     },
                   ],
                 }}
@@ -278,6 +284,7 @@ const RestaurantStatistic = () => {
             elevation: 5,
             alignItems: 'center',
             marginVertical: 15,
+            marginHorizontal: 20
           }}>
           <View
             style={{
@@ -296,7 +303,7 @@ const RestaurantStatistic = () => {
                   labels: ['Năm trước', 'Năm nay'],
                   datasets: [
                     {
-                      data: [statistic.PreYearRevenue, statistic.YearRevenue],
+                      data: [Number(statistic.PreYearRevenue), Number(statistic.YearRevenue)],
                     },
                   ],
                 }}

@@ -33,6 +33,7 @@ import Location from '../../../../components/custom/data/location.json';
 import Icons, {IconName} from '../../../../assets/icons/Icons';
 import WaitingModal from '../../../custom/ui/WaitingModal';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
+import AlertConfirm from '../../../custom/alerts/AlertConfirm';
 
 type Route = RouteProp<ParamList, 'AddressInfor'>;
 
@@ -84,7 +85,7 @@ const AddressInfor = (props: Props) => {
     if (id) {
       getAddress();
     }
-  },[id]);
+  }, [id]);
 
   useEffect(() => {
     const backAction = () => {
@@ -209,81 +210,6 @@ const AddressInfor = (props: Props) => {
     );
   };
 
-  const ContinueModal = () => {
-    return (
-      <Modal animationType="fade" visible={goON} transparent>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <View
-            style={{
-              width: 320,
-              height: 200,
-              backgroundColor: Colors.white,
-              elevation: 5,
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              borderRadius: 20,
-            }}>
-            <Icons name={IconName.infor} size={50} color={Colors.blue} />
-            <Text style={[fonts.captionBold]}>Địa chỉ đã được thêm</Text>
-            <View
-              style={{
-                width: '100%',
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-evenly',
-              }}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: Colors.green,
-                  paddingHorizontal: 10,
-                  paddingVertical: 20,
-                  borderRadius: 20,
-                }}
-                onPress={() => {
-                  setAddress('');
-                  setPhone('');
-                  dispatch(setCity(''));
-                  dispatch(setDistrict(''));
-                  dispatch(setWard(''));
-                  setPriority(false);
-                  setGoOn(false);
-                }}>
-                <Text style={[fonts.subline, {color: Colors.white}]}>
-                  Còn nữa không ?
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: Colors.slate,
-                  paddingHorizontal: 10,
-                  paddingVertical: 20,
-                  borderRadius: 20,
-                }}
-                onPress={() => {
-                  setAddress('');
-                  setPhone('');
-                  dispatch(setCity(''));
-                  dispatch(setDistrict(''));
-                  dispatch(setWard(''));
-                  setPriority(false);
-                  setGoOn(false);
-                  navigation.navigate('Address');
-                }}>
-                <Text style={[fonts.subline, {color: Colors.white}]}>
-                  Trở về
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
   return (
     <View style={screenStyles.container}>
       <Text style={[fonts.titleBold, {textAlign: 'center'}]}>
@@ -298,7 +224,29 @@ const AddressInfor = (props: Props) => {
           }}
         />
 
-        <ContinueModal />
+        <AlertConfirm
+          title="Địa chỉ đã được thêm"
+          content="Bạn còn địa chỉ nào muốn thêm nữa không ?" 
+          onPress={() => {
+            setAddress('');
+            setPhone('');
+            dispatch(setCity(''));
+            dispatch(setDistrict(''));
+            dispatch(setWard(''));
+            setPriority(false);
+            setGoOn(false);
+            navigation.navigate('Address');
+          }}
+          onConfirm={() => {
+            setAddress('');
+                  setPhone('');
+                  dispatch(setCity(''));
+                  dispatch(setDistrict(''));
+                  dispatch(setWard(''));
+                  setPriority(false);
+                  setGoOn(false);
+          }}
+          visible={goON}        />
         <WaitModal />
 
         <View style={{flexDirection: 'row', alignItems: 'center'}}>

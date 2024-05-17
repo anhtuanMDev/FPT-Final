@@ -28,16 +28,36 @@ const AllRestaurants = () => {
   const host = useSelector(selectHost);
   const dispatch = useDispatch();
   const [data, setData] = useState<RestaurantDisplayType[]>([]);
+
+  const addFavorite = async (target: string) => {
+    const body = {
+      target,
+      user: userID,
+    };
+    const response = await AxiosInstance().post('/post-add-favorite.php', body);
+    console.log('add favorite', response);
+  };
+
+  const removeFavorite = async (target: string) => {
+    const body = {
+      target,
+      user: userID,
+    };
+    const response = await AxiosInstance().post(
+      '/post-remove-favorite.php',
+      body,
+    );
+    console.log('remove favorite', response);
+  };
+
   const getRestaurants = async () => {
     const response = await AxiosInstance().post(
       '/get-all-restaurants-mobile.php',
       {id: userID},
     );
-    // console.log(response);
+    console.log(response);
     if (response.status) {
       setData(response.data);
-    } else {
-      setData([]);
     }
   };
 
@@ -46,7 +66,7 @@ const AllRestaurants = () => {
   }, [isFocused]);
 
   return (
-    <View style={[screenStyles.container]}>
+    <View style={[screenStyles.parent_container]}>
       <Text
         style={[
           fonts.captionBold,
@@ -60,12 +80,25 @@ const AllRestaurants = () => {
           <BigCard
             image={item.Image ? `${host}/uploads/${item.Image}.jpg` : undefined}
             name={item.Name}
-            intro={item.Introduction.slice(0, 80) + '...'}
+            intro={item.Introduction.length > 50 ? item.Introduction.slice(0, 50) + '...': item.Introduction}
             favorite={item.UserFavorite}
+            rate={item.Point}
+            rateCount={item.TotalReview}
             style={{
               marginLeft: 20,
               marginRight: 20,
               marginBottom: 25,
+            }}
+            onFavoritePress={() => {
+              item.UserFavorite ? removeFavorite(item.Id) : addFavorite(item.Id);
+              setData(
+                data.map(value => {
+                  if (value.Id === item.Id) {
+                    value.UserFavorite = value.UserFavorite ? 0 : 1;
+                  }
+                  return value;
+                }),
+              );
             }}
             onPress={() => {
               dispatch(isLoading(true));

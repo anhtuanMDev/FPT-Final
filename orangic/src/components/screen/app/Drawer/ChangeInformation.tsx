@@ -26,8 +26,6 @@ import AxiosInstance from '../../../../helpers/AxiosInstance';
 import WaitingModal from '../../../custom/ui/WaitingModal';
 import {useSelector} from 'react-redux';
 import {selectHost} from '../../../../helpers/state/Global/globalSlice';
-import {BottomSheetProvider} from '@gorhom/bottom-sheet/lib/typescript/contexts';
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {
   ImageLibraryOptions,
@@ -176,7 +174,7 @@ const ChangeInformation = (props: Props) => {
       });
       if (img.length != 0) {
         let formData = new FormData();
-        formData.append('file', {
+        formData.append('image', {
           uri: img,
           type: 'image/jpeg',
           name: `${infor?.Image}.jpg`,
@@ -188,6 +186,7 @@ const ChangeInformation = (props: Props) => {
         if (result.status) {
           setImg('');
         }
+        console.log(result)
       }
     } else {
       showMessage({
@@ -200,6 +199,7 @@ const ChangeInformation = (props: Props) => {
 
   useEffect(()=>{
     if(isFocused) setState(infor || initialState)
+      console.log(infor?.Image)
   },[isFocused])
 
   const ModalLoad = () => {

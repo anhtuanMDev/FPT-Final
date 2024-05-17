@@ -136,6 +136,7 @@ try {
             "statusText" => "Lấy danh sách món ăn thành công!",
             "data" => $home,
         ),
+        JSON_UNESCAPED_UNICODE
     );
 } catch (Exception $e) {
     echo json_encode(
@@ -144,5 +145,6 @@ try {
             "statusText" => "Không thể lấy danh sách món ăn $e!",
             "data" => [],
         ),
+        JSON_UNESCAPED_UNICODE
     );
 }

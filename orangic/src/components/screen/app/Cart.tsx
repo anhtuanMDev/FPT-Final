@@ -17,7 +17,7 @@ import CartItems from '../../custom/cards/CartItems';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import WaitingModal from '../../custom/ui/WaitingModal';
 import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
-import { StripeProvider, usePaymentSheet, useStripe, useConfirmPayment } from '@stripe/stripe-react-native';
+import { StripeProvider, usePaymentSheet } from '@stripe/stripe-react-native';
 import AddressItemCart from '../../custom/cards/AddressItemCart';
 import { ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -121,10 +121,10 @@ const Cart = () => {
 
 
   useEffect(() => {
-    fetchExchangeRate();
+    getExchangeRate();
   }, []);
 
-  const fetchExchangeRate = async () => {
+  const getExchangeRate = async () => {
     try {
       const response = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
       const rate = response.data.rates.VND;

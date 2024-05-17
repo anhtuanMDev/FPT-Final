@@ -94,6 +94,15 @@ const Home = () => {
     console.log('add favorite', response);
   };
 
+  // const Logdata = async () => {
+  //   const response = await AxiosInstance().post('/get-home-20-items.php', {
+  //     id: userID,
+  //   });
+  //   console.log('data in Logdata home', response.data.recommendedItemsArray);
+  //   // return response.data;
+  // };
+  // Logdata()
+
   const removeFavorite = async (target: string) => {
     const body = {
       target,
@@ -117,20 +126,23 @@ const Home = () => {
       navigation.navigate('Search', {search: search});
     }
   };
+  // console.log("userID 1", userID)
 
-  const fetchAlldata = async () => {
+  const fetchAlldata = async (userID: string) => {
+    // console.log("userID", userID)
     await dispatched(fetchHomeItem(userID));
   };
 
   useEffect(() => {
-    if (isFocused) fetchAlldata();
+    if (isFocused) fetchAlldata(userID);
     else setSearch('');
-  }, [isFocused]);
+  }, [isFocused, userID]);
 
   const onRefresh = React.useCallback(() => {
+    // console.log("userID 2", userID)
     setRefreshing(true);
-    fetchAlldata().then(() => setRefreshing(false));
-  }, []);
+    fetchAlldata(userID).then(() => setRefreshing(false));
+  }, [userID]);
 
   return load ? (
     <Loading />
@@ -211,7 +223,7 @@ const Home = () => {
                   time={converTime(item.TimeMade)}
                   rate={item.Point}
                   onFavoritePress={() => {
-                    if (item.UserFavorite == 1) {
+                    if (item.UserFavorite === 1) {
                       removeFavorite(item.Id);
                       dispatched(
                         setRecommendedItemsArray(
@@ -239,7 +251,7 @@ const Home = () => {
                   }}
                   rateCount={item.TotalReview}
                   name={item.Name.slice(0, 10) + '...'}
-                  favorite={item.UserFavorite == 1}
+                  favorite={item.UserFavorite === 1}
                   onPress={() => {
                     dispatched(isLoading(true));
                     navigation.navigate('US_FoodDetail', {id: item.Id});

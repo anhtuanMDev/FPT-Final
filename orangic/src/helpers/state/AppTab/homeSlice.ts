@@ -1,6 +1,6 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AxiosInstance from '../../AxiosInstance';
-import { set } from 'mongoose';
+// import { set } from 'mongoose';
 
 export type FoodDisplayType = {
   Id: string;
@@ -29,7 +29,7 @@ export type RestaurantDisplayType = {
 
 export type EventState = {
   Id: string,
-  Title:string
+  Title: string
 }
 
 interface HomeState {
@@ -81,7 +81,7 @@ const homeSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(fetchHomeItem.fulfilled, (state, action: PayloadAction<HomeState>) => {
-      if(action.payload) {
+      if (action.payload) {
         console.log('action.payload', action.payload.recommendedItemsArray)
         state.eventArray = action.payload.eventArray as EventState[];
         state.recommendedItemsArray = action.payload.recommendedItemsArray as FoodDisplayType[];
@@ -89,6 +89,7 @@ const homeSlice = createSlice({
         state.newItemsArray = action.payload.newItemsArray as FoodDisplayType[];
         state.popularItemsArray = action.payload.popularItemsArray as FoodDisplayType[];
         state.restaurantsArray = action.payload.restaurantsArray as RestaurantDisplayType[];
+        // console.log(recommendedItemsArray);
       }
     });
     builder.addCase(fetchHomeItem.rejected, (state, action) => {
@@ -106,7 +107,7 @@ export const fetchHomeItem = createAsyncThunk(
     const response = await AxiosInstance().post('/get-home-20-items.php', {
       id: userID,
     });
-    // console.log('data in redux home', response.data);
+    // console.log('data in redux home', response.data.recommendedItemsArray);
     return response.data;
   },
 );
@@ -120,11 +121,11 @@ export const {
   setRestaurantsArray,
 } = homeSlice.actions;
 
-export const selectEventArray = (state: {home: HomeState}) => state.home.eventArray;
-export const selectFeatureArray = (state: {home: HomeState}) => state.home.featureArray;
-export const selectNewItemsArray = (state: {home: HomeState}) => state.home.newItemsArray;
-export const selectPopularItemsArray = (state: {home: HomeState}) => state.home.popularItemsArray;
-export const selectRecommendedItemsArray = (state: {home: HomeState}) => state.home.recommendedItemsArray;
-export const selectRestaurantsArray = (state: {home: HomeState}) => state.home.restaurantsArray;
+export const selectEventArray = (state: { home: HomeState }) => state.home.eventArray;
+export const selectFeatureArray = (state: { home: HomeState }) => state.home.featureArray;
+export const selectNewItemsArray = (state: { home: HomeState }) => state.home.newItemsArray;
+export const selectPopularItemsArray = (state: { home: HomeState }) => state.home.popularItemsArray;
+export const selectRecommendedItemsArray = (state: { home: HomeState }) => state.home.recommendedItemsArray;
+export const selectRestaurantsArray = (state: { home: HomeState }) => state.home.restaurantsArray;
 
 export default homeSlice.reducer;

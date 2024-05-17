@@ -10,14 +10,14 @@ import {
 import AxiosInstance from '../../../helpers/AxiosInstance';
 import { showMessage } from 'react-native-flash-message';
 import Fluid_btn from '../../custom/buttons/Fluid_btn';
-import { fonts } from '../../custom/styles/ComponentStyle';
+import { buttons, fonts } from '../../custom/styles/ComponentStyle';
 import { Colors, screenStyles } from '../../custom/styles/ScreenStyle';
 import CartBar from '../../custom/cards/CartBar';
 import CartItems from '../../custom/cards/CartItems';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import WaitingModal from '../../custom/ui/WaitingModal';
 import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
-import { StripeProvider, usePaymentSheet } from '@stripe/stripe-react-native';
+import { StripeProvider, usePaymentSheet, useStripe, useConfirmPayment } from '@stripe/stripe-react-native';
 import AddressItemCart from '../../custom/cards/AddressItemCart';
 import { ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -25,7 +25,7 @@ import Icons, { IconName } from '../../../assets/icons/Icons';
 import { ParamList } from '../../navigation/RootNavigation';
 import CouponUserList from '../../custom/cards/CouponUserList';
 import ViewShot from 'react-native-view-shot';
-import { Image } from 'react-native';
+
 import axios from 'axios';
 
 
@@ -154,6 +154,7 @@ const Cart = () => {
     CouponDetail: ""
   });
 
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
 
   const generateID = (prefix: string) => {
@@ -201,12 +202,6 @@ const Cart = () => {
       formData,
     );
 
-    // const response = await AxiosInstance().post('/upload-file.php', formData, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // });
-
     if (response.status) {
       console.log('Upload image success:', response.data);
 
@@ -245,7 +240,7 @@ const Cart = () => {
       }).reduce((prev: number, current) => prev + (current || 0), 0);
 
       setSubtotal(total);
-    }
+    } else { setSubtotal(0) }
   }, [data.data]);
 
   useEffect(() => {
@@ -256,7 +251,7 @@ const Cart = () => {
       }).reduce((prev: number, current) => prev + (current || 0), 0);
 
       setRestaurantReduction(total);
-    }
+    } else { setRestaurantReduction(0) }
   }, [data.data]);
 
   useEffect(() => {
@@ -269,7 +264,7 @@ const Cart = () => {
             return (Math.round(item.Price * (item.Discount / 100)) * item.Quantity);
       }).reduce((prev: number, current) => prev + (current || 0), 0);
       setCouponDiscount(total);
-    }
+    } else { setCouponDiscount(0) }
   }, [data.data, data.selectedCouponFood]);
 
   useEffect(() => {
@@ -446,7 +441,7 @@ const Cart = () => {
 
   const publicKey =
     'pk_test_51OsaA1AFTGMMMmVwNrZ2DZJ0yFvXYpW16C4oaCwwuVROBuJMgoFCefRGy77C8YMlFpIAx02m6Uaq8EYcpb52GgUR006Tg9Wjh6';
-  const { initPaymentSheet, presentPaymentSheet, loading , confirmPaymentSheetPayment} = usePaymentSheet();
+  const { initPaymentSheet, presentPaymentSheet, loading, confirmPaymentSheetPayment } = usePaymentSheet();
 
   const initialisePaymentSheet = async () => {
     try {
@@ -478,7 +473,7 @@ const Cart = () => {
 
   const fetchPaymentIntentClientSecret = async () => {
     try {
-      const amount = Math.floor(convertVNDtoUSD(total*1000)*100);
+      const amount = Math.floor(convertVNDtoUSD(total * 1000) * 100);
       const response = await fetch(`${host}/index.php`, {
         method: 'POST',
         headers: {
@@ -502,11 +497,12 @@ const Cart = () => {
   };
 
   const handlePayment = async () => {
-
+    console.log('ready', ready)
     if (!ready) {
+      setRefresh(true);
       await initialisePaymentSheet();
+      setRefresh(false);
     }
-
 
     const { error: presentError } = await presentPaymentSheet();
 
@@ -516,30 +512,15 @@ const Cart = () => {
         `handlePayment presentError: ${presentError.code}, presentError message: ${presentError.message}`,
       );
     } else {
-      // setReady(false);
-      // captureScreen();
+      await setPaymentSuccess(true);
       setReady(false);
       console.log(
         `handlePayment present susscess`,
       );
-      // handleAfterPayment();
+      captureScreen();
+
+      handleAfterPayment();
     }
-
-
-    // captureScreen();
-    // const { error: confirmError } = await confirmPaymentSheetPayment();  
-
-    // if (confirmError) {
-    //   setReady(false);
-    //   console.log(
-    //     `handlePayment confirmError: ${confirmError.code}, confirmError message: ${confirmError.message}`,
-    //   );
-    // } else {
-    //   // setReady(false);
-    //   captureScreen();
-    //   setReady(false);
-    //   // handleAfterPayment();
-    // }
 
   };
 
@@ -548,7 +529,7 @@ const Cart = () => {
 
       await handleUpdateItemInPaymentPick();
       // captureScreen();
-
+      setPaymentSuccess(false);
       const body = {
         orderID: data.Id,
         userID: id as string,
@@ -797,12 +778,12 @@ const Cart = () => {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#54545411" }}>
 
-      <StripeProvider publishableKey={publicKey}>
+      <StripeProvider publishableKey={publicKey} >
         <ViewShot ref={viewShotRef} options={{ format: 'jpg', quality: 0.9 }} style={{ flex: 1 }}>
           <View style={[screenStyles.parent_container, { backgroundColor: "#54545411" }]}>
-            {/* <ModalProcess /> */}
+            <ModalProcess />
             {modalVisible && (
               <View
                 style={{
@@ -911,6 +892,15 @@ const Cart = () => {
                     return <View style={{ height: 10 }} />;
                   }}
                   data={data.data}
+                  ListEmptyComponent={() => {
+                    return (
+                      <View style={{ alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                        <Text style={[fonts.subline, { color: Colors.slate }]}>
+                          Chưa có sản phẩm nào trong giỏ hàng
+                        </Text>
+                      </View>
+                    );
+                  }}
                   showsVerticalScrollIndicator={false}
                   style={{ marginTop: 20, marginBottom: 20 }}
                   renderItem={({ item }) => (
@@ -1180,14 +1170,29 @@ const Cart = () => {
                   }
                 </Text>
               </View>
-              <Fluid_btn
-                style={{ marginBottom: 25 }}
-                title="Thanh toán"
-                // enable={loading || !ready}
-                onPress={async () => {
-                  await checkingItemInPayment();
-                }}
-              />
+              {
+                paymentSuccess ?
+                  <View
+                    style={[buttons.fluid_Cont, { marginBottom: 25, backgroundColor: Colors.green, flexDirection: 'row', gap: 10 }]}>
+                    <Text style={[fonts.caption, { color: Colors.white, marginLeft: 5 }]}>Thanh toán thành công</Text>
+
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 300, borderColor: Colors.white, borderWidth: 3, padding: 5 }}
+                    >
+                      <Icons name={IconName.check} size={15} color={Colors.white} />
+                    </View>
+                  </View>
+                  :
+                  <Fluid_btn
+                    style={{ marginBottom: 25 }}
+                    title="Đặt hàng"
+                    // enable={loading || !ready}
+                    onPress={async () => {
+                      await checkingItemInPayment();
+                    }}
+                  />
+              }
+
             </View>
 
           </View>

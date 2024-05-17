@@ -39,19 +39,11 @@ const CouponUserCart = (props: Prop) => {
             if (day > 0) {
                 returnString += day + ' ngày ';
             }
-            if (hour > 0) {
-                returnString += hour.toString().padStart(2, '0') + ':';
-            }
 
-            if (minute > 0) {
-                returnString += minute.toString().padStart(2, '0') + ':';
-            }
+            returnString += hour > 0 ? hour.toString().padStart(2, '0') + ':' : '00:';
+            returnString += minute > 0 ? minute.toString().padStart(2, '0')  : '00';
+            // returnString += second > 0 ? second.toString().padStart(2, '0') : '00';
 
-            if (second > 0) {
-                returnString += second.toString().padStart(2, '0');
-            } else {
-                returnString += '00';
-            }
 
             return returnString;
         } catch (error) {

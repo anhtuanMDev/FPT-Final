@@ -1,5 +1,5 @@
-import {View, Text, ColorValue} from 'react-native';
-import React, {PropsWithChildren} from 'react';
+import { View, Text, ColorValue } from 'react-native';
+import React, { PropsWithChildren } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 
 type IconProps = PropsWithChildren<{
@@ -9,7 +9,7 @@ type IconProps = PropsWithChildren<{
 }>;
 
 export enum IconName {
-  menu='bars',
+  menu = 'bars',
   back = 'chevron-left',
   next = 'caret-right',
   eye = 'eye',
@@ -39,7 +39,7 @@ export enum IconName {
   calendar = 'calendar-alt',
   report = 'pennant',
   add = 'plus',
-  minus= 'minus',
+  minus = 'minus',
   camera = 'camera',
   library = 'images',
   rule = 'swatchbook',
@@ -54,8 +54,9 @@ export enum IconName {
   cash = 'money-bill',
   tag = 'tag',
   percent = 'percent',
+  check = 'check',
 }
-const Icons = ({name, color, size}: IconProps) => {
+const Icons = ({ name, color, size }: IconProps) => {
   return <FontAwesome name={name} size={size || 20} color={color} />;
 };
 

@@ -29,7 +29,8 @@ export type RestaurantDisplayType = {
 
 export type EventState = {
   Id: string,
-  Title:string
+  Title:string,
+  CouponID: string,
 }
 
 interface HomeState {

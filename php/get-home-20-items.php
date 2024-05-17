@@ -12,7 +12,7 @@ try {
     $data = json_decode(file_get_contents("php://input"));
     $id = $data->id;
 
-    $query = "SELECT Id, `Title` FROM events WHERE `Start` <= NOW() AND `End` > NOW()";
+    $query = "SELECT Id, `Title`, CouponID FROM events WHERE `Start` <= NOW() AND `End` > NOW()";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -79,7 +79,7 @@ try {
 
     $home['newItemsArray'] = $foods;
 
-    $query = "SELECT foods.*, SUM(orderitems.Quantity) as Sold, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
+    $query = "SELECT foods.*, COALESCE(SUM(orderitems.Quantity),0) as Sold, (CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) as UserFavorite,
     images.Id AS Image,
     COUNT(reviews.Id) as TotalReview,
     COALESCE(ROUND(AVG(Point),1), 0) AS Point

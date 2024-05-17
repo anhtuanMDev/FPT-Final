@@ -51,6 +51,10 @@ import JoinEvent from '../screen/app/Store/JoinEvent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AllRestaurants from '../allScreen/AllRestaurants';
 import US_OrderDetail from '../screen/app/Drawer/US_OrderDetail';
+import AllFeature from '../allScreen/AllFeature';
+import AllPopular from '../allScreen/AllPopular';
+import AllNew from '../allScreen/AllNew';
+import AllEvent from '../allScreen/AllEvent';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Drawer = createDrawerNavigator<ParamList>();
@@ -85,7 +89,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         console.log('userID', err),
       );
       dispatch(isLogin(false));
-
     } catch (error) {
       console.error('Failed to remove the item', error);
     }
@@ -97,7 +100,11 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       <View
         style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
         <Image
-          source={image ? {uri: `${host}/uploads/${image}.jpg`} : require('./../../assets/images/baseImage.png')}
+          source={
+            image
+              ? {uri: `${host}/uploads/${image}.jpg`}
+              : require('./../../assets/images/baseImage.png')
+          }
           style={{width: 35, height: 35, borderRadius: 35, marginRight: 15}}
         />
         <View style={{alignItems: 'flex-start'}}>
@@ -309,6 +316,42 @@ const AppTabNavigation = () => {
       <Tab.Screen
         name="AllRestaurants"
         component={AllRestaurants}
+        options={{
+          tabBarIconStyle: {display: 'none'},
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="AllEvent"
+        component={AllEvent}
+        options={{
+          tabBarIconStyle: {display: 'none'},
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="AllFeature"
+        component={AllFeature}
+        options={{
+          tabBarIconStyle: {display: 'none'},
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="AllPopular"
+        component={AllPopular}
+        options={{
+          tabBarIconStyle: {display: 'none'},
+          tabBarButton: () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="AllNew"
+        component={AllNew}
         options={{
           tabBarIconStyle: {display: 'none'},
           tabBarButton: () => null,

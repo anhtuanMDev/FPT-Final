@@ -12,51 +12,28 @@ try {
     $id = $data->id;
 
     $query = "SELECT foods.Id, foods.TimeMade, foods.Price, foods.Name, foods.FeatureItem, 
-    foods.Discount, COUNT(favlist.Id) as UserFavorite FROM foods LEFT JOIN favlist
-    ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
+    foods.Discount, COUNT(favlist.Id) AS UserFavorite, images.Id AS `Image`, COUNT(reviews.Id) as TotalReview,
+    COALESCE(ROUND(AVG(Point),1), 0) AS Point
+    FROM foods 
+    LEFT JOIN favlist ON foods.Id = favlist.TargetID AND favlist.UserID = '$id'
+    INNER JOIN images ON foods.Id = images.OwnerID
+    LEFT JOIN reviews ON foods.Id = reviews.TargetID
     WHERE foods.FeatureItem = 1 AND foods.Status = 'Sale'
-    GROUP BY foods.Id limit 20";
+    GROUP BY foods.Id, images.Id limit 20";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if ($foods) {
-        foreach ($foods as $key => $food) {
-            $query = "SELECT Id as Image FROM images WHERE OwnerID = :id LIMIT 1";
-            $stmt = $dbConn->prepare($query);
-            $stmt->bindParam(':id', $food['Id']);
-            $stmt->execute();
-            $image = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Add the image to the food item
-            $foods[$key]['Image'] = $image ? $image['Image'] : '';
-        }
+    echo json_encode(
+        array(
+            "status" => true,
+            "statusText" => `Lấy danh sách món ăn đặc biệt thành công!`,
+            "data" => $foods,
+        ),
+        JSON_UNESCAPED_UNICODE
 
-        foreach ($foods as $key => $food) {
-            $queryReview = "SELECT COUNT(Id) as TotalReview, AVG(Point) as AverageRating FROM reviews WHERE TargetID = :id";
-            $stmtReview = $dbConn->prepare($queryReview);
-            $stmtReview->bindParam(':id', $food['Id']);
-            $stmtReview->execute();
-            $review = $stmtReview->fetch(PDO::FETCH_ASSOC);
-            $foods[$key]['TotalReview'] = $review ? $review['TotalReview'] : 0;
-            $foods[$key]['Point'] = $review ? $review['AverageRating'] : 0;}
-
-        echo json_encode(
-            array(
-                "status" => true,
-                "statusText" => `Lấy danh sách món ăn đặc biệt thành công!`,
-                "data" => $foods,
-            )
-        );
-    } else {
-        echo json_encode(
-            array(
-                "status" => false,
-                "statusText" => "Không có món ăn đặc biệt trong hệ thống!",
-                "data" => [],
-            ),
-        );
-    }
+    );
 } catch (Exception $e) {
     echo json_encode(
         array(
@@ -64,5 +41,7 @@ try {
             "statusText" => "Lấy danh sách món ăn đặc biệt thất bại bởi vì $e!",
             "data" => [],
         ),
+        JSON_UNESCAPED_UNICODE
+
     );
 }

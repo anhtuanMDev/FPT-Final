@@ -94,15 +94,6 @@ const Home = () => {
     console.log('add favorite', response);
   };
 
-  // const Logdata = async () => {
-  //   const response = await AxiosInstance().post('/get-home-20-items.php', {
-  //     id: userID,
-  //   });
-  //   console.log('data in Logdata home', response.data.recommendedItemsArray);
-  //   // return response.data;
-  // };
-  // Logdata()
-
   const removeFavorite = async (target: string) => {
     const body = {
       target,

@@ -69,6 +69,7 @@ type CartState = {
   Status: string,
 
   CouponID: string,
+  CouponUserID: string,
   CouponDiscount: number,
   CouponDetail: string
 };
@@ -150,6 +151,7 @@ const Cart = () => {
     AddressDetail: "",
 
     CouponID: '',
+    CouponUserID: '',
     CouponDiscount: 0,
     CouponDetail: ""
   });
@@ -410,9 +412,11 @@ const Cart = () => {
     orderID: string,
     item: { id: string; quantity: number }[],
   ) => {
+    useCoupon(data.CouponUserID);
     const body = {
       orderID: orderID,
       item: item,
+      couponID: data.CouponID
     };
     const response = await AxiosInstance().post(
       '/post-confirm-payment.php',
@@ -425,8 +429,9 @@ const Cart = () => {
         type: 'success',
         icon: 'success',
       });
-      // handlePayment();
+
     } else {
+      console.log("updateItemInPaymentPick", response.statusText)
       showMessage({
         message: response.statusText,
         type: 'danger',
@@ -731,14 +736,15 @@ const Cart = () => {
             <Text style={[fonts.captionBold, { marginVertical: 20, textAlign: "center" }]}>Chọn phiếu mua hàng</Text>
             <CouponUserList
               itemsStyle={{ elevation: 5, shadowColor: Colors.black }}
-              selectedItem={{ Id: data.CouponID }}
+              selectedItem={{ Id: data.CouponUserID }}
               selectedItemStyle={{ backgroundColor: Colors.unselected }}
               onItemPress={(item) => {
                 let couponDetail = item.Code + ", Giảm: " + item.Discount + "%";
 
                 item.CouponID && getSelectedCouponFoodsInCart(item.CouponID);
-                // setData({ type: 'Coupon', payload: item.Coupon })
-                setData({ type: 'CouponID', payload: item.Id })
+                // console.log("coupon", item);
+                setData({ type: 'CouponID', payload: item.CouponID })
+                setData({ type: 'CouponUserID', payload: item.Id })
                 setData({ type: 'CouponDetail', payload: couponDetail });
                 setData({ type: 'CouponDiscount', payload: item.Discount });
 
@@ -751,6 +757,20 @@ const Cart = () => {
       </Modal>
     )
   }
+
+  const useCoupon = async (couponUserID: string) => {
+    const response = await AxiosInstance().post('/post-use-user-coupon.php', {
+      id: couponUserID,
+    });
+
+    if (response.status) {
+      setData({ type: 'CouponID', payload: '' })
+      setData({ type: 'CouponUserID', payload: '' })
+      setData({ type: 'CouponDetail', payload: '' });
+      setData({ type: 'CouponDiscount', payload: '' });
+    }
+  }
+
 
   const rightAction = (onDel: () => void) => {
     return (
@@ -969,6 +989,7 @@ const Cart = () => {
                 <Swipeable renderRightActions={() => rightAction(
                   () => {
                     setData({ type: 'CouponID', payload: '' })
+                    setData({ type: 'CouponUserID', payload: '' })
                     setData({ type: 'CouponDetail', payload: '' });
                     setData({ type: 'CouponDiscount', payload: '' });
                   }

@@ -31,10 +31,12 @@ try {
 
     if (count($orders) == 0) {
 
-        echo json_encode(array(
-            'status' => true,
-            'statusText' => "Không còn món ăn trong giỏ hàng"
-        ));
+        echo json_encode(
+            array(
+                'status' => true,
+                'statusText' => "Không còn món ăn trong giỏ hàng"
+            )
+        );
     } else {
         $id = generateID('ORD');
         $query = "INSERT INTO orders(Id,Status, UserID)
@@ -46,18 +48,28 @@ try {
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
 
-        echo json_encode(array(
-            'status' => true,
-            'statusText' => "Đã thanh toán những món ăn đã chọn"
-        ));
+        echo json_encode(
+            array(
+                'status' => true,
+                'statusText' => "Đã thanh toán những món ăn đã chọn"
+            )
+        );
     }
 
-    $query = "UPDATE orders SET Status = 'Done', CreateAt = Now(), AddressID = '$addressID', PaymentMethod = '$paymentMethod' WHERE Id = '$orderID'";
+    $query = "UPDATE orders SET 
+                                Status = 'Done',
+                                CreateAt = Now(),
+                                AddressID = '$addressID',
+                                PaymentMethod = '$paymentMethod' 
+                            WHERE Id = '$orderID'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
+
 } catch (Exception $e) {
-    echo json_encode(array(
-        "status" => false,
-        "statusText" => "Lỗi cập xác nhận thanh toán bởi vì $e"
-    ));
+    echo json_encode(
+        array(
+            "status" => false,
+            "statusText" => "Lỗi cập xác nhận thanh toán bởi vì $e"
+        )
+    );
 }

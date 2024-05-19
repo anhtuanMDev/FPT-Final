@@ -1,21 +1,23 @@
-import {View, Text, FlatList, Dimensions, Image, Modal} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
-import {fonts} from '../../../custom/styles/ComponentStyle';
+import { View, Text, FlatList, Dimensions, Image, Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
+import { fonts } from '../../../custom/styles/ComponentStyle';
 import Fluid_btn from '../../../custom/buttons/Fluid_btn';
 import Linear_btn from '../../../custom/buttons/Linear_btn';
-import {useSelector} from 'react-redux';
-import {selectRestaurantID} from '../../../../helpers/state/AppTab/storeSlice';
+import { useSelector } from 'react-redux';
+import { selectRestaurantID } from '../../../../helpers/state/AppTab/storeSlice';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import {
   NavigationProp,
   useIsFocused,
   useNavigation,
 } from '@react-navigation/native';
-import {convertPoint} from '../../../navigation/AppTabNavigation';
-import {ParamList} from '../../../navigation/RootNavigation';
-import {selectHost} from '../../../../helpers/state/Global/globalSlice';
+import { convertPoint } from '../../../navigation/AppTabNavigation';
+import { ParamList } from '../../../navigation/RootNavigation';
+import { selectHost } from '../../../../helpers/state/Global/globalSlice';
 import Empty from '../../../../assets/images/BlankFood.svg';
+import OrderCard from '../../../custom/cards/OrderCard';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 type ItemData = {
   ArriveAt: string;
@@ -33,6 +35,31 @@ type ItemData = {
   UserRank: number;
   Value: number;
   CreateAt: string;
+};
+
+export type Items = {
+  ArriveAt: string;
+  FoodName: string;
+  Id: string;
+  Image: string;
+  FoodID: string;
+  OrderID: string;
+  Quantity: number;
+  Status: string;
+  Value: number;
+};
+
+type OrderItems = {
+  Address: string;
+  City: string;
+  CreateAt: string;
+  Delivery: number;
+  District: string;
+  Id: string;
+  Items: Items[];
+  Phone: string;
+  TotalValue: number;
+  Ward: string;
 };
 
 export const convertStatus = (status: string) => {
@@ -55,19 +82,22 @@ export const convertStatus = (status: string) => {
   }
 };
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const RestaurantOrders = () => {
   const navigation =
     useNavigation<NavigationProp<ParamList, 'RestaurantOrders'>>();
+
   const resID = useSelector(selectRestaurantID);
   const host = useSelector(selectHost);
   const isFocused = useIsFocused();
-  const [orders, setOrders] = useState<ItemData[]>([]);
+  const [orders, setOrders] = useState<OrderItems[]>([]);
   const [status, setStatus] = useState<string>('');
+  const [action, setAction] = useState(false);
+  const [orderAction, setOrderAction] = useState<Items>({} as Items);
 
   const getOrders = async () => {
-    const response = await AxiosInstance().post(`/get-restaurant-orders.php`, {
-      resID,
+    const response = await AxiosInstance().post(`/get-restaurant-order-history.php`, {
+      restaurantID: resID,
     });
     if (response.status) setOrders(response.data);
   };
@@ -110,10 +140,10 @@ const RestaurantOrders = () => {
           <Image
             source={
               FoodImageID && FoodImageID.length > 0
-                ? {uri: `${host}/uploads/${FoodImageID}.jpg`}
+                ? { uri: `${host}/uploads/${FoodImageID}.jpg` }
                 : require('./../../../../assets/images/baseImage.png')
             }
-            style={{width: width / 4, height: width / 5, borderRadius: 10}}
+            style={{ width: width / 4, height: width / 5, borderRadius: 10 }}
           />
 
           {/* Order Detail */}
@@ -126,7 +156,7 @@ const RestaurantOrders = () => {
             }}>
             {/* Food name and quantity */}
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={fonts.sublineBold}>{FoodName}</Text>
               <Text style={fonts.sublineBold}>{'SL: ' + Quantity}</Text>
             </View>
@@ -138,16 +168,16 @@ const RestaurantOrders = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
                   source={
                     UserImage && UserImage.length > 0
-                      ? {uri: `${host}/uploads/${UserImage}.jpg`}
+                      ? { uri: `${host}/uploads/${UserImage}.jpg` }
                       : require('./../../../../assets/images/baseImage.png')
                   }
-                  style={{width: 20, height: 20, borderRadius: 10}}
+                  style={{ width: 20, height: 20, borderRadius: 10 }}
                 />
-                <Text style={[fonts.subline, {marginLeft: 3}]}>
+                <Text style={[fonts.subline, { marginLeft: 3 }]}>
                   {UserName.length > 15
                     ? UserName.slice(0, 15) + '...'
                     : UserName}
@@ -166,26 +196,26 @@ const RestaurantOrders = () => {
               <Text
                 style={[
                   fonts.sublineBold,
-                  {marginLeft: 3, color: Colors.green},
+                  { marginLeft: 3, color: Colors.green },
                 ]}>
                 {Value}$
               </Text>
-              <Text style={[fonts.text, {marginLeft: 3}]}>{CreateAt}</Text>
+              <Text style={[fonts.text, { marginLeft: 3 }]}>{CreateAt}</Text>
             </View>
           </View>
         </View>
-        <View style={{marginVertical: 5, marginHorizontal: 15}}>
-          <Text style={[fonts.sublineBold, {textAlign: 'right'}]}>
+        <View style={{ marginVertical: 5, marginHorizontal: 15 }}>
+          <Text style={[fonts.sublineBold, { textAlign: 'right' }]}>
             {convertStatus(Status)}
           </Text>
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
           <Linear_btn
             title="Chi Tiết"
             onPress={() => {
-              navigation.navigate('OrderDetail', {id: Id});
+              navigation.navigate('OrderDetail', { id: Id });
             }}
-            style={{width: 150, height: 40}}
+            style={{ width: 150, height: 40 }}
           />
 
           <Fluid_btn
@@ -196,7 +226,7 @@ const RestaurantOrders = () => {
             enable={
               Status === 'Done' || Status === 'Canceled' || Status === 'Denied'
             }
-            style={{width: 150, height: 40}}
+            style={{ width: 150, height: 40 }}
           />
         </View>
       </View>
@@ -224,7 +254,7 @@ const RestaurantOrders = () => {
             <Text
               style={[
                 fonts.sublineBold,
-                {textAlign: 'center', marginBottom: 10},
+                { textAlign: 'center', marginBottom: 10 },
               ]}>
               Chọn trạng thái
             </Text>
@@ -241,7 +271,7 @@ const RestaurantOrders = () => {
                 setOrders(
                   orders.map(order =>
                     order.Id === status
-                      ? {...order, Status: 'Approved'}
+                      ? { ...order, Status: 'Approved' }
                       : order,
                   ),
                 );
@@ -256,7 +286,7 @@ const RestaurantOrders = () => {
                 setOrders(
                   orders.map(order =>
                     order.Id === status
-                      ? {...order, Status: 'Canceled'}
+                      ? { ...order, Status: 'Canceled' }
                       : order,
                   ),
                 );
@@ -277,7 +307,7 @@ const RestaurantOrders = () => {
                 setOrders(
                   orders.map(order =>
                     order.Id === status
-                      ? {...order, Status: 'Delivering'}
+                      ? { ...order, Status: 'Delivering' }
                       : order,
                   ),
                 );
@@ -297,7 +327,7 @@ const RestaurantOrders = () => {
                 setStatus('');
                 setOrders(
                   orders.map(order =>
-                    order.Id === status ? {...order, Status: 'Done'} : order,
+                    order.Id === status ? { ...order, Status: 'Done' } : order,
                   ),
                 );
               }}
@@ -317,7 +347,7 @@ const RestaurantOrders = () => {
                 setOrders(
                   orders.map(order =>
                     order.Id === status
-                      ? {...order, Status: 'Canceled'}
+                      ? { ...order, Status: 'Canceled' }
                       : order,
                   ),
                 );
@@ -332,7 +362,7 @@ const RestaurantOrders = () => {
             </Text>
             <Fluid_btn
               title="Hủy"
-              style={{marginTop: 30}}
+              style={{ marginTop: 30 }}
               onPress={() => setStatus('')}
             />
           </View>
@@ -352,36 +382,55 @@ const RestaurantOrders = () => {
     );
   };
   return (
-    <View style={screenStyles.container}>
-      <FlatList
-        data={orders}
-        contentContainerStyle={{paddingBottom: 20}}
-        ItemSeparatorComponent={() => <View style={{height: 25}} />}
-        ListEmptyComponent={() => {
-          return (
-            <View
-              style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-              <Empty
-                width={width / 2}
-                height={width / 2}
-                style={{alignSelf: 'center'}}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={[screenStyles.container, {padding:0}]}>
+        <FlatList
+          data={orders}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          ItemSeparatorComponent={() => <View style={{ height: 25 }} />}
+          ListEmptyComponent={() => {
+            return (
+              <View
+                style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Empty
+                  width={width / 2}
+                  height={width / 2}
+                  style={{ alignSelf: 'center' }}
+                />
+                <Text
+                  style={[
+                    fonts.sublineBold,
+                    { textAlign: 'center', marginTop: 20 },
+                  ]}>
+                  Không có đơn hàng nào
+                </Text>
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, index }: { item: OrderItems, index: number }) => {
+            // console.log("item:",item.Items);
+            return (
+              <OrderCard
+                id={item.Id}
+                totalValue={item.TotalValue}
+                padding={20}
+                style={{ marginVertical: 10 }}
+                orderDate={item.CreateAt.slice(0, 10)}
+                items={item.Items}
+                onAlert={setAction}
+                onGetInfor={setOrderAction}
+                onPress={() => {
+                  // navigation.navigate('US_OrderDetail', {id: item.Id});
+                }}
               />
-              <Text
-                style={[
-                  fonts.sublineBold,
-                  {textAlign: 'center', marginTop: 20},
-                ]}>
-                Không có đơn hàng nào
-              </Text>
-            </View>
-          );
-        }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({item}) => <OrderItem {...item} />}
-        keyExtractor={(_, index) => index.toString()}
-      />
-      <StatusModal />
-    </View>
+            );
+          }}
+          keyExtractor={(_, index) => index.toString()}
+        />
+        <StatusModal />
+      </View>
+    </GestureHandlerRootView>
   );
 };
 

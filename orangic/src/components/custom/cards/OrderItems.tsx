@@ -60,6 +60,7 @@ const OrderItems = (props: Prop) => {
           paddingHorizontal: 20,
           paddingTop: 10,
           paddingBottom: 13,
+          gap: 15
         },
         style,
       ]}>
@@ -155,7 +156,7 @@ const OrderItems = (props: Prop) => {
                addToCart();
               }}
               style={{
-                width: 110,
+                width: 100,
                 backgroundColor:
                   i.Status == 'Waiting' ? Colors.orange : Colors.green,
                 alignItems: 'center',
@@ -180,7 +181,7 @@ const OrderItems = (props: Prop) => {
               onPress={() => navigate.navigate('US_FoodDetail', {id: i.FoodID})}
               style={{
                 flexDirection: 'row',
-                paddingTop: 15,
+                // marginVertical: 10,
                 backgroundColor: Colors.white,
               }}>
               <Image

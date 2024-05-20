@@ -93,8 +93,6 @@ const OrderCard = (props: Prop) => {
     const {name, quantity, status, value, image, action, actionColors, index, foodID} =
       props;
 
-      console.log(name, status, foodID)
-
     const cancel = () => {
       onGetInfor(items[index]);
       onAlert(true);

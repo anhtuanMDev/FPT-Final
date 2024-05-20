@@ -82,27 +82,6 @@ const OrderItems = (props: Prop) => {
         async function cancel() {
           getOrder(i);
           setAction(true);
-          // const response = await AxiosInstance().post(
-          //   '/post-update-orderitems-status.php',
-          //   {
-          //     id: i.Id,
-          //     status: 'Cancled',
-          //   },
-          // );
-          // if (response.status) {
-          //   const newItem = item.map(item => {
-          //     if (item.Id === i.Id) {
-          //       item.Status = 'Cancled';
-          //     }
-          //     return item;
-          //   });
-          //   setItems(newItem);
-          //   showMessage({
-          //     message: 'Hủy đơn hàng thành công',
-          //     type: 'success',
-          //     icon: 'info',
-          //   });
-          // }
           swipeRef.current?.close();
         }
         async function addToCart() {

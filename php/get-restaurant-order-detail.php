@@ -16,10 +16,12 @@ try {
     orders.Delivery, orders.CreateAt, orders.UpdateAt, orders.PaymentMethod, 
     CONCAT(address.Phone, ' - ', address.Address, ', ', address.District, ', ', 
     address.Ward, ', ', address.City ) AS Address,
+    images.Id AS Image,
     coupons.Id AS CouponID, coupons.Discount, coupons.Code
     FROM orders
     LEFT JOIN address ON address.Id = orders.AddressID
     LEFT JOIN coupons ON coupons.Id = orders.CouponID
+    LEFT JOIN images ON images.OwnerID = orders.Id
     INNER JOIN orderitems ON orderitems.OrderID = orders.Id
     WHERE orders.Id = '$orderID' ORDER BY orders.CreateAt DESC";
     $stmt = $dbConn->prepare($query);

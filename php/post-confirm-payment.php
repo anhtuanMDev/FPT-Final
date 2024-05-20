@@ -104,7 +104,7 @@ try {
     $query = "UPDATE `orders` 
               SET TotalValue = :totalValue,
                   Delivery = :delivery,
-                  -- CreateAt = NOW(),
+                  CreateAt = NOW()
               WHERE `Id` = :orderID";
     $stmt = $dbConn->prepare($query);
     $stmt->bindParam(':totalValue', $order, PDO::PARAM_INT);

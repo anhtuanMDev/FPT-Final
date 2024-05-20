@@ -17,11 +17,11 @@ import {
 import {ParamList} from '../../../navigation/RootNavigation';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import OrderItemRow from '../../../custom/cards/OrderItemRow';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import AlertConfirm from '../../../custom/alerts/AlertConfirm';
 import {showMessage} from 'react-native-flash-message';
 import AlertMessage from '../../../custom/alerts/AlertMessage';
+import { selectUserID } from '../../../../helpers/state/Global/globalSlice';
+import { useSelector } from 'react-redux';
 
 type OrderDetail = {
   Id: string;
@@ -63,6 +63,7 @@ const US_OrderDetail = () => {
   const navigate = useNavigation<NavigationProp<ParamList, 'US_OrderDetail'>>();
   const id = route.params?.id;
   const isFocused = useIsFocused();
+  const userID = useSelector(selectUserID);
   const [infor, setInfor] = useState<OrderDetail>({
     Id: '',
     TotalValue: 0,
@@ -81,12 +82,6 @@ const US_OrderDetail = () => {
   const [action, setAction] = useState(false);
   const [visible, setVisible] = useState(false);
   const [orderAction, setOrderAction] = useState<Items>({} as Items);
-  const CreatebottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['20%', '90%'], []);
-
-  const handlePresentCommentModalPress = useCallback(() => {
-    CreatebottomSheetModalRef.current?.present();
-  }, []);
 
   const cancelOrder = async (item: Items) => {
     const response = await AxiosInstance().post(
@@ -165,7 +160,6 @@ const US_OrderDetail = () => {
     };
   }, []);
   return (
-    <GestureHandlerRootView style={[screenStyles.parent_container]}>
       <View style={{flex: 1}}>
         <TitleBar
           value="Chi tiết đơn hàng"
@@ -347,33 +341,19 @@ const US_OrderDetail = () => {
 
         <View style={{backgroundColor: Colors.white, paddingHorizontal: 10}}>
           <Linear_btn
-            title="Đặt lại đơn hàng"
-            onPress={handlePresentCommentModalPress}
+            title="Thêm đơn hàng vào giỏ hàng"
+            onPress={async()=>{
+              const response = await AxiosInstance().post('/post-many-orders.php', {
+                id,
+                userID,
+              });
+              console.log(response)
+            }}
             style={{borderColor: Colors.silver}}
           />
         </View>
 
-        <BottomSheetModalProvider>
-          <View>
-            <BottomSheetModal
-              ref={CreatebottomSheetModalRef}
-              index={1}
-              style={{
-                flex: 1,
-              }}
-              snapPoints={snapPoints}>
-              <Text
-                style={[
-                  fonts.captionBold,
-                  {marginVertical: 10, textAlign: 'center'},
-                ]}>
-                Thanh toán
-              </Text>
-            </BottomSheetModal>
-          </View>
-        </BottomSheetModalProvider>
       </View>
-    </GestureHandlerRootView>
   );
 };
 

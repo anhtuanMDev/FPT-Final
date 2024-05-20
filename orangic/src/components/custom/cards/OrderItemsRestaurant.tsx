@@ -40,7 +40,6 @@ type Items = {
 
 type Prop = {
   getOrder: (item: Items) => void;
-  setAction: (action: boolean) => void;
   item: Items;
   style?: ViewStyle | ViewStyle[];
 };
@@ -48,7 +47,7 @@ type Prop = {
 const {width, height} = Dimensions.get('window');
 
 const OrderItemsRestaurant = (props: Prop) => {
-  const {item, style,getOrder, setAction} =
+  const {item, style,getOrder} =
     props;
   const host = useSelector(selectHost);
   const userID = useSelector(selectUserID);
@@ -133,11 +132,11 @@ const OrderItemsRestaurant = (props: Prop) => {
             <Fluid_btn
               title="Trạng thái"
               onPress={() => {
-                // setStatus(item.Id);
+                getOrder(item);
               }}
               enable={
                 item.Status === 'Done' ||
-                item.Status === 'Canceled' ||
+                item.Status === 'Cancled' ||
                 item.Status === 'Denied'
               }
               style={{width: 150, height: 40}}

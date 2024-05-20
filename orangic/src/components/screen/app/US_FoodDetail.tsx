@@ -138,7 +138,7 @@ const addCart = async (userID: string, foodID: string, quantity: number) => {
     quantity: quantity,
   };
   const repsonse = await AxiosInstance().post('/post-orders.php', data);
-  console.log(repsonse);
+  // console.log(repsonse);
   if (repsonse.status !== 400 && repsonse.status !== 500) {
     showMessage({
       message: 'Thêm món ăn vào giỏ hàng thành công',
@@ -238,6 +238,7 @@ const US_FoodDetail = (props: Props) => {
   }, [isFocused]);
 
   const getFoodDetail = async () => {
+    setQuantity(1);
     const data = {
       id,
       user: userID,
@@ -248,7 +249,7 @@ const US_FoodDetail = (props: Props) => {
         let data: FoodDetailType = response.data;
         data.TimeMade = converTime(data.TimeMade);
         setState(data);
-        console.log(response);
+        // console.log(response);
         if (data.Opinion != false) {
           setComment(data.Opinion as UserComment);
         }
@@ -261,7 +262,7 @@ const US_FoodDetail = (props: Props) => {
 
   useEffect(() => {
     dispatch(isLoading(true));
-    console.log(id);
+    // console.log(id);
     if (id !== '') getFoodDetail();
     dispatch(isLoading(false));
   }, [id]);

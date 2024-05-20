@@ -25,7 +25,6 @@ import {useSelector} from 'react-redux';
 import {selectHost} from '../../../../helpers/state/Global/globalSlice';
 import {convertPoint} from '../../../navigation/AppTabNavigation';
 import Fluid_btn from '../../../custom/buttons/Fluid_btn';
-import { convertStatus } from './RestaurantOrders';
 
 type Props = {
   route: RouteProp<ParamList, 'OrderDetail'>;
@@ -67,6 +66,28 @@ type Infor = {
   OrderID: string;
 };
 
+export const convertItemStatus = (status: string) => {
+  switch (status) {
+    case 'Waiting':
+      return 'Chờ xác nhận';
+    case 'Approved':
+      return 'Đã xác nhận';
+    case 'Denied':
+      return 'Từ chối';
+    case 'Made':
+      return 'Đã làm xong';
+    case 'In Delivery':
+      return 'Đang giao hàng';
+    case 'Done':
+      return 'Hoàn thành';
+    case 'Cancled':
+      return 'Hủy bỏ';
+    default:
+      return 'Không xác định';
+  }
+};
+
+
 const screenWidth = Dimensions.get('window').width;
 const OrderDetail = (props: Props) => {
   const id = props.route.params?.id;
@@ -75,6 +96,18 @@ const OrderDetail = (props: Props) => {
   const [visible, setVisible] = useState(false);
   const naviagtion = useNavigation<NavigationProp<ParamList, 'OrderDetail'>>();
   const [infor, setInfor] = useState<Infor>();
+  const statuses = [
+    'Waiting',
+    'Denied',
+    'Approved',
+    'Made',
+    'In Delivery',
+    'Cancled',
+    'Done',
+  ];
+  const [statusIndex, setStatusIndex] = useState(
+    statuses.indexOf(infor?.Status as string),
+  );
 
   const getOrderDetails = async () => {
     const respsonse = await AxiosInstance().post(
@@ -83,10 +116,11 @@ const OrderDetail = (props: Props) => {
         id,
       },
     );
+    console.log(respsonse)
     if (respsonse.status) {
-      console.log(respsonse.data)
-      setInfor(respsonse.data)
-    };
+      setInfor(respsonse.data);
+      setStatusIndex(statuses.indexOf(respsonse.data.Status));
+    }
   };
 
   useEffect(() => {
@@ -116,7 +150,6 @@ const OrderDetail = (props: Props) => {
       legendFontSize: 13,
     },
   ];
-
   const updateStatus = async (id: string, status: string) => {
     // console.log(id, status);
     const response = await AxiosInstance().post(
@@ -126,6 +159,7 @@ const OrderDetail = (props: Props) => {
         status,
       },
     );
+    setStatusIndex(statuses.indexOf(status));
     // console.log(response);
   };
 
@@ -155,90 +189,35 @@ const OrderDetail = (props: Props) => {
               ]}>
               Chọn trạng thái
             </Text>
-            <Text
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}
-              onPress={() => {
-                updateStatus(id as string, 'Approved');
-                setVisible(false);
-                if (infor) {
-                  setInfor({...infor, Status: 'Approved'});
-                }
-              }}>
-              Chấp nhận đơn hàng
-            </Text>
 
-            <Text
-              onPress={() => {
-                updateStatus(id as string, 'Made');
-                setVisible(false);
-                if (infor) {
-                  setInfor({...infor, Status: 'Made'});
-                }
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Đã làm xong
-            </Text>
+            {statuses.map((item, index) => {
+              if (index <= statusIndex) {
+                return null;
+              }
+              return (
+                <Text
+                  key={index}
+                  onPress={() => {
+                    updateStatus(id as string, item);
+                    setVisible(false);
+                    if (infor) {
+                      setInfor({...infor, Status: item});
+                    }
+                    getOrderDetails();
+                  }}
+                  style={[
+                    fonts.text,
+                    {
+                      paddingVertical: 15,
+                      color:
+                        statusIndex === index ? Colors.orange : Colors.black,
+                    },
+                  ]}>
+                  {convertItemStatus(item)}
+                </Text>
+              );
+            })}
 
-            <Text
-              onPress={() => {
-                updateStatus(id as string, 'In Delivery');
-                setVisible(false);
-                if (infor) {
-                  setInfor({...infor, Status: 'In Delivery'});
-                }
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Vận chuyển đơn hàng
-            </Text>
-
-            <Text
-              onPress={() => {
-                updateStatus(id as string, 'Done');
-                setVisible(false);
-                if (infor) {
-                  setInfor({...infor, Status: 'Done'});
-                }
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Hoàn thành
-            </Text>
-
-            <Text
-              onPress={() => {
-                updateStatus(id as string, 'Denied');
-                setVisible(false);
-                if (infor) {
-                  setInfor({...infor, Status: 'Denied'});
-                }
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Từ chối đơn hàng
-            </Text>
             <Fluid_btn
               title="Hủy"
               style={{marginTop: 30}}
@@ -394,7 +373,9 @@ const OrderDetail = (props: Props) => {
               alignItems: 'center',
             }}>
             <Text style={[fonts.textBold]}>Trạng thái:</Text>
-            <Text style={[fonts.text]}>{convertStatus(infor?.Status as string)}</Text>
+            <Text style={[fonts.text]}>
+              {convertItemStatus(infor?.Status as string)}
+            </Text>
           </View>
 
           <View
@@ -418,7 +399,9 @@ const OrderDetail = (props: Props) => {
               alignItems: 'center',
             }}>
             <Text style={[fonts.textBold]}>Tổng lần đặt</Text>
-            <Text style={[fonts.text]}>{infor?.UserStatistics.TotalOrders}</Text>
+            <Text style={[fonts.text]}>
+              {infor?.UserStatistics.TotalOrders}
+            </Text>
           </View>
         </View>
 
@@ -440,7 +423,7 @@ const OrderDetail = (props: Props) => {
           onPress={() => setVisible(true)}
           enable={
             infor?.Status === 'Done' ||
-            infor?.Status === 'Canceled' ||
+            infor?.Status === 'Cancled' ||
             infor?.Status === 'Denied'
           }
         />

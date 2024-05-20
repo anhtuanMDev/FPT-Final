@@ -9,7 +9,9 @@ include_once 'connection.php';
 
 try {
     $data = json_decode(file_get_contents('php://input'));
-    $id = $data->id;
+    $orderID = $data->orderID;
+    $restaurantID = $data->restaurantID;
+
 
     $query = "SELECT orders.Id, orders.TotalValue, orders.Status, 
     orders.Delivery, orders.CreateAt, orders.UpdateAt, orders.PaymentMethod, 
@@ -20,7 +22,7 @@ try {
     LEFT JOIN address ON address.Id = orders.AddressID
     LEFT JOIN coupons ON coupons.Id = orders.CouponID
     INNER JOIN orderitems ON orderitems.OrderID = orders.Id
-    WHERE orders.Id = '$id' ORDER BY orders.CreateAt DESC"  ;
+    WHERE orders.Id = '$orderID' ORDER BY orders.CreateAt DESC"  ;
     $stmt = $dbConn->prepare($query);
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
@@ -28,12 +30,12 @@ try {
     $cp = isset($orders['CouponID']) ? $orders['CouponID'] : null;
 
 
-
-    $query = "SELECT DISTINCT  restaurants.Id, restaurants.Name, images.Id as Image
+    $query = "SELECT DISTINCT restaurants.Id, restaurants.Name, images.Id as Image
     FROM restaurants
     INNER JOIN images ON images.OwnerID = restaurants.Id
-    INNER JOIN orderitems ON orderitems.OrderID = '$id'
-    INNER JOIN foods ON foods.Id = orderitems.FoodID AND foods.RestaurantID = restaurants.Id";
+    INNER JOIN orderitems ON orderitems.OrderID = '$orderID'
+    INNER JOIN foods ON foods.Id = orderitems.FoodID AND foods.RestaurantID = restaurants.Id
+    WHERE restaurants.Id = '$restaurantID'";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $rest = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,7 +51,7 @@ try {
         FROM orderitems
         INNER JOIN foods ON foods.Id = orderitems.FoodID AND foods.RestaurantID = '$resID'
         INNER JOIN images ON images.OwnerID = foods.ID
-        WHERE orderitems.OrderID = '$id'";
+        WHERE orderitems.OrderID = '$orderID'";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
         $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -61,7 +63,7 @@ try {
         array(
             'data' => $orders,
             'status' => true,
-            'statusText' => "Lấy thông tin chi tiết của đơn hàng thành công cho người dùng $id!",
+            'statusText' => "Lấy thông tin chi tiết của đơn hàng thành công cho người dùng $orderID!",
         )
     );
 } catch (Exception $e) {
@@ -69,7 +71,7 @@ try {
         array(
             'id' => null,
             'status' => false,
-            'statusText' => "Lấy thông tin chi tiết của đơn hàng không thành công cho người dùng $id! $e",
+            'statusText' => "Lấy thông tin chi tiết của đơn hàng không thành công cho người dùng $orderID! $e",
         )
     );
 };

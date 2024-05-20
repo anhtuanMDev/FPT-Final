@@ -86,7 +86,6 @@ try {
         return;
     }
 
-    // $delivery = 0;
     // Kiểm tra xem couponID có tồn tại trong bảng coupons không
     if ($couponID) {
         $query = "SELECT `Id` FROM coupons WHERE Id = :couponID";
@@ -101,22 +100,27 @@ try {
     }
 
     $delivery = 0;
-    // $order = 0; // Thay thế $order bằng giá trị phù hợp
 
     $query = "UPDATE `orders` 
               SET TotalValue = :totalValue,
                   Delivery = :delivery,
                   -- CreateAt = NOW(),
-                  CouponID = :couponID
               WHERE `Id` = :orderID";
     $stmt = $dbConn->prepare($query);
     $stmt->bindParam(':totalValue', $order, PDO::PARAM_INT);
     $stmt->bindParam(':delivery', $delivery, PDO::PARAM_INT);
-    $stmt->bindParam(':couponID', $couponID, PDO::PARAM_STR);
     $stmt->bindParam(':orderID', $orderID, PDO::PARAM_STR);
     $stmt->execute();
 
-error_log("couponID".$couponID);
+    if ($couponID) {
+        $query = "UPDATE `orders` 
+        SET 
+            CouponID = :couponID
+        WHERE `Id` = :orderID";
+        $stmt = $dbConn->prepare($query);
+        $stmt->bindParam(':couponID', $couponID, PDO::PARAM_STR);
+        $stmt->execute();
+    }
 
     echo json_encode(
         array(

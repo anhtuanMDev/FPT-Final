@@ -8,16 +8,18 @@ import {
   ColorValue,
 } from 'react-native';
 import React from 'react';
-import {Colors} from '../styles/ScreenStyle';
-import Icons2, {Icon2Name} from '../../../assets/icons/Icons2';
-import {fonts} from '../styles/ComponentStyle';
-import {useSelector} from 'react-redux';
-import {selectHost, selectUserID} from '../../../helpers/state/Global/globalSlice';
-import {Swipeable} from 'react-native-gesture-handler';
+import { Colors } from '../styles/ScreenStyle';
+import Icons2, { Icon2Name } from '../../../assets/icons/Icons2';
+import { fonts } from '../styles/ComponentStyle';
+import { useSelector } from 'react-redux';
+import { selectHost, selectUserID } from '../../../helpers/state/Global/globalSlice';
+import { Swipeable } from 'react-native-gesture-handler';
 import AxiosInstance from '../../../helpers/AxiosInstance';
 import { showMessage } from 'react-native-flash-message';
+import Linear_btn from '../buttons/Linear_btn';
+import Fluid_btn from '../buttons/Fluid_btn';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const padding = 20;
 
 type Items = {
@@ -73,7 +75,7 @@ const convertStatus = (status: string) => {
   }
 };
 
-const OrderCard = (props: Prop) => {
+const OrderCardRestaurant = (props: Prop) => {
   const {
     id,
     totalValue,
@@ -90,7 +92,7 @@ const OrderCard = (props: Prop) => {
   const OrderItemDetail = (props: OrderItemDetailProp) => {
     const userID = useSelector(selectUserID);
     const swipeRef = React.useRef<Swipeable>(null);
-    const {name, quantity, status, value, image, action, actionColors, index, foodID} =
+    const { name, quantity, status, value, image, action, actionColors, index, foodID } =
       props;
 
     const cancel = () => {
@@ -99,13 +101,13 @@ const OrderCard = (props: Prop) => {
       swipeRef.current?.close();
     };
 
-    const addToCart = async() => {
-      const response = await AxiosInstance().post('/post-orders.php',{
+    const addToCart = async () => {
+      const response = await AxiosInstance().post('/post-orders.php', {
         userID,
         foodID,
         quantity
       })
-      if(response.status){
+      if (response.status) {
         showMessage({
           message: 'Thêm vào giỏ hàng thành công',
           type: 'success',
@@ -147,7 +149,7 @@ const OrderCard = (props: Prop) => {
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => {
-             addToCart();
+            addToCart();
           }}
           style={{
             width: 110,
@@ -163,14 +165,17 @@ const OrderCard = (props: Prop) => {
                 textAlign: 'center',
               },
             ]}>
-              Thêm vào giỏ hàng
+            Thêm vào giỏ hàng
           </Text>
         </TouchableOpacity>
       );
     };
 
     return (
-      <Swipeable ref={swipeRef} renderLeftActions={leftRender} renderRightActions={rightRender}>
+      <Swipeable ref={swipeRef}
+        // renderLeftActions={leftRender}
+        // renderRightActions={rightRender}
+      >
         <View
           style={{
             backgroundColor: Colors.white,
@@ -195,13 +200,13 @@ const OrderCard = (props: Prop) => {
                 borderRadius: 20,
               }}>
               <Image
-                source={{uri: image}}
-                style={{width: '100%', height: '100%', resizeMode: 'cover'}}
+                source={{ uri: image }}
+                style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
               />
             </View>
 
             <View
-              style={{flex: 1, marginLeft: 15, justifyContent: 'space-evenly'}}>
+              style={{ flex: 1, marginLeft: 15, justifyContent: 'space-evenly' }}>
               <Text style={[fonts.sublineBold]}>{name}</Text>
 
               <View
@@ -210,15 +215,15 @@ const OrderCard = (props: Prop) => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={[fonts.textBold, {color: Colors.orange}]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={[fonts.textBold, { color: Colors.orange }]}>
                     {value}.000 đ
                   </Text>
-                  <Text style={[fonts.subline, {marginLeft: 5}]}>
+                  <Text style={[fonts.subline, { marginLeft: 5 }]}>
                     x {quantity}
                   </Text>
                 </View>
-                <Text style={[fonts.sublineBold, {marginLeft: 5}]}>
+                <Text style={[fonts.sublineBold, { marginLeft: 5 }]}>
                   {status}
                 </Text>
               </View>
@@ -228,6 +233,102 @@ const OrderCard = (props: Prop) => {
       </Swipeable>
     );
   };
+
+  // const OrderItem = (data: Items) => {
+  //   const {
+  //     FoodName,
+  //     Quantity,
+  //     Value,
+  //     Status,
+  //     Image,
+  //     Id
+  //   } = data;
+
+  //   return (
+  //     <View
+  //       style={{
+  //         backgroundColor: Colors.white,
+  //         borderRadius: 15,
+  //         paddingBottom: 10,
+  //       }}>
+  //       <View
+  //         style={{
+  //           flexDirection: 'row',
+  //           paddingTop: 5,
+  //           paddingBottom: 10,
+  //           paddingLeft: 7,
+  //           paddingRight: 15,
+  //         }}>
+  //         <Image
+  //           source={
+  //             Image && Image.length > 0
+  //               ? { uri: `${host}/uploads/${Image}.jpg` }
+  //               : require('./../../../../assets/images/baseImage.png')
+  //           }
+  //           style={{ width: width / 4, height: width / 5, borderRadius: 10 }}
+  //         />
+
+  //         {/* Order Detail */}
+  //         <View
+  //           style={{
+  //             flex: 1,
+  //             paddingLeft: 10,
+  //             justifyContent: 'space-evenly',
+  //             paddingTop: 5,
+  //           }}>
+  //           {/* Food name and quantity */}
+  //           <View
+  //             style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+  //             <Text style={fonts.sublineBold}>{FoodName}</Text>
+  //             <Text style={fonts.sublineBold}>{'SL: ' + Quantity}</Text>
+  //           </View>
+
+  //           {/* Order item infor*/}
+  //           <View
+  //             style={{
+  //               flexDirection: 'row',
+  //               alignItems: 'center',
+  //               justifyContent: 'space-between',
+  //             }}>
+  //             <Text
+  //               style={[
+  //                 fonts.sublineBold,
+  //                 { marginLeft: 3, color: Colors.green },
+  //               ]}>
+  //               {Value}$
+  //             </Text>
+  //             <Text style={[fonts.text, { marginLeft: 3 }]}>{CreateAt}</Text>
+  //           </View>
+  //         </View>
+  //       </View>
+  //       <View style={{ marginVertical: 5, marginHorizontal: 15 }}>
+  //         <Text style={[fonts.sublineBold, { textAlign: 'right' }]}>
+  //           {convertStatus(Status)}
+  //         </Text>
+  //       </View>
+  //       <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+  //         <Linear_btn
+  //           title="Chi Tiết"
+  //           onPress={() => {
+  //             navigation.navigate('OrderDetail', { id: Id });
+  //           }}
+  //           style={{ width: 150, height: 40 }}
+  //         />
+
+  //         <Fluid_btn
+  //           title="Trạng thái"
+  //           onPress={() => {
+  //             setStatus(Id);
+  //           }}
+  //           enable={
+  //             Status === 'Done' || Status === 'Canceled' || Status === 'Denied'
+  //           }
+  //           style={{ width: 150, height: 40 }}
+  //         />
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   return (
     <TouchableOpacity
@@ -249,7 +350,7 @@ const OrderCard = (props: Prop) => {
         },
         style,
       ]}>
-      <Text style={[fonts.sublineBold, {marginVertical: 5}]}>
+      <Text style={[fonts.sublineBold, { marginVertical: 5 }]}>
         Mã đơn hàng: {id}
       </Text>
       <View
@@ -294,4 +395,4 @@ const OrderCard = (props: Prop) => {
   );
 };
 
-export default OrderCard;
+export default OrderCardRestaurant;

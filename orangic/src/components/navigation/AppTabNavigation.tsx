@@ -1,7 +1,7 @@
-import {View, Text, StatusBar, Image} from 'react-native';
+import { View, Text, StatusBar, Image } from 'react-native';
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ParamList} from './RootNavigation';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ParamList } from './RootNavigation';
 import Home from '../screen/app/Home';
 import Store from '../screen/app/Store';
 import Favorite from '../screen/app/Favorite';
@@ -11,8 +11,8 @@ import US_Restaurant from '../screen/app/US_Restaurant';
 import US_FoodDetail from '../screen/app/US_FoodDetail';
 import Profile from '../screen/app/Drawer/Profile';
 import SS_FoodDetail from '../screen/app/SS_FoodDetail';
-import Icons, {IconName} from '../../assets/icons/Icons';
-import {Colors} from '../custom/styles/ScreenStyle';
+import Icons, { IconName } from '../../assets/icons/Icons';
+import { Colors } from '../custom/styles/ScreenStyle';
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
@@ -21,8 +21,8 @@ import {
 import OrderManagement from '../screen/app/Drawer/OrderManagement';
 import Schedules from '../screen/app/Drawer/Schedules';
 import Avatar from '../../assets/images/avatar.svg';
-import {fonts} from '../custom/styles/ComponentStyle';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import { fonts } from '../custom/styles/ComponentStyle';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Rank from '../screen/app/Drawer/Rank';
 import Animated from 'react-native-reanimated';
 import CreateRestaurant from '../screen/app/Store/CreateRestaurant';
@@ -30,7 +30,7 @@ import ChangeRestaurantInfor from '../screen/app/Store/ChangeRestaurantInfor';
 import CreateFood from '../screen/app/Store/CreateFood';
 import AddressInfor from '../screen/app/Address/AddressInfor';
 import Notifications from '../screen/app/Drawer/Notifications';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   isLogin,
   selectHost,
@@ -55,6 +55,7 @@ import AllFeature from '../allScreen/AllFeature';
 import AllPopular from '../allScreen/AllPopular';
 import AllNew from '../allScreen/AllNew';
 import AllEvent from '../allScreen/AllEvent';
+import RES_OrderDetail from '../screen/app/Store/RES_OrderDetail';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Drawer = createDrawerNavigator<ParamList>();
@@ -76,7 +77,7 @@ export function convertPoint(point: number) {
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const {state} = props;
+  const { state } = props;
   const point = useSelector(selectPoint);
   const name = useSelector(selectName);
   const host = useSelector(selectHost);
@@ -96,18 +97,18 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
   const navigate = useNavigation<NavigationProp<ParamList, 'HomeDrawer'>>();
   return (
-    <View style={{padding: 20, flex: 1}}>
+    <View style={{ padding: 20, flex: 1 }}>
       <View
-        style={{flexDirection: 'row', alignItems: 'center', marginBottom: 15}}>
+        style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
         <Image
           source={
             image
-              ? {uri: `${host}/uploads/${image}.jpg`}
+              ? { uri: `${host}/uploads/${image}.jpg` }
               : require('./../../assets/images/baseImage.png')
           }
-          style={{width: 35, height: 35, borderRadius: 35, marginRight: 15}}
+          style={{ width: 35, height: 35, borderRadius: 35, marginRight: 15 }}
         />
-        <View style={{alignItems: 'flex-start'}}>
+        <View style={{ alignItems: 'flex-start' }}>
           <Text style={[fonts.captionBold]}>{name}</Text>
           <Text style={[fonts.textBold]}>Hạng: {convertPoint(point)}</Text>
         </View>
@@ -118,7 +119,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         onPress={() => {
           navigate.navigate('Profile');
         }}
-        icon={({color}) => {
+        icon={({ color }) => {
           return <Icons name={IconName.profile} color={color} />;
         }}
         activeTintColor={Colors.orange}
@@ -130,7 +131,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         onPress={() => {
           navigate.navigate('Rank');
         }}
-        icon={({color}) => {
+        icon={({ color }) => {
           return <Icons name={IconName.rank} color={color} />;
         }}
         activeTintColor={Colors.orange}
@@ -142,7 +143,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         onPress={() => {
           navigate.navigate('OrderManagement');
         }}
-        icon={({color}) => {
+        icon={({ color }) => {
           return <Icons name={IconName.order} color={color} />;
         }}
         inactiveTintColor={Colors.slate}
@@ -154,13 +155,13 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         onPress={() => {
           navigate.navigate('Schedules');
         }}
-        icon={({color}) => {
+        icon={({ color }) => {
           return <Icons name={IconName.calendar} color={color} />;
         }}
         inactiveTintColor={Colors.slate}
         activeTintColor={Colors.orange}
       />
-      <View style={{flex: 1}} />
+      <View style={{ flex: 1 }} />
 
       <DrawerItem
         label="Đăng xuất"
@@ -168,7 +169,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         onPress={async () => {
           await logOut();
         }}
-        icon={({color}) => {
+        icon={({ color }) => {
           return <Icons name={IconName.door} color={color} />;
         }}
         inactiveTintColor={Colors.slate}
@@ -183,7 +184,7 @@ const AppDrawerNavigation = () => {
     <Drawer.Navigator
       drawerContent={props => <CustomDrawerContent {...props} />}
       initialRouteName="Home"
-      screenOptions={({route}) => ({
+      screenOptions={({ route }) => ({
         drawerActiveTintColor: Colors.orange,
         drawerInactiveTintColor: Colors.silver,
         drawerStyle: {
@@ -211,8 +212,8 @@ const AppTabNavigation = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color }) => {
           let iconName;
           switch (route.name) {
             case 'HomeDrawer':
@@ -265,10 +266,10 @@ const AppTabNavigation = () => {
       <Tab.Screen
         name="HomeDrawer"
         component={AppDrawerNavigation}
-        listeners={({navigation}) => ({
+        listeners={({ navigation }) => ({
           tabPress: e => {
             e.preventDefault();
-            navigation.navigate('HomeDrawer', {screen: 'Home'});
+            navigation.navigate('HomeDrawer', { screen: 'Home' });
           },
         })}
         options={{
@@ -308,7 +309,7 @@ const AppTabNavigation = () => {
         name="US_Restaurant"
         component={US_Restaurant}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -317,7 +318,7 @@ const AppTabNavigation = () => {
         name="AllRestaurants"
         component={AllRestaurants}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -326,7 +327,7 @@ const AppTabNavigation = () => {
         name="AllEvent"
         component={AllEvent}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -335,7 +336,7 @@ const AppTabNavigation = () => {
         name="AllFeature"
         component={AllFeature}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -344,7 +345,7 @@ const AppTabNavigation = () => {
         name="AllPopular"
         component={AllPopular}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -353,7 +354,7 @@ const AppTabNavigation = () => {
         name="AllNew"
         component={AllNew}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -362,25 +363,25 @@ const AppTabNavigation = () => {
         name="JoinEvent"
         component={JoinEvent}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
       <Tab.Screen
         name="US_FoodDetail"
         component={US_FoodDetail}
-        initialParams={{id: ''}}
+        initialParams={{ id: '' }}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
       <Tab.Screen
         name="SS_FoodDetail"
         component={SS_FoodDetail}
-        initialParams={{id: ''}}
+        initialParams={{ id: '' }}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -388,7 +389,7 @@ const AppTabNavigation = () => {
         name="AllFood"
         component={AllFood}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -397,7 +398,7 @@ const AppTabNavigation = () => {
         name="RestaurantStatistic"
         component={RestaurantStatistic}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -405,7 +406,7 @@ const AppTabNavigation = () => {
         name="ChangeRestaurantInfor"
         component={ChangeRestaurantInfor}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -413,7 +414,7 @@ const AppTabNavigation = () => {
         name="RestaurantOrders"
         component={RestaurantOrders}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -421,7 +422,15 @@ const AppTabNavigation = () => {
         name="OrderDetail"
         component={OrderDetail}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
+          tabBarButton: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="RES_OrderDetail"
+        component={RES_OrderDetail}
+        options={{
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -429,7 +438,7 @@ const AppTabNavigation = () => {
         name="CreateRestaurant"
         component={CreateRestaurant}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -437,7 +446,7 @@ const AppTabNavigation = () => {
         name="CreateFood"
         component={CreateFood}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -445,7 +454,7 @@ const AppTabNavigation = () => {
         name="AddressInfor"
         component={AddressInfor}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />
@@ -453,7 +462,7 @@ const AppTabNavigation = () => {
         name="Report"
         component={Report}
         options={{
-          tabBarIconStyle: {display: 'none'},
+          tabBarIconStyle: { display: 'none' },
           tabBarButton: () => null,
         }}
       />

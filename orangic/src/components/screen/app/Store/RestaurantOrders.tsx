@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Dimensions, Image, Modal } from 'react-native';
+import { View, Text, FlatList, Dimensions, Image, Modal, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
 import { fonts } from '../../../custom/styles/ComponentStyle';
@@ -18,6 +18,8 @@ import { selectHost } from '../../../../helpers/state/Global/globalSlice';
 import Empty from '../../../../assets/images/BlankFood.svg';
 import OrderCard from '../../../custom/cards/OrderCard';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import OrderCardRestaurant from '../../../custom/cards/OrderCardRestaurant';
+import Icons, { IconName } from '../../../../assets/icons/Icons';
 
 type ItemData = {
   ArriveAt: string;
@@ -94,12 +96,15 @@ const RestaurantOrders = () => {
   const [status, setStatus] = useState<string>('');
   const [action, setAction] = useState(false);
   const [orderAction, setOrderAction] = useState<Items>({} as Items);
+  const [refresh, setRefresh] = useState(false);
 
   const getOrders = async () => {
+    setRefresh(true);
     const response = await AxiosInstance().post(`/get-restaurant-order-history.php`, {
       restaurantID: resID,
     });
     if (response.status) setOrders(response.data);
+    setRefresh(false);
   };
 
   useEffect(() => {
@@ -383,9 +388,41 @@ const RestaurantOrders = () => {
   };
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={[screenStyles.container, {padding:0}]}>
+      <View style={[[screenStyles.container, { padding: 0 }]]}>
+
+        <View
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 20,
+            paddingHorizontal: 20,
+            alignItems: 'center',
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Store');
+            }}
+            style={{
+              width: 45,
+              height: 45,
+              borderRadius: 10,
+              backgroundColor: Colors.white,
+              elevation: 5,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Icons name={IconName.back} size={18} color={Colors.orange} />
+          </TouchableOpacity>
+
+          <Text style={[fonts.captionBold]}>Quản lý đơn đặt hàng</Text>
+          <View style={{ width: 45 }} />
+        </View>
+
         <FlatList
           data={orders}
+          refreshing={refresh}
+          onRefresh={getOrders}
           contentContainerStyle={{ paddingBottom: 20 }}
           ItemSeparatorComponent={() => <View style={{ height: 25 }} />}
           ListEmptyComponent={() => {
@@ -411,7 +448,7 @@ const RestaurantOrders = () => {
           renderItem={({ item, index }: { item: OrderItems, index: number }) => {
             // console.log("item:",item.Items);
             return (
-              <OrderCard
+              <OrderCardRestaurant
                 id={item.Id}
                 totalValue={item.TotalValue}
                 padding={20}
@@ -421,7 +458,7 @@ const RestaurantOrders = () => {
                 onAlert={setAction}
                 onGetInfor={setOrderAction}
                 onPress={() => {
-                  // navigation.navigate('US_OrderDetail', {id: item.Id});
+                  navigation.navigate('RES_OrderDetail', { id: item.Id });
                 }}
               />
             );

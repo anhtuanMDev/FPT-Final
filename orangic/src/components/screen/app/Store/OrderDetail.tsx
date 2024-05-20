@@ -261,7 +261,7 @@ const OrderDetail = (props: Props) => {
         }}>
         <TouchableOpacity
           onPress={() => {
-            naviagtion.navigate('RestaurantOrders');
+            naviagtion.navigate('RES_OrderDetail');
           }}
           style={{
             width: 45,
@@ -313,7 +313,7 @@ const OrderDetail = (props: Props) => {
                 marginVertical: 10,
               }}>
               <Text style={[fonts.textBold]}>Số điện thoại:</Text>
-              <Text style={[fonts.text]}>01234567895</Text>
+              <Text style={[fonts.text]}>{infor?.UserPhone}</Text>
             </View>
             <View
               style={{
@@ -322,7 +322,7 @@ const OrderDetail = (props: Props) => {
                 marginVertical: 10,
               }}>
               <Text style={[fonts.textBold]}>Email:</Text>
-              <Text style={[fonts.text]}>anhtt676@gmail.com</Text>
+              <Text style={[fonts.text]}>{infor?.UserEmail}</Text>
             </View>
 
             <Text style={[fonts.textBold, {marginVertical: 5}]}>
@@ -402,7 +402,7 @@ const OrderDetail = (props: Props) => {
               alignItems: 'center',
             }}>
             <Text style={[fonts.textBold]}>Tổng giá trị</Text>
-            <Text style={[fonts.text]}>{infor?.Value}$</Text>
+            <Text style={[fonts.text]}>{infor?.Value}.000 đ</Text>
           </View>
         </View>
 

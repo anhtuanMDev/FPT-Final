@@ -76,6 +76,7 @@ export type ParamList = {
   CreateFood: undefined | { id: string };
   AddressInfor: undefined | { title: string; id?: string };
   JoinEvent: undefined | { id: string };
+  RES_OrderDetail: undefined | { id: string };
 };
 
 /** Type for notification's detail */
@@ -117,7 +118,7 @@ const RootNavigation = () => {
 
   useEffect(() => {
     // dispatch(setHost('http://127.0.0.1:8686'));
-    dispatch(setHost('http://172.16.112.104:8686'));
+    dispatch(setHost('http://172.16.68.116:8686'));
   }, []);
 
   const getInfor = async () => {

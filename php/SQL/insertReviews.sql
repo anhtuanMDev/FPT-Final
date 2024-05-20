@@ -1937,6 +1937,8 @@ INSERT INTO reviews (Id, Point, UserID, TargetID, Comment, Status, CreateAt, Upd
 ('REVOf1dj3ZcG99EQz0mw', '4', 'USR3J74IipLHPp3CBYit', 'FODZvcbdcOYheqH7t2sZ', 'Ăn sướng miệng thật, món này shop làm là nhất', 'Active', '2024-02-28 09:10:59', '2024-02-29 00:58:00'),
 ('REVdMRXprarVUp0xNaZv', '4', 'USRpgp8KJJB96rLVNKqj', 'FODZvcbdcOYheqH7t2sZ', 'Ăn sướng miệng thật, món này shop làm là nhất', 'Active', '2024-03-26 22:13:16', '2024-04-07 02:29:42'),
 ('REVBxGKG2XR3szFau47J', '1', 'USRvdG9vZx1bn9qVgJqw', 'FODZvcbdcOYheqH7t2sZ', 'Món ăn cũng tạm ổn à', 'Active', '2024-01-31 00:42:38', '2024-05-03 19:36:05');
+
+
 INSERT INTO reviews (Id, Point, UserID, TargetID, Comment, Status, CreateAt, UpdateAt) VALUES
 ('REVxEXWG39v8svCeYuVi', '2', 'USRc4TwrkPa8yZM2XTiq', 'RES0BmlpsUBKFICav1D7', 'Ông chủ shop này hách dịch lắm', 'Active', '2024-03-21 18:29:43', '2024-04-14 01:06:23'),
 ('REVVfGiUaqVi3IKj7lWL', '4', 'USRZKn1fwjREGgyyiLTt', 'RES0BmlpsUBKFICav1D7', 'Chủ shop dễ thương quá, yêu shop ghê', 'Removed', '2024-04-09 09:49:57', '2024-04-25 15:01:10'),

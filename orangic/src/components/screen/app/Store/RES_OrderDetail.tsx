@@ -1,31 +1,38 @@
-import { View, Text, ScrollView, FlatList, BackHandler, TouchableOpacity, Modal } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
+import {
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+  BackHandler,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
 import TitleBar from '../../../custom/topbars/TitleBar';
-import { fonts } from '../../../custom/styles/ComponentStyle';
-import Icons, { IconName } from '../../../../assets/icons/Icons';
+import {fonts} from '../../../custom/styles/ComponentStyle';
+import Icons, {IconName} from '../../../../assets/icons/Icons';
 import Linear_btn from '../../../custom/buttons/Linear_btn';
 import {
-  DrawerActions,
   NavigationProp,
   RouteProp,
   useIsFocused,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { ParamList } from '../../../navigation/RootNavigation';
+import {ParamList} from '../../../navigation/RootNavigation';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import OrderItemRow from '../../../custom/cards/OrderItemRow';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import AlertConfirm from '../../../custom/alerts/AlertConfirm';
-import { showMessage } from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import AlertMessage from '../../../custom/alerts/AlertMessage';
-import { useSelector } from 'react-redux';
-import { selectRestaurantID } from '../../../../helpers/state/AppTab/storeSlice';
+import {useSelector} from 'react-redux';
+import {selectRestaurantID} from '../../../../helpers/state/AppTab/storeSlice';
 import OrderItemsRestaurant from '../../../custom/cards/OrderItemsRestaurant';
 import Fluid_btn from '../../../custom/buttons/Fluid_btn';
-import { Dimensions } from 'react-native';
+import {Dimensions} from 'react-native';
 
 type ItemData = {
   ArriveAt: string;
@@ -45,31 +52,6 @@ type ItemData = {
   CreateAt: string;
 };
 
-// export type Items = {
-//   ArriveAt: string;
-//   FoodName: string;
-//   Id: string;
-//   Image: string;
-//   FoodID: string;
-//   OrderID: string;
-//   Quantity: number;
-//   Status: string;
-//   Value: number;
-// };
-
-// type OrderItems = {
-//   Address: string;
-//   City: string;
-//   CreateAt: string;
-//   Delivery: number;
-//   District: string;
-//   Id: string;
-//   Items: Items[];
-//   Phone: string;
-//   TotalValue: number;
-//   Ward: string;
-// };
-
 export const convertStatus = (status: string) => {
   switch (status) {
     case 'Cancled':
@@ -86,7 +68,6 @@ export const convertStatus = (status: string) => {
       return 'Đã từ chối';
     case 'Made':
       return 'Đã làm xong';
-
   }
 };
 
@@ -102,8 +83,7 @@ type OrderDetail = {
   CouponID: string | null;
   Discount: number | null;
   Code: string | null;
-  Restaurant: Restaurant[];
-  Group: Items[];
+  Items: Items[];
 };
 
 type Restaurant = {
@@ -125,10 +105,11 @@ type Items = {
   HasDiscount: number;
 };
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const RES_OrderDetail = () => {
   const route = useRoute<RouteProp<ParamList, 'RES_OrderDetail'>>();
-  const navigation = useNavigation<NavigationProp<ParamList, 'RES_OrderDetail'>>();
+  const navigation =
+    useNavigation<NavigationProp<ParamList, 'RES_OrderDetail'>>();
   const restaurantID = useSelector(selectRestaurantID);
   const id = route.params?.id;
   const isFocused = useIsFocused();
@@ -144,8 +125,7 @@ const RES_OrderDetail = () => {
     CouponID: null,
     Discount: null,
     Code: null,
-    Restaurant: [],
-    Group: [],
+    Items: [],
   });
   const [action, setAction] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -157,63 +137,62 @@ const RES_OrderDetail = () => {
     CreatebottomSheetModalRef.current?.present();
   }, []);
 
-  const cancelOrder = async (item: Items) => {
-    const response = await AxiosInstance().post(
-      '/post-update-orderitems-status.php',
-      {
-        id: item.Id,
-        status: 'Cancled',
-      },
-    );
-    if (response.status) {
-      console.log(response.status);
-      const newOrder = {
-        ...infor,
-        Restaurants: infor.Restaurant.map(orderItem => {
-          const newItem = orderItem.Items.map(items => {
-            if (items.Id === item.Id) {
-              return { ...items, Status: 'Cancled' };
-            }
-            return items;
-          });
-          return newItem;
-        }),
-        Group: infor.Group.map(items => {
-          if (items.Id === item.Id) {
-            items.Status = 'Cancled';
-          }
-          return items;
-        }),
-      };
-      setInfor(newOrder);
-      setVisible(true);
-      showMessage({
-        message: 'Hủy đơn hàng thành công',
-        type: 'success',
-        icon: 'info',
-      });
-    }
-    console.log(item);
-  };
+  // const cancelOrder = async (item: Items) => {
+  //   const response = await AxiosInstance().post(
+  //     '/post-update-orderitems-status.php',
+  //     {
+  //       id: item.Id,
+  //       status: 'Cancled',
+  //     },
+  //   );
+  //   if (response.status) {
+  //     console.log(response.status);
+  //     const newOrder = {
+  //       ...infor,
+  //       Restaurants: infor.Restaurant.map(orderItem => {
+  //         const newItem = orderItem.Items.map(items => {
+  //           if (items.Id === item.Id) {
+  //             return { ...items, Status: 'Cancled' };
+  //           }
+  //           return items;
+  //         });
+  //         return newItem;
+  //       }),
+  //       Group: infor.Group.map(items => {
+  //         if (items.Id === item.Id) {
+  //           items.Status = 'Cancled';
+  //         }
+  //         return items;
+  //       }),
+  //     };
+  //     setInfor(newOrder);
+  //     setVisible(true);
+  //     showMessage({
+  //       message: 'Hủy đơn hàng thành công',
+  //       type: 'success',
+  //       icon: 'info',
+  //     });
+  //   }
+  //   console.log(item);
+  // };
 
   const getDetail = async () => {
-    // console.log(id);
-    const response = await AxiosInstance().post('/get-restaurant-order-detail.php', {
-      orderID: id,
-      restaurantID: restaurantID,
-    });
-    console.log(restaurantID);
-    console.log(response.data);
-    console.log(infor.Restaurant);
-    console.log(infor.Restaurant[0]?.Items);
-    console.log(infor)
+    const response = await AxiosInstance().post(
+      '/get-restaurant-order-detail.php',
+      {
+        orderID: id,
+        restaurantID: restaurantID,
+      },
+    );
+    // console.log(restaurantID);
+    console.log(response);
+    // console.log("the data:",response.data);
+    // console.log(infor.Restaurant);
+    // console.log(infor.Restaurant[0]?.Items);
+    // console.log(infor)
     const data: OrderDetail = response.data;
     if (response.status) {
-      const allItems = data.Restaurant.reduce<Items[]>((items, restaurant) => {
-        return items.concat(restaurant.Items);
-      }, []);
-      setInfor({ ...data, Group: allItems });
-      console.log('ord', data);
+      setInfor(data);
     }
   };
 
@@ -224,7 +203,7 @@ const RES_OrderDetail = () => {
   const handleBackPress = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'OrderManagement' }],
+      routes: [{name: 'OrderManagement'}],
     });
     return true;
   };
@@ -388,7 +367,7 @@ const RES_OrderDetail = () => {
             <Text
               style={[
                 fonts.sublineBold,
-                { textAlign: 'center', marginBottom: 10 },
+                {textAlign: 'center', marginBottom: 10},
               ]}>
               Chọn trạng thái
             </Text>
@@ -496,7 +475,7 @@ const RES_OrderDetail = () => {
             </Text>
             <Fluid_btn
               title="Hủy"
-              style={{ marginTop: 30 }}
+              style={{marginTop: 30}}
               onPress={() => setStatus('')}
             />
           </View>
@@ -518,18 +497,7 @@ const RES_OrderDetail = () => {
 
   return (
     <GestureHandlerRootView style={[screenStyles.parent_container]}>
-      <View style={{ flex: 1 }}>
-        {/* <TitleBar
-          value="Chi tiết đơn hàng"
-          onLeftPress={() => {
-            navigate.dispatch(DrawerActions.openDrawer());
-          }}
-          onRightPress={() => {
-            navigate.navigate('Notifications');
-          }}
-          style={{paddingHorizontal: 20}}
-          notify={0}
-        /> */}
+      <View style={{flex: 1}}>
         <View
           style={{
             width: '100%',
@@ -556,7 +524,7 @@ const RES_OrderDetail = () => {
           </TouchableOpacity>
 
           <Text style={[fonts.captionBold]}>Chi tiết đơn hàng</Text>
-          <View style={{ width: 45 }} />
+          <View style={{width: 45}} />
         </View>
 
         <AlertConfirm
@@ -565,7 +533,7 @@ const RES_OrderDetail = () => {
           content={`Bạn có chắc chắn muốn hủy đơn hàng ${orderAction.Name} với số lượng ${orderAction.Quantity} không ?`}
           onPress={setAction}
           onConfirm={() => {
-            cancelOrder(orderAction);
+            // cancelOrder(orderAction);
             setAction(false);
           }}
         />
@@ -576,7 +544,7 @@ const RES_OrderDetail = () => {
           content={`Bạn sẽ được hoàn tiền lại ${orderAction.Value}.000 đ cho đơn hàng ${orderAction.Name} với số lượng ${orderAction.Quantity}`}
           onPress={setVisible}
         />
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{flex: 1}}>
           <View
             style={{
               backgroundColor: Colors.white,
@@ -585,28 +553,26 @@ const RES_OrderDetail = () => {
               marginBottom: 15,
             }}>
             <Icons name={IconName.delivery} size={16} color={Colors.orange} />
-            <Text style={[fonts.captionBold, { marginVertical: 5 }]}>
+            <Text style={[fonts.captionBold, {marginVertical: 5}]}>
               Địa chỉ giao hàng
             </Text>
-            <Text style={[fonts.subline, { lineHeight: 22 }]}>
+            <Text style={[fonts.subline, {lineHeight: 22}]}>
               {infor.Address}
             </Text>
           </View>
 
-          {/* {infor.Restaurant.map(item => ( */}
-            <OrderItemsRestaurant
-              // key={i.Id}
-              onResPress={() =>
-                navigation.navigate('US_Restaurant', { id: infor?.Restaurant[0]?.Id })
-              }
-              item={infor?.Restaurant[0]?.Items}
-              restaurantName={infor?.Restaurant[0]?.Name}
-              resImg={infor?.Restaurant[0]?.Image}
-              getOrder={item => setOrderAction(item)}
-              setAction={setAction}
-              style={{ marginBottom: 15 }}
-            />
-          {/* ))} */}
+            <FlatList
+            data={infor.Items}
+            keyExtractor={item => item.Id}
+            scrollEnabled={false}
+            renderItem={({item}) => (
+              <OrderItemsRestaurant
+                item={item}
+                getOrder={item => setOrderAction(item)}
+                setAction={setAction}
+                style={{marginBottom: 15}}
+              />
+            )}/>
 
           <View
             style={{
@@ -616,11 +582,11 @@ const RES_OrderDetail = () => {
               paddingBottom: 18,
               marginVertical: 15,
             }}>
-            <Text style={[fonts.captionBold, { marginBottom: 10 }]}>
+            <Text style={[fonts.captionBold, {marginBottom: 10}]}>
               Tổng quan đơn hàng
             </Text>
 
-            {infor.Group.map((item, index) => (
+            {infor.Items.map((item, index) => (
               <View
                 key={item.Id}
                 style={{
@@ -628,10 +594,10 @@ const RES_OrderDetail = () => {
                   justifyContent: 'space-between',
                   marginVertical: 10,
                 }}>
-                <Text style={[fonts.sublineBold, { color: Colors.slate }]}>
+                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
                   {item.Name}
                 </Text>
-                <Text style={[fonts.sublineBold, { color: Colors.slate }]}>
+                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
                   {item.Value}.000 đ
                 </Text>
               </View>
@@ -645,7 +611,7 @@ const RES_OrderDetail = () => {
               }}>
               <Text style={[fonts.sublineBold]}>Tổng</Text>
               <Text style={[fonts.sublineBold]}>
-                {infor.Group.reduce((n, n1) => {
+                {infor.Items.reduce((n, n1) => {
                   return n + Number(n1.Value);
                 }, 0)}
                 .000 đ
@@ -661,7 +627,7 @@ const RES_OrderDetail = () => {
               paddingBottom: 18,
               marginTop: 10,
             }}>
-            <Text style={[fonts.captionBold, { marginBottom: 10 }]}>
+            <Text style={[fonts.captionBold, {marginBottom: 10}]}>
               Chi tiết đơn hàng
             </Text>
             <OrderItemRow title="Số đơn hàng" content={infor.Id} />
@@ -686,41 +652,31 @@ const RES_OrderDetail = () => {
               style={{
                 marginVertical: 10,
               }}>
-              <Text style={[fonts.sublineBold, { color: Colors.slate }]}>
+              <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
                 Ngày giao hàng
               </Text>
-              <View style={{ marginLeft: 5, marginTop: 10 }}>
-                {infor.Restaurant.map((item, index) => (
-                  <View key={item.Id}>
-                    <Text
-                      style={[
-                        fonts.sublineBold,
-                        { color: Colors.slate, marginTop: 20 },
-                      ]}>
-                      {item.Name}
-                    </Text>
-                    {item.Items.map((i, n) => {
-                      return (
-                        <OrderItemRow
-                          key={i.Id}
-                          title={i.Name}
-                          style={{ marginLeft: 10 }}
-                          subValue={
-                            i.HasDiscount && infor.Discount
-                              ? Math.round((i.Value * 100) / infor.Discount) +
-                              '.000 đ'
-                              : undefined
-                          }
-                          content={
-                            i.Status == 'Denied' || i.Status == 'Cancled'
-                              ? 'Bị hủy'
-                              : i.ArriveAt || 'Chưa cập nhật'
-                          }
-                        />
-                      );
-                    })}
-                  </View>
-                ))}
+
+              <View style={{marginLeft: 5, marginTop: 10}}>
+                {infor.Items.map((i, n) => {
+                  return (
+                    <OrderItemRow
+                      key={i.Id}
+                      title={i.Name}
+                      style={{marginLeft: 10}}
+                      subValue={
+                        i.HasDiscount && infor.Discount
+                          ? Math.round((i.Value * 100) / infor.Discount) +
+                            '.000 đ'
+                          : undefined
+                      }
+                      content={
+                        i.Status == 'Denied' || i.Status == 'Cancled'
+                          ? 'Bị hủy'
+                          : i.ArriveAt || 'Chưa cập nhật'
+                      }
+                    />
+                  );
+                })}
               </View>
             </View>
           </View>
@@ -746,7 +702,7 @@ const RES_OrderDetail = () => {
               <Text
                 style={[
                   fonts.captionBold,
-                  { marginVertical: 10, textAlign: 'center' },
+                  {marginVertical: 10, textAlign: 'center'},
                 ]}>
                 Thanh toán
               </Text>

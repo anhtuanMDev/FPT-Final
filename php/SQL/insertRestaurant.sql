@@ -624,8 +624,7 @@ VALUES (
         'RES2J6GvojOQOg2MHTNF',
         'Nhà hàng Mắm Ba',
         'nhahangmam@gmail.com',
-        'Nhà hàng Mắm Ba là điểm đến lý tưởng cho những người yêu thích hương vị đậm đà của mắm. Với đa dạng món ngon như Cá Lóc Nướng Mắm, Gỏi Cuốn Mắm Ớt, Canh Chua Mắm Cá, Bún chả mắm ngọt, và Bún Mắm. 
-        Chúng tôi đảm bảo sẽ mang đến trải nghiệm ẩm thực độc đáo và đầy thú vị ngay tại không gian ấm cúng của gia đình bạn. Đặt món ngay để thưởng thức hương vị đặc trưng của Nhà hàng Mắm Ba ngay hôm nay!',
+        'Nhà hàng Mắm Ba là điểm đến lý tưởng cho những người yêu thích hương vị đậm đà của mắm. Với đa dạng món ngon như Cá Lóc Nướng Mắm, Gỏi Cuốn Mắm Ớt, Canh Chua Mắm Cá, Bún chả mắm ngọt, và Bún Mắm. Đặt món ngay để thưởng thức hương vị đặc trưng của Nhà hàng Mắm Ba ngay hôm nay!',
         '115/17',
         'Tỉnh Quảng Bình',
         'Huyện Bố Trạch',
@@ -640,8 +639,7 @@ VALUES (
         'REStVDL1LJmBpFoAlwTB',
         'Nhà hàng Đậm Cay',
         'nhahangdam@gmail.com',
-        'Nhà hàng Đậm Cay là địa chỉ lý tưởng cho những tín đồ của hương vị cay nồng. Với đa dạng món ăn như mực xào cay, canh chua cá lóc cay, hay lẩu cay thập cẩm, khách hàng có thể thỏa mãn khẩu vị của mình một cách hoàn hảo. 
-        Đặc biệt, gà chiên giòn sốt cay và dĩa đậu phộng chiên cay là lựa chọn không thể bỏ qua cho những buổi tiệc nhỏ hay gặp gỡ bạn bè. Nhờ dịch vụ đặt hàng online tiện lợi, thực khách có thể thưởng thức những món ăn tại nhà mà vẫn đảm bảo được hương vị đậm đà và đặc trưng của Nhà hàng Đậm Cay.',
+        'Nhà hàng Đậm Cay là địa chỉ lý tưởng cho những tín đồ của hương vị cay nồng. Với đa dạng món ăn như mực xào cay, canh chua cá lóc cay, hay lẩu cay thập cẩm, khách hàng có thể thỏa mãn khẩu vị của mình một cách hoàn hảo.',
         '115/17',
         'Tỉnh Lạng Sơn',
         'Huyện Chi Lăng',
@@ -656,7 +654,7 @@ VALUES (
         'RES4T6DBFZFdSAe6pXUS',
         'Nhà hàng Hạnh Nguyễn',
         'nhahanghanh@gmail.com',
-        'Nhà hàng Hạnh Nguyễn mang đến trải nghiệm ẩm thực độc đáo với những món ăn ngon từ các vùng miền. Gà Đồi Hấp thơm phức, lòng lợn trần hành béo ngậy, nộm hoa chuối tươi mát, lợn hấp cả thịt mềm ngọt và rau lang xào giòn sần sật. 
+        'Nhà hàng Hạnh Nguyễn mang đến trải nghiệm ẩm thực độc đáo với những món ăn ngon từ các vùng miền. Gà Đồi Hấp thơm phức, lòng lợn trần hành béo ngậy,...
         Với dịch vụ đặt hàng online tiện lợi, khách hàng có thể thưởng thức hương vị tinh tế của Nhà hàng Hạnh Nguyễn ngay tại nhà.',
         '115/17',
         'Tỉnh Bình Dương',
@@ -672,8 +670,7 @@ VALUES (
         'RESDkK4VNlkGqcicIL6t',
         'Quán Xanh',
         'quanxanh@gmail.com',
-        'Quán Xanh mang đến hương vị độc đáo của ẩm thực Việt, tận trong tầm tay bạn. Với các món như Canh Khổ Qua, Mướp Đắng Xào Tỏi, và Chè Đậu Đen, chúng tôi tự hào về sự tươi ngon và chất lượng. Đặc biệt, lòng xào dưa chua và canh bí đỏ sẽ khiến bạn nhớ mãi. 
-        Hãy thưởng thức và trải nghiệm hương vị truyền thống tại Quán Xanh ngay hôm nay!',
+        'Quán Xanh mang đến hương vị độc đáo của ẩm thực Việt, tận trong tầm tay bạn. Chúng tôi tự hào về sự tươi ngon và chất lượng. Đặc biệt, lòng xào dưa chua và canh bí đỏ sẽ khiến bạn nhớ mãi. Hãy thưởng thức và trải nghiệm hương vị truyền thống tại Quán Xanh ngay hôm nay!',
         '115/17',
         'Tỉnh Trà Vinh',
         'Huyện Tiểu Cần',
@@ -688,7 +685,7 @@ VALUES (
         'RES99GHWtnwWJckAXeWW',
         'Nhà hàng Hữu Nhập',
         'nhahanghoanhap@gmail.com',
-        'Chào mừng đến với Quán Hữu Nhập – nơi mang đến hương vị ẩm thực tuyệt vời ngay tại nhà bạn! Thực đơn đa dạng với Rau bò khai xào tỏi, Súp cá hồi, Súp Gà Ngô Kem, Bánh bao chiên và Súp cua, chúng tôi cam kết phục vụ món ăn tươi ngon, giàu dinh dưỡng và đậm đà bản sắc Việt. 
+        'Chào mừng đến với Quán Hữu Nhập - nơi mang đến hương vị ẩm thực tuyệt vời ngay tại nhà bạn! Thực đơn đa dạng với Rau bò khai xào tỏi, Súp cá hồi, Súp Gà Ngô Kem, Bánh bao chiên và Súp cua, chúng tôi cam kết phục vụ món ăn tươi ngon, giàu dinh dưỡng và đậm đà bản sắc Việt. 
         Hãy đặt hàng ngay!',
         '115/17',
         'Tỉnh Điện Biên',
@@ -737,7 +734,7 @@ VALUES (
         'Nhà hàng Đồng Quê',
         'nhahangdongque@gmail.com',
         'Chào mừng bạn đến với Nhà hàng Đồng Quê, điểm đến lý tưởng cho những tín đồ ẩm thực yêu thích hương vị quê nhà. 
-        Chúng tôi chuyên cung cấp các món ăn đậm đà bản sắc Việt như Canh chua cá lóc, Cơm chiên cá mặn, Lẩu cá diêu hồng, Gà nướng lá chanh và Cơm gà Hội An. Đặt hàng ngay hôm nay để thưởng thức!',
+        Chúng tôi chuyên cung cấp các món ăn đậm đà bản sắc Việt như Canh chua cá lóc, Cơm chiên cá mặn, Lẩu cá diêu hồng,.... Đặt hàng ngay hôm nay để thưởng thức!',
         '115/17',
         'Tỉnh Bình Dương',
         'Huyện Bàu Bàng',

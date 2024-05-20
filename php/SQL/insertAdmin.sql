@@ -47,6 +47,7 @@ INSERT INTO admin ( `Id`,`Name`,`Email`,`Password`,`Job`,`CreateAt`,`UpdateAt`,`
 ('ADMcpsK31xDPcrE6lkmE','Ngô Đức Quyền','ngoducquyen@gmail.com','123456', 'Admin', '2023-05-01 03:10:07', '2023-10-04 06:03:54', NULL),
 ('ADMyCS5pofsXT7s6COxk','Hoàng Đức Đinh','hoangducdinh@gmail.com','123456', 'Admin', '2023-10-03 19:43:18', '2024-04-26 21:45:42', NULL),
 ('ADM8qdaHNoYXKWdRQACL','Đinh Đức Quân','dinhducquan@gmail.com','123456', 'Admin', '2023-05-04 17:21:11', '2024-02-19 13:30:29', NULL),
+('ADM00000000000000001','Trần Khánh Duy','trank9626@gmail.com','123456', 'Admin', '2023-03-02 13:24:55', '2023-09-09 01:57:04', NULL),
 ('ADMV9v8qczEuKfkLcCy0','Phan Thành Hạnh','phanthanhhanh@gmail.com','123456', 'Admin', '2023-03-02 13:24:55', '2023-09-09 01:57:04', NULL);
 
 INSERT INTO images ( `Id`,`OwnerID`) 

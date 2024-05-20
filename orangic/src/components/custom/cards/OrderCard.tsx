@@ -60,7 +60,7 @@ const convertStatus = (status: string) => {
   switch (status) {
     case 'Waiting':
       return 'Đang chờ';
-    case 'Approve':
+    case 'Approved':
       return 'Đã xác nhận';
     case 'Denied':
       return 'Bị từ chối';
@@ -92,6 +92,8 @@ const OrderCard = (props: Prop) => {
     const swipeRef = React.useRef<Swipeable>(null);
     const {name, quantity, status, value, image, action, actionColors, index, foodID} =
       props;
+
+      console.log(name, status, foodID)
 
     const cancel = () => {
       onGetInfor(items[index]);

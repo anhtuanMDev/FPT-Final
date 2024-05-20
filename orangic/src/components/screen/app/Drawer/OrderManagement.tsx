@@ -65,7 +65,9 @@ const OrderManagement = () => {
     const response = await AxiosInstance().post('/get-user-order-history.php', {
       id: userID,
     });
-    setOrder(response.data);
+    if(response.status){
+      setOrder(response.data);
+    }
   };
 
   const cancelOrder = async(item: Items) => {
@@ -73,7 +75,7 @@ const OrderManagement = () => {
       id: item.Id,
       status: 'Cancled',
     });
-    // console.log("Response:",response)
+    console.log("cancel: ",response)
     if (response.status){
       const newOrder = order.map((orderItem) => {
         if (orderItem.Id === item.OrderID){
@@ -85,7 +87,6 @@ const OrderManagement = () => {
         }
         return orderItem;
       });
-      // console.log("newOrder:",newOrder[5].Items)
       setOrder(newOrder);
       setVisible(true);
       showMessage({

@@ -1,9 +1,9 @@
-import {View, Text, ScrollView, FlatList, BackHandler} from 'react-native';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
+import { View, Text, ScrollView, FlatList, BackHandler } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
 import TitleBar from '../../../custom/topbars/TitleBar';
-import {fonts} from '../../../custom/styles/ComponentStyle';
-import Icons, {IconName} from '../../../../assets/icons/Icons';
+import { fonts } from '../../../custom/styles/ComponentStyle';
+import Icons, { IconName } from '../../../../assets/icons/Icons';
 import OrderItems from '../../../custom/cards/OrderItems';
 import Linear_btn from '../../../custom/buttons/Linear_btn';
 import {
@@ -14,14 +14,15 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {ParamList} from '../../../navigation/RootNavigation';
+import { ParamList } from '../../../navigation/RootNavigation';
 import AxiosInstance from '../../../../helpers/AxiosInstance';
 import OrderItemRow from '../../../custom/cards/OrderItemRow';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import AlertConfirm from '../../../custom/alerts/AlertConfirm';
-import {showMessage} from 'react-native-flash-message';
+import { showMessage } from 'react-native-flash-message';
 import AlertMessage from '../../../custom/alerts/AlertMessage';
+import ReOrder from './ReOrder';
 
 type OrderDetail = {
   Id: string;
@@ -82,7 +83,7 @@ const US_OrderDetail = () => {
   const [visible, setVisible] = useState(false);
   const [orderAction, setOrderAction] = useState<Items>({} as Items);
   const CreatebottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['20%', '90%'], []);
+  const snapPoints = useMemo(() => ['20%', '100%'], []);
 
   const handlePresentCommentModalPress = useCallback(() => {
     CreatebottomSheetModalRef.current?.present();
@@ -103,7 +104,7 @@ const US_OrderDetail = () => {
         Restaurants: infor.Restaurant.map(orderItem => {
           const newItem = orderItem.Items.map(items => {
             if (items.Id === item.Id) {
-              return {...items, Status: 'Cancled'};
+              return { ...items, Status: 'Cancled' };
             }
             return items;
           });
@@ -138,7 +139,7 @@ const US_OrderDetail = () => {
       const allItems = data.Restaurant.reduce<Items[]>((items, restaurant) => {
         return items.concat(restaurant.Items);
       }, []);
-      setInfor({...data, Group: allItems});
+      setInfor({ ...data, Group: allItems });
       console.log('ord', data);
     }
   };
@@ -150,7 +151,7 @@ const US_OrderDetail = () => {
   const handleBackPress = () => {
     navigate.reset({
       index: 0,
-      routes: [{name: 'OrderManagement'}],
+      routes: [{ name: 'OrderManagement' }],
     });
     return true;
   };
@@ -166,7 +167,7 @@ const US_OrderDetail = () => {
   }, []);
   return (
     <GestureHandlerRootView style={[screenStyles.parent_container]}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <TitleBar
           value="Chi tiết đơn hàng"
           onLeftPress={() => {
@@ -175,7 +176,7 @@ const US_OrderDetail = () => {
           onRightPress={() => {
             navigate.navigate('Notifications');
           }}
-          style={{paddingHorizontal: 20}}
+          style={{ paddingHorizontal: 20 }}
           notify={0}
         />
         <AlertConfirm
@@ -195,7 +196,7 @@ const US_OrderDetail = () => {
           content={`Bạn sẽ được hoàn tiền lại ${orderAction.Value}.000 đ cho đơn hàng ${orderAction.Name} với số lượng ${orderAction.Quantity}`}
           onPress={setVisible}
         />
-        <ScrollView style={{flex: 1}}>
+        <ScrollView style={{ flex: 1 }}>
           <View
             style={{
               backgroundColor: Colors.white,
@@ -204,10 +205,10 @@ const US_OrderDetail = () => {
               marginBottom: 15,
             }}>
             <Icons name={IconName.delivery} size={16} color={Colors.orange} />
-            <Text style={[fonts.captionBold, {marginVertical: 5}]}>
+            <Text style={[fonts.captionBold, { marginVertical: 5 }]}>
               Địa chỉ giao hàng
             </Text>
-            <Text style={[fonts.subline, {lineHeight: 22}]}>
+            <Text style={[fonts.subline, { lineHeight: 22 }]}>
               {infor.Address}
             </Text>
           </View>
@@ -216,14 +217,14 @@ const US_OrderDetail = () => {
             <OrderItems
               key={item.Id}
               onResPress={() =>
-                navigate.navigate('US_Restaurant', {id: item.Id})
+                navigate.navigate('US_Restaurant', { id: item.Id })
               }
               item={item.Items}
               restaurantName={item.Name}
               resImg={item.Image}
               getOrder={item => setOrderAction(item)}
               setAction={setAction}
-              style={{marginBottom: 15}}
+              style={{ marginBottom: 15 }}
             />
           ))}
 
@@ -235,7 +236,7 @@ const US_OrderDetail = () => {
               paddingBottom: 18,
               marginVertical: 15,
             }}>
-            <Text style={[fonts.captionBold, {marginBottom: 10}]}>
+            <Text style={[fonts.captionBold, { marginBottom: 10 }]}>
               Tổng quan đơn hàng
             </Text>
 
@@ -247,10 +248,10 @@ const US_OrderDetail = () => {
                   justifyContent: 'space-between',
                   marginVertical: 10,
                 }}>
-                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                <Text style={[fonts.sublineBold, { color: Colors.slate }]}>
                   {item.Name}
                 </Text>
-                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                <Text style={[fonts.sublineBold, { color: Colors.slate }]}>
                   {item.Value}.000 đ
                 </Text>
               </View>
@@ -280,7 +281,7 @@ const US_OrderDetail = () => {
               paddingBottom: 18,
               marginTop: 10,
             }}>
-            <Text style={[fonts.captionBold, {marginBottom: 10}]}>
+            <Text style={[fonts.captionBold, { marginBottom: 10 }]}>
               Chi tiết đơn hàng
             </Text>
             <OrderItemRow title="Số đơn hàng" content={infor.Id} />
@@ -305,16 +306,16 @@ const US_OrderDetail = () => {
               style={{
                 marginVertical: 10,
               }}>
-              <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+              <Text style={[fonts.sublineBold, { color: Colors.slate }]}>
                 Ngày giao hàng
               </Text>
-              <View style={{marginLeft: 5, marginTop: 10}}>
+              <View style={{ marginLeft: 5, marginTop: 10 }}>
                 {infor.Restaurant.map((item, index) => (
                   <View key={item.Id}>
                     <Text
                       style={[
                         fonts.sublineBold,
-                        {color: Colors.slate, marginTop: 20},
+                        { color: Colors.slate, marginTop: 20 },
                       ]}>
                       {item.Name}
                     </Text>
@@ -323,11 +324,11 @@ const US_OrderDetail = () => {
                         <OrderItemRow
                           key={i.Id}
                           title={i.Name}
-                          style={{marginLeft: 10}}
+                          style={{ marginLeft: 10 }}
                           subValue={
                             i.HasDiscount && infor.Discount
                               ? Math.round((i.Value * 100) / infor.Discount) +
-                                '.000 đ'
+                              '.000 đ'
                               : undefined
                           }
                           content={
@@ -345,11 +346,11 @@ const US_OrderDetail = () => {
           </View>
         </ScrollView>
 
-        <View style={{backgroundColor: Colors.white, paddingHorizontal: 10}}>
+        <View style={{ backgroundColor: Colors.white, paddingHorizontal: 10 }}>
           <Linear_btn
             title="Đặt lại đơn hàng"
             onPress={handlePresentCommentModalPress}
-            style={{borderColor: Colors.silver}}
+            style={{ borderColor: Colors.silver }}
           />
         </View>
 
@@ -365,10 +366,15 @@ const US_OrderDetail = () => {
               <Text
                 style={[
                   fonts.captionBold,
-                  {marginVertical: 10, textAlign: 'center'},
+                  { marginVertical: 10, textAlign: 'center' },
                 ]}>
                 Thanh toán
               </Text>
+              <BottomSheetScrollView>
+                <ReOrder orderID={infor.Id} onSuccess={(status) => {
+                  CreatebottomSheetModalRef?.current?.close();
+                }} />
+              </BottomSheetScrollView>
             </BottomSheetModal>
           </View>
         </BottomSheetModalProvider>

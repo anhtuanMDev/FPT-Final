@@ -9,8 +9,7 @@ include_once 'connection.php';
 
 try {
     $data = json_decode(file_get_contents('php://input'));
-    $orderID = $data->orderID;
-    $restaurantID = $data->restaurantID;
+    $id = $data->id;
 
     $query = "SELECT orders.Id, orders.TotalValue, orders.Status, 
     orders.Delivery, orders.CreateAt, orders.UpdateAt, orders.PaymentMethod, 
@@ -21,32 +20,48 @@ try {
     LEFT JOIN address ON address.Id = orders.AddressID
     LEFT JOIN coupons ON coupons.Id = orders.CouponID
     INNER JOIN orderitems ON orderitems.OrderID = orders.Id
-    WHERE orders.Id = '$orderID' ORDER BY orders.CreateAt DESC";
+    WHERE orders.Id = '$id' ORDER BY orders.CreateAt DESC"  ;
     $stmt = $dbConn->prepare($query);
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $orders = $stmt->fetch(PDO::FETCH_ASSOC);
     $cp = isset($orders['CouponID']) ? $orders['CouponID'] : null;
 
-    $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Status, 
+
+
+    $query = "SELECT DISTINCT  restaurants.Id, restaurants.Name, images.Id as Image
+    FROM restaurants
+    INNER JOIN images ON images.OwnerID = restaurants.Id
+    INNER JOIN orderitems ON orderitems.OrderID = '$id'
+    INNER JOIN foods ON foods.Id = orderitems.FoodID AND foods.RestaurantID = restaurants.Id";
+    $stmt = $dbConn->prepare($query);
+    $stmt->execute();
+    $rest = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $orders['Restaurant'] = $rest;
+
+    foreach ($orders['Restaurant'] as $key => $value) {
+        $resID = $value['Id'];
+        $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Status, 
         orderitems.Value, orderitems.ArriveAt, foods.Id AS FoodID, foods.Name, images.Id AS Image,
         CASE WHEN '$cp' IS NOT NULL AND foods.Id IN (SELECT FoodID FROM 
         couponitems WHERE CouponID = '$cp') THEN 1 ELSE 0 END AS HasDiscount
         FROM orderitems
-        INNER JOIN foods ON foods.Id = orderitems.FoodID AND foods.RestaurantID = '$restaurantID'
+        INNER JOIN foods ON foods.Id = orderitems.FoodID AND foods.RestaurantID = '$resID'
         INNER JOIN images ON images.OwnerID = foods.ID
-        WHERE orderitems.OrderID = '$orderID'";
-    $stmt = $dbConn->prepare($query);
-    $stmt->execute();
-    $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        WHERE orderitems.OrderID = '$id'";
+        $stmt = $dbConn->prepare($query);
+        $stmt->execute();
+        $foods = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $orders['Items'] = $foods;
+        $orders['Restaurant'][$key]['Items'] = $foods;
+    }
 
     echo json_encode(
         array(
             'data' => $orders,
             'status' => true,
-            'statusText' => "Lấy thông tin chi tiết của đơn hàng thành công cho người dùng $orderID!",
+            'statusText' => "Lấy thông tin chi tiết của đơn hàng thành công cho người dùng $id!",
         )
     );
 } catch (Exception $e) {
@@ -54,7 +69,7 @@ try {
         array(
             'id' => null,
             'status' => false,
-            'statusText' => "Lấy thông tin chi tiết của đơn hàng không thành công cho người dùng $orderID! $e",
+            'statusText' => "Lấy thông tin chi tiết của đơn hàng không thành công cho người dùng $id! $e",
         )
     );
 };

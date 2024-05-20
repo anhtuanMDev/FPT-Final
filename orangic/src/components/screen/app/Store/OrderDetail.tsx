@@ -64,6 +64,7 @@ type Infor = {
   UserRank: number;
   UserStatistics: Order;
   Value: number;
+  OrderID: string;
 };
 
 const screenWidth = Dimensions.get('window').width;
@@ -82,7 +83,10 @@ const OrderDetail = (props: Props) => {
         id,
       },
     );
-    if (respsonse.status) setInfor(respsonse.data);
+    if (respsonse.status) {
+      console.log(respsonse.data)
+      setInfor(respsonse.data)
+    };
   };
 
   useEffect(() => {
@@ -261,7 +265,7 @@ const OrderDetail = (props: Props) => {
         }}>
         <TouchableOpacity
           onPress={() => {
-            naviagtion.navigate('RES_OrderDetail');
+            naviagtion.navigate('RES_OrderDetail', {id: infor?.OrderID ?? ''});
           }}
           style={{
             width: 45,
@@ -403,6 +407,18 @@ const OrderDetail = (props: Props) => {
             }}>
             <Text style={[fonts.textBold]}>Tổng giá trị</Text>
             <Text style={[fonts.text]}>{infor?.Value}.000 đ</Text>
+          </View>
+
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginVertical: 5,
+              alignItems: 'center',
+            }}>
+            <Text style={[fonts.textBold]}>Tổng lần đặt</Text>
+            <Text style={[fonts.text]}>{infor?.UserStatistics.TotalOrders}</Text>
           </View>
         </View>
 

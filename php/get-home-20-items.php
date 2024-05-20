@@ -113,17 +113,13 @@ try {
     MAX(images.Id) AS Image
     ,COUNT(reviews.Id) as TotalReview,
     COALESCE(ROUND(AVG(Point),1), 0) AS Point
-    ,COALESCE(SUM(orderitems.Quantity),0) as Sold
     ,(CASE WHEN favlist.Id IS NULL THEN 0 ELSE 1 END) AS UserFavorite 
     FROM restaurants    
-    LEFT JOIN foods ON restaurants.Id = foods.RestaurantId
-    LEFT JOIN orderitems ON foods.Id = orderitems.FoodId
     LEFT JOIN favlist ON restaurants.Id = favlist.TargetID AND favlist.UserID = '$id'
     INNER JOIN images ON restaurants.Id = images.OwnerID
     LEFT JOIN reviews ON restaurants.Id = reviews.TargetID
-    WHERE foods.Status != 'Banned' AND foods.Status != 'Removed' 
-    AND restaurants.Status != 'Banned' AND restaurants.Status != 'Removed' 
-    GROUP BY restaurants.Id, favlist.Id ORDER BY Sold DESC LIMIT 5";
+    WHERE restaurants.Status != 'Banned' AND restaurants.Status != 'Removed' 
+    GROUP BY restaurants.Id, favlist.Id ORDER BY `Point` DESC , TotalReview DESC LIMIT 5";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $restaurants = $stmt->fetchAll(PDO::FETCH_ASSOC);

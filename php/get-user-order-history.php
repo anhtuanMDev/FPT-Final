@@ -11,15 +11,15 @@ try {
     $data = json_decode(file_get_contents('php://input'));
     $id = $data->id;
 
-    // $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt,
-    // address.Address, address.Phone, address.City, address.District, address.Ward
-    // FROM orders
-    // INNER JOIN address ON orders.AddressID = address.Id
-    // WHERE orders.UserID = '$id' AND orders.Status = 'Done' ORDER BY orders.CreateAt DESC, orders.UpdateAt DESC ";
-
-    $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt
+    $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt,
+    address.Address, address.Phone, address.City, address.District, address.Ward
     FROM orders
-    WHERE orders.UserID = '$id' AND orders.Status = 'Done' ORDER BY orders.CreateAt DESC, orders.UpdateAt DESC";
+    INNER JOIN address ON orders.AddressID = address.Id
+    WHERE orders.UserID = '$id' AND orders.Status = 'Done' ORDER BY orders.CreateAt DESC, orders.UpdateAt DESC ";
+
+    // $query = "SELECT orders.TotalValue, orders.Id, orders.Delivery, orders.CreateAt
+    // FROM orders
+    // WHERE orders.UserID = '$id' AND orders.Status = 'Done' ORDER BY orders.CreateAt DESC, orders.UpdateAt DESC";
 
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

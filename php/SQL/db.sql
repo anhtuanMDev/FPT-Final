@@ -92,8 +92,6 @@ CREATE TABLE `coupons` (
   `Id` varchar(20) NOT NULL,
   `Code` varchar(6) NOT NULL,
   `Discount` int DEFAULT NULL,
-  `Type` varchar(10) DEFAULT NULL,
-  `Amount` int DEFAULT NULL,
   `Start` datetime DEFAULT NULL,
   `End` datetime DEFAULT NULL,
   `CreateAt` datetime DEFAULT NULL,

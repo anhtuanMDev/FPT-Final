@@ -9,11 +9,11 @@ const Loading = () => {
         source={require('../../../assets/lottie/Loading.json')}
         autoPlay
         loop
-        style={{ flex: 1}}
+        style={{ flex: 1, position: 'relative', }}
       />
       <Text style={{
         position: 'absolute',
-        bottom: 180,
+        bottom: 100,
         alignSelf: 'center',
         fontSize: 20,
         fontWeight: 'bold',

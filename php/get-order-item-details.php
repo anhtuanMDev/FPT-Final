@@ -9,7 +9,7 @@ include_once 'connection.php';
 $data = json_decode(file_get_contents("php://input"));
 try {
     $id = $data->id;
-    $query = "SELECT orderitems.Id, orderitems.Quantity, orderitems.Value, 
+    $query = "SELECT orders.Id AS OrderID, orderitems.Id, orderitems.Quantity, orderitems.Value, 
     orderitems.Status, orders.CreateAt, orders.UserID,
     foods.Name AS FoodName,
     users.Name AS UserName, users.Email AS UserEmail,

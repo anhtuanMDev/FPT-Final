@@ -446,7 +446,6 @@ const RestaurantOrders = () => {
           }}
           showsVerticalScrollIndicator={false}
           renderItem={({ item, index }: { item: OrderItems, index: number }) => {
-            // console.log("item:",item.Items);
             return (
               <OrderCardRestaurant
                 id={item.Id}

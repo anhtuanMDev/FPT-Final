@@ -6,24 +6,24 @@ import {
   selectHost,
   selectLoading,
   selectUserID,
-} from '../../../helpers/state/Global/globalSlice';
-import AxiosInstance from '../../../helpers/AxiosInstance';
+} from '../../../../helpers/state/Global/globalSlice';
+import AxiosInstance from '../../../../helpers/AxiosInstance';
 import { showMessage } from 'react-native-flash-message';
-import Fluid_btn from '../../custom/buttons/Fluid_btn';
-import { buttons, fonts } from '../../custom/styles/ComponentStyle';
-import { Colors, screenStyles } from '../../custom/styles/ScreenStyle';
-import CartBar from '../../custom/cards/CartBar';
-import CartItems from '../../custom/cards/CartItems';
+import Fluid_btn from '../../../custom/buttons/Fluid_btn';
+import { buttons, fonts } from '../../../custom/styles/ComponentStyle';
+import { Colors, screenStyles } from '../../../custom/styles/ScreenStyle';
+import CartBar from '../../../custom/cards/CartBar';
+import CartItems from '../../../custom/cards/CartItems';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
-import WaitingModal from '../../custom/ui/WaitingModal';
+import WaitingModal from '../../../custom/ui/WaitingModal';
 import { NavigationProp, useIsFocused, useNavigation } from '@react-navigation/native';
 import { StripeProvider, usePaymentSheet } from '@stripe/stripe-react-native';
-import AddressItemCart from '../../custom/cards/AddressItemCart';
+import AddressItemCart from '../../../custom/cards/AddressItemCart';
 import { ScrollView } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import Icons, { IconName } from '../../../assets/icons/Icons';
-import { ParamList } from '../../navigation/RootNavigation';
-import CouponUserList from '../../custom/cards/CouponUserList';
+import Icons, { IconName } from '../../../../assets/icons/Icons';
+import { ParamList } from '../../../navigation/RootNavigation';
+import CouponUserList from '../../../custom/cards/CouponUserList';
 import ViewShot from 'react-native-view-shot';
 
 import axios from 'axios';
@@ -98,8 +98,14 @@ function handleCartItem(state: CartState, payload: CartAction) {
   };
 }
 
-const Cart = () => {
+type Prop = {
+  orderID: string;
+  onSuccess: (status: boolean) => void;
+}
+
+const ReOrder = (props: Prop) => {
   const navigation = useNavigation<NavigationProp<ParamList>>();
+  const { orderID, onSuccess } = props;
 
   const host = useSelector(selectHost);
   const id = useSelector(selectUserID);
@@ -209,13 +215,12 @@ const Cart = () => {
     if (response.status) {
       console.log('Upload image success:', response.data);
 
-      const body = {
-        id: id,
-        ownerID: data.Id
-      };
+      // const body = {
+      //   id: id,
+      //   ownerID: data.Id
+      // };
 
-      const upload: any = await AxiosInstance().post('/insert-image.php', body);
-      console.log(upload);
+      // const upload: any = await AxiosInstance().post('/insert-image.php', body);
     } else {
       console.error('Upload image failed:', response.statusText);
     }
@@ -312,8 +317,10 @@ const Cart = () => {
 
   const getCartItem = async (id: string) => {
     try {
-      const response = await AxiosInstance().post('/get-waiting-order.php', {
-        id,
+      console.log("orderID", orderID)
+      const response = await AxiosInstance().post('/get-order-for-re-order.php', {
+        userID: id,
+        orderID: orderID
       });
       let infor = await response.data;
       if (response.status) {
@@ -411,38 +418,6 @@ const Cart = () => {
     return false;
   };
 
-  const updateItemInPaymentPick = async (
-    orderID: string,
-    item: { id: string; quantity: number }[],
-  ) => {
-    useCoupon(data.CouponUserID);
-    const body = {
-      orderID: orderID,
-      item: item,
-      couponID: data.CouponID
-    };
-    const response = await AxiosInstance().post(
-      '/post-confirm-payment.php',
-      body,
-    );
-    const c = response.status;
-    if (c) {
-      showMessage({
-        message: response.statusText,
-        type: 'success',
-        icon: 'success',
-      });
-
-    } else {
-      console.log("updateItemInPaymentPick", response.statusText)
-      showMessage({
-        message: response.statusText,
-        type: 'danger',
-        icon: 'danger',
-      });
-    }
-  };
-
   /* Initialise payment Sheet*/
 
   const [ready, setReady] = useState(false);
@@ -535,7 +510,16 @@ const Cart = () => {
   const handleAfterPayment = async () => {
     try {
 
-      await handleUpdateItemInPaymentPick();
+      const items = handleUpdateItemInPaymentPick();
+      if (items.length === 0) {
+        showMessage({
+          type: 'danger',
+          icon: 'danger',
+          message: "Không có món ăn nào được chọn",
+        });
+        onSuccess(false);
+        return;
+      }
       // captureScreen();
       setPaymentSuccess(false);
       const body = {
@@ -543,10 +527,13 @@ const Cart = () => {
         userID: id as string,
         addressID: data.AddressID,
         paymentMethod: paymentMethods,
+
+        item: items,
+        couponID: data.CouponID
       };
 
       const response = await AxiosInstance().post(
-        '/post-handle-after-payment.php',
+        '/post-handle-after-payment-re-order.php',
         body,
       );
       if (response.status) {
@@ -558,7 +545,8 @@ const Cart = () => {
           icon: 'success',
           message: response.statusText,
         });
-        // setReady(false);
+        onSuccess(true);
+        useCoupon(data.CouponUserID);
         setData({ type: 'CouponID', payload: '' })
         setData({ type: 'CouponUserID', payload: '' })
         setData({ type: 'CouponDetail', payload: '' });
@@ -573,6 +561,8 @@ const Cart = () => {
         icon: 'danger',
         message: "Thanh toán thất bại",
       });
+      onSuccess(false);
+
     } catch (error) {
       console.log('handleAfterPayment', error);
       showMessage({
@@ -580,11 +570,12 @@ const Cart = () => {
         icon: 'danger',
         message: "Thanh toán thất bại",
       });
+      onSuccess(false);
 
     }
   }
 
-  const handleUpdateItemInPaymentPick = async () => {
+  const handleUpdateItemInPaymentPick = () => {
     if (
       /** if no item got check */
       !data.data.every((item: Data) => {
@@ -598,9 +589,12 @@ const Cart = () => {
         .map(item => ({
           id: item.Id,
           quantity: item.Quantity,
+          foodID: item.FoodID,
         }));
-      await updateItemInPaymentPick(data.Id, item);
+
+      return item;
     }
+    return [];
   }
 
   const ModalProcess = () => {
@@ -867,14 +861,14 @@ const Cart = () => {
               showsVerticalScrollIndicator={false}
             >
               <Swipeable ref={swipeAddressRef}
-              renderRightActions={() => rightAction(
-                () => {
-                  setData({ type: 'Address', payload: '' });
-                  setData({ type: 'AddressID', payload: '' });
-                  setData({ type: 'AddressDetail', payload: '' });
-                  swipeAddressRef?.current?.close();
-                }
-              )}>
+                renderRightActions={() => rightAction(
+                  () => {
+                    setData({ type: 'Address', payload: '' });
+                    setData({ type: 'AddressID', payload: '' });
+                    setData({ type: 'AddressDetail', payload: '' });
+                    swipeAddressRef?.current?.close();
+                  }
+                )}>
                 <TouchableOpacity
                   onPress={() => {
                     data.AddressID.length === 0 && allAddress.length === 0 ?
@@ -996,15 +990,15 @@ const Cart = () => {
 
               <View style={{ gap: 10 }}>
                 <Swipeable ref={swipeCouponRef}
-                renderRightActions={() => rightAction(
-                  () => {
-                    setData({ type: 'CouponID', payload: '' })
-                    setData({ type: 'CouponUserID', payload: '' })
-                    setData({ type: 'CouponDetail', payload: '' });
-                    setData({ type: 'CouponDiscount', payload: '' });
-                    swipeCouponRef?.current?.close();
-                  }
-                )}
+                  renderRightActions={() => rightAction(
+                    () => {
+                      setData({ type: 'CouponID', payload: '' })
+                      setData({ type: 'CouponUserID', payload: '' })
+                      setData({ type: 'CouponDetail', payload: '' });
+                      setData({ type: 'CouponDiscount', payload: '' });
+                      swipeCouponRef?.current?.close();
+                    }
+                  )}
                 >
                   <TouchableOpacity
                     onPress={() => {
@@ -1234,4 +1228,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default ReOrder;

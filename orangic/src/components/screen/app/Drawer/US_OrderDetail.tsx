@@ -23,6 +23,8 @@ import AlertConfirm from '../../../custom/alerts/AlertConfirm';
 import { showMessage } from 'react-native-flash-message';
 import AlertMessage from '../../../custom/alerts/AlertMessage';
 import ReOrder from './ReOrder';
+import { useSelector } from 'react-redux';
+import { selectUserID } from '../../../../helpers/state/Global/globalSlice';
 
 type OrderDetail = {
   Id: string;
@@ -64,6 +66,7 @@ const US_OrderDetail = () => {
   const navigate = useNavigation<NavigationProp<ParamList, 'US_OrderDetail'>>();
   const id = route.params?.id;
   const isFocused = useIsFocused();
+  const userID = useSelector(selectUserID);
   const [infor, setInfor] = useState<OrderDetail>({
     Id: '',
     TotalValue: 0,
@@ -379,7 +382,7 @@ const US_OrderDetail = () => {
           </View>
         </BottomSheetModalProvider>
       </View>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
   );
 };
 

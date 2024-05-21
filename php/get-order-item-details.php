@@ -27,22 +27,31 @@ try {
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    $ordID = $result["OrderID"];
     $user = $result['UserID'];
 
-    $query = "SELECT (SELECT COUNT(orders.Id) FROM orders 
-    WHERE orders.UserID = '$user') AS TotalOrders,
-    (SELECT COUNT(orders.Id) FROM orders 
-    WHERE orders.UserID = '$user' AND orderitems.Status = 'Denied' 
-    OR orderitems.Status = 'Cancled') AS CancelOrders,
-    (SELECT COUNT(orders.Id) FROM orders 
-    WHERE orders.UserID = '$user'AND orderitems.Status = 'Done') AS CompleteOrders,
-    (SELECT COUNT(orders.Id) FROM orders 
-    WHERE orders.UserID = '$user'AND orderitems.Status != 'Denied' 
-    AND orderitems.Status != 'Cancled' AND orderitems.Status != 'Done') AS InProgressOrders
-    FROM users 
-    INNER JOIN orders ON orders.UserID = '$user'
+    // $query = "SELECT (SELECT COUNT(orders.Id) FROM orders 
+    // WHERE orders.UserID = '$user') AS TotalOrders,
+    // (SELECT COUNT(orders.Id) FROM orders 
+    // WHERE orders.UserID = '$user' AND orderitems.Status = 'Denied' 
+    // OR orderitems.Status = 'Cancled') AS CancelOrders,
+    // (SELECT COUNT(orders.Id) FROM orders 
+    // WHERE orders.UserID = '$user'AND orderitems.Status = 'Done') AS CompleteOrders,
+    // (SELECT COUNT(orders.Id) FROM orders 
+    // WHERE orders.UserID = '$user'AND orderitems.Status != 'Denied' 
+    // AND orderitems.Status != 'Cancled' AND orderitems.Status != 'Done') AS InProgressOrders
+    // FROM users 
+    // INNER JOIN orders ON orders.UserID = '$user'
+    // INNER JOIN orderitems ON orders.Id = orderitems.OrderID
+    // WHERE users.Id = '$user'";
+
+    $query = "SELECT COUNT(orderitems.Id) AS TotalOrders,
+    COUNT(CASE WHEN orderitems.Status = 'Denied' OR orderitems.Status = 'Cancled' THEN 1 END) AS CancelOrders,
+    COUNT(CASE WHEN orderitems.Status = 'Done' THEN 1 END) AS CompleteOrders,
+    COUNT(CASE WHEN orderitems.Status != 'Denied' AND orderitems.Status != 'Cancled' AND orderitems.Status != 'Done' THEN 1 END) AS InProgressOrders
+    FROM orders
     INNER JOIN orderitems ON orders.Id = orderitems.OrderID
-    WHERE users.Id = '$user'";
+    WHERE orders.UserID = '$user'";
 
     $stmt = $dbConn->query($query);
     $stmt->execute();

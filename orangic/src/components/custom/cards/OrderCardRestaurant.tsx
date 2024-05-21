@@ -62,7 +62,7 @@ const convertStatus = (status: string) => {
   switch (status) {
     case 'Waiting':
       return 'Đang chờ';
-    case 'Approve':
+    case 'Approved':
       return 'Đã xác nhận';
     case 'Denied':
       return 'Bị từ chối';

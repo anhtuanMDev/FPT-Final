@@ -6,6 +6,7 @@ import {
   BackHandler,
   TouchableOpacity,
   Modal,
+  Image,
 } from 'react-native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Colors, screenStyles} from '../../../custom/styles/ScreenStyle';
@@ -33,24 +34,7 @@ import {selectRestaurantID} from '../../../../helpers/state/AppTab/storeSlice';
 import OrderItemsRestaurant from '../../../custom/cards/OrderItemsRestaurant';
 import Fluid_btn from '../../../custom/buttons/Fluid_btn';
 import {Dimensions} from 'react-native';
-
-type ItemData = {
-  ArriveAt: string;
-  FoodID: string;
-  FoodImageID: string;
-  FoodName: string;
-  Id: string;
-  OrderID: string;
-  Pick: boolean;
-  Quantity: number;
-  Status: string;
-  UserID: string;
-  UserImage: string | null;
-  UserName: string;
-  UserRank: number;
-  Value: number;
-  CreateAt: string;
-};
+import {selectHost} from '../../../../helpers/state/Global/globalSlice';
 
 export const convertStatus = (status: string) => {
   switch (status) {
@@ -83,12 +67,6 @@ type OrderDetail = {
   CouponID: string | null;
   Discount: number | null;
   Code: string | null;
-  Items: Items[];
-};
-
-type Restaurant = {
-  Id: string;
-  Name: string;
   Image: string;
   Items: Items[];
 };
@@ -110,6 +88,7 @@ const RES_OrderDetail = () => {
   const route = useRoute<RouteProp<ParamList, 'RES_OrderDetail'>>();
   const navigation =
     useNavigation<NavigationProp<ParamList, 'RES_OrderDetail'>>();
+  const host = useSelector(selectHost);
   const restaurantID = useSelector(selectRestaurantID);
   const id = route.params?.id;
   const isFocused = useIsFocused();
@@ -125,56 +104,23 @@ const RES_OrderDetail = () => {
     CouponID: null,
     Discount: null,
     Code: null,
+    Image: '',
     Items: [],
   });
+  const statuses = [
+    'Waiting',
+    'Denied',
+    'Approved',
+    'Made',
+    'In Delivery',
+    'Cancled',
+    'Done',
+  ];
+  const [statusIndex, setStatusIndex] = useState(0);
   const [action, setAction] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [orderAction, setOrderAction] = useState<Items>({} as Items);
-  const CreatebottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['20%', '90%'], []);
+  const [itemID, setItemID] = useState('' as string);
 
-  const handlePresentCommentModalPress = useCallback(() => {
-    CreatebottomSheetModalRef.current?.present();
-  }, []);
-
-  // const cancelOrder = async (item: Items) => {
-  //   const response = await AxiosInstance().post(
-  //     '/post-update-orderitems-status.php',
-  //     {
-  //       id: item.Id,
-  //       status: 'Cancled',
-  //     },
-  //   );
-  //   if (response.status) {
-  //     console.log(response.status);
-  //     const newOrder = {
-  //       ...infor,
-  //       Restaurants: infor.Restaurant.map(orderItem => {
-  //         const newItem = orderItem.Items.map(items => {
-  //           if (items.Id === item.Id) {
-  //             return { ...items, Status: 'Cancled' };
-  //           }
-  //           return items;
-  //         });
-  //         return newItem;
-  //       }),
-  //       Group: infor.Group.map(items => {
-  //         if (items.Id === item.Id) {
-  //           items.Status = 'Cancled';
-  //         }
-  //         return items;
-  //       }),
-  //     };
-  //     setInfor(newOrder);
-  //     setVisible(true);
-  //     showMessage({
-  //       message: 'Hủy đơn hàng thành công',
-  //       type: 'success',
-  //       icon: 'info',
-  //     });
-  //   }
-  //   console.log(item);
-  // };
 
   const getDetail = async () => {
     const response = await AxiosInstance().post(
@@ -184,12 +130,6 @@ const RES_OrderDetail = () => {
         restaurantID: restaurantID,
       },
     );
-    // console.log(restaurantID);
-    console.log(response);
-    // console.log("the data:",response.data);
-    // console.log(infor.Restaurant);
-    // console.log(infor.Restaurant[0]?.Items);
-    // console.log(infor)
     const data: OrderDetail = response.data;
     if (response.status) {
       setInfor(data);
@@ -218,7 +158,6 @@ const RES_OrderDetail = () => {
     };
   }, []);
 
-  const [status, setStatus] = useState<string>('');
   // const [action, setAction] = useState(false);
   // const [orderAction, setOrderAction] = useState<Items>({} as Items);
   // const OrderItem = (data: ItemData) => {
@@ -348,7 +287,7 @@ const RES_OrderDetail = () => {
 
   const StatusModal = () => {
     return (
-      <Modal visible={status !== ''} transparent={true} animationType="slide">
+      <Modal visible={visible} transparent={true} animationType="slide">
         <View
           style={{
             flex: 1,
@@ -358,6 +297,7 @@ const RES_OrderDetail = () => {
           <View
             style={{
               backgroundColor: Colors.white,
+              elevation: 5,
               width: (width * 2) / 3,
               borderRadius: 15,
               paddingHorizontal: 20,
@@ -371,112 +311,39 @@ const RES_OrderDetail = () => {
               ]}>
               Chọn trạng thái
             </Text>
-            <Text
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}
-              onPress={() => {
-                updateStatus(status, 'Approved');
-                setStatus('');
-                // setOrders(
-                //   orders.map(order =>
-                //     order.Id === status
-                //       ? { ...order, Status: 'Approved' }
-                //       : order,
-                //   ),
-                // );
-              }}>
-              Chấp nhận đơn hàng
-            </Text>
 
-            <Text
-              onPress={() => {
-                updateStatus(status, 'Made');
-                setStatus('');
-                // setOrders(
-                //   orders.map(order =>
-                //     order.Id === status
-                //       ? { ...order, Status: 'Canceled' }
-                //       : order,
-                //   ),
-                // );
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Đã làm xong
-            </Text>
+            {statuses.map((item, index) => {
+              if (index <= statusIndex) {
+                return null;
+              }
+              return (
+                <Text
+                  key={index}
+                  onPress={() => {
+                    updateStatus(itemID, item);
+                    setVisible(false);
+                    if (infor) {
+                      setInfor({...infor, Status: item});
+                    }
+                    getDetail();
+                  }}
+                  style={[
+                    fonts.text,
+                    {
+                      paddingVertical: 15,
+                      color:
+                        statusIndex === index ? Colors.orange : Colors.black,
+                    },
+                  ]}>
+                  {convertStatus(item)}
+                </Text>
+              );
+            })}
 
-            <Text
-              onPress={() => {
-                updateStatus(status, 'In Delivery');
-                setStatus('');
-                // setOrders(
-                //   orders.map(order =>
-                //     order.Id === status
-                //       ? { ...order, Status: 'Delivering' }
-                //       : order,
-                //   ),
-                // );
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Vận chuyển đơn hàng
-            </Text>
-
-            <Text
-              onPress={() => {
-                updateStatus(status, 'Done');
-                setStatus('');
-                // setOrders(
-                //   orders.map(order =>
-                //     order.Id === status ? { ...order, Status: 'Done' } : order,
-                //   ),
-                // );
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Hoàn thành
-            </Text>
-
-            <Text
-              onPress={() => {
-                updateStatus(status, 'Denied');
-                setStatus('');
-                // setOrders(
-                //   orders.map(order =>
-                //     order.Id === status
-                //       ? { ...order, Status: 'Canceled' }
-                //       : order,
-                //   ),
-                // );
-              }}
-              style={[
-                fonts.text,
-                {
-                  paddingVertical: 15,
-                },
-              ]}>
-              Từ chối đơn hàng
-            </Text>
             <Fluid_btn
               title="Hủy"
               style={{marginTop: 30}}
-              onPress={() => setStatus('')}
+              onPress={() => setVisible(false)}
             />
           </View>
         </View>
@@ -496,7 +363,6 @@ const RES_OrderDetail = () => {
   };
 
   return (
-    <GestureHandlerRootView style={[screenStyles.parent_container]}>
       <View style={{flex: 1}}>
         <View
           style={{
@@ -506,6 +372,7 @@ const RES_OrderDetail = () => {
             marginBottom: 20,
             paddingHorizontal: 20,
             alignItems: 'center',
+            backgroundColor: Colors.white,
           }}>
           <TouchableOpacity
             onPress={() => {
@@ -527,23 +394,8 @@ const RES_OrderDetail = () => {
           <View style={{width: 45}} />
         </View>
 
-        <AlertConfirm
-          visible={action}
-          title="Bạn muốn hủy đơn hàng ?"
-          content={`Bạn có chắc chắn muốn hủy đơn hàng ${orderAction.Name} với số lượng ${orderAction.Quantity} không ?`}
-          onPress={setAction}
-          onConfirm={() => {
-            // cancelOrder(orderAction);
-            setAction(false);
-          }}
-        />
+        <StatusModal />
 
-        <AlertMessage
-          visible={visible}
-          title="Hủy đơn hàng thành công"
-          content={`Bạn sẽ được hoàn tiền lại ${orderAction.Value}.000 đ cho đơn hàng ${orderAction.Name} với số lượng ${orderAction.Quantity}`}
-          onPress={setVisible}
-        />
         <ScrollView style={{flex: 1}}>
           <View
             style={{
@@ -561,18 +413,22 @@ const RES_OrderDetail = () => {
             </Text>
           </View>
 
-            <FlatList
+          <FlatList
             data={infor.Items}
             keyExtractor={item => item.Id}
             scrollEnabled={false}
             renderItem={({item}) => (
               <OrderItemsRestaurant
                 item={item}
-                getOrder={item => setOrderAction(item)}
-                setAction={setAction}
+                getOrder={item => {
+                  setItemID(item.Id);
+                  setStatusIndex(statuses.indexOf(item.Status));
+                  setVisible(true);
+                }}
                 style={{marginBottom: 15}}
               />
-            )}/>
+            )}
+          />
 
           <View
             style={{
@@ -679,38 +535,30 @@ const RES_OrderDetail = () => {
                 })}
               </View>
             </View>
+
+            {infor?.Image != null && (
+              <View
+                style={{
+                  marginVertical: 10,
+                }}>
+                <Text style={[fonts.sublineBold, {color: Colors.slate}]}>
+                  Ảnh Thanh Toán
+                </Text>
+                <Image
+                  source={{uri: `${host}/uploads/${infor.Image}.jpg`}}
+                  style={{
+                    width: width - 40,
+                    height,
+                    alignSelf: 'center',
+                    resizeMode: 'contain',
+                  }}
+                />
+              </View>
+            )}
           </View>
         </ScrollView>
 
-        {/* <View style={{backgroundColor: Colors.white, paddingHorizontal: 10}}>
-          <Linear_btn
-            title="Đặt lại đơn hàng"
-            onPress={handlePresentCommentModalPress}
-            style={{borderColor: Colors.silver}}
-          />
-        </View> */}
-
-        <BottomSheetModalProvider>
-          <View>
-            <BottomSheetModal
-              ref={CreatebottomSheetModalRef}
-              index={1}
-              style={{
-                flex: 1,
-              }}
-              snapPoints={snapPoints}>
-              <Text
-                style={[
-                  fonts.captionBold,
-                  {marginVertical: 10, textAlign: 'center'},
-                ]}>
-                Thanh toán
-              </Text>
-            </BottomSheetModal>
-          </View>
-        </BottomSheetModalProvider>
       </View>
-    </GestureHandlerRootView>
   );
 };
 

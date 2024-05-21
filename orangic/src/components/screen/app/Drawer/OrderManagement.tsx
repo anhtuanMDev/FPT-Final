@@ -119,7 +119,7 @@ const OrderManagement = () => {
           }}
           notify={0}
           onRightPress={() => {
-            navigation.navigate('Profile');
+            navigation.navigate('Notifications');
           }}
         />
         <AlertConfirm

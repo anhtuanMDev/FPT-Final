@@ -1347,10 +1347,6 @@ const Restaurants = (prop) => {
                                                 </li>
 
                                                 <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Bình luận</button>
-                                                </li>
-
-                                                <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Bị chặn</button>
                                                 </li>
 
@@ -1388,7 +1384,7 @@ const Restaurants = (prop) => {
                                                                         } else {
                                                                             return (
                                                                                 <li className={`page-item ${data.allResPage === index + 1 ? 'active' : ''}`} key={index + 1} style={{ cursor: 'pointer' }}>
-                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_REST_PAGE', payload: data.allResTotalPage })}>{index + 1}</a>
+                                                                                    <a className="page-link" onClick={() => dispatchData({ type: 'SET_ALL_REST_PAGE', payload: index + 1 })}>{index + 1}</a>
                                                                                 </li>
                                                                             );
                                                                         }

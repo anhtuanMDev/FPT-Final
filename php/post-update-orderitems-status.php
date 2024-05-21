@@ -12,6 +12,39 @@ try {
     $id = $data->id;
     $status = $data->status;
 
+    if ($status == 'Denied' || $status == 'Cancled') {
+        // Check if order has cp
+        $query = "SELECT orders.CouponID, orders.Id FROM couponitems
+        INNER JOIN orders ON orders.Id = couponitems.OrderID 
+        WHERE couponitems.Id = '$id'";
+        $stmt = $dbConn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row["CouponID"]) {
+            // Check if is there any couponitems left in order before reset cp user
+            $cp = $row['CouponID'];
+            $ordID = $row['Id'];
+
+            $query = "SELECT COUNT(orderitems.Id) as count FROM couponitems
+            INNER JOIN orderitems ON orderitems.FoodID = couponitems.FoodID AND orderitems.OrderID = :ordID
+            WHERE couponitems.CouponID = :cp AND orderitems.Status NOT IN ('Cancelled', 'Denied')";
+            $stmt = $dbConn->prepare($query);
+            $stmt->bindParam(':cp', $cp);
+            $stmt->bindParam(':ordID', $ordID);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($row['count'] == 0) {
+                $query = "UPDATE couponuser SET Status = 0 WHERE Id = :cp";
+                $stmt = $dbConn->prepare($query);
+                $stmt->bindParam(':cp', $cp);
+                $stmt->execute();
+            }
+
+        }
+    }
+
     function generateID($prefix)
     {
         $charc = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -37,9 +70,9 @@ try {
         case 'Done':
             $content .= " hoàn thành.";
             break;
-            case 'Cancled':
-                $content .= " bị hủy.";
-                break;
+        case 'Cancled':
+            $content .= " bị hủy.";
+            break;
         case 'Denied':
             $content .= " đã bị từ chối.";
             break;
@@ -85,7 +118,6 @@ try {
            WHERE orderitems.Id = '$id'";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
-
     } else {
         $query = "UPDATE orderitems SET Status =  '$status' WHERE Id = '$id'";
         $stmt = $dbConn->prepare($query);

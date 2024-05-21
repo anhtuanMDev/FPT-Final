@@ -209,12 +209,13 @@ const Cart = () => {
     if (response.status) {
       console.log('Upload image success:', response.data);
 
-      // const body = {
-      //   id: id,
-      //   ownerID: data.Id
-      // };
+      const body = {
+        id: id,
+        ownerID: data.Id
+      };
 
-      // const upload: any = await AxiosInstance().post('/insert-image.php', body);
+      const upload: any = await AxiosInstance().post('/insert-image.php', body);
+      console.log(upload);
     } else {
       console.error('Upload image failed:', response.statusText);
     }

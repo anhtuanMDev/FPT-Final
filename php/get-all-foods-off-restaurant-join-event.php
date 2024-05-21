@@ -12,7 +12,7 @@ try {
     $eventId = $_GET['eventId'];
 
     $query = "SELECT DISTINCT
-                            F.Id,
+                            F.Id AS Id,
                             F.Name,
                             F.TimeMade,
                             F.Price,
@@ -25,18 +25,22 @@ try {
                                 LIMIT 1
                             ) AS Image,
                             CASE
-                                WHEN CI.Status = 'Active' THEN TRUE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM couponitems CI
+                                    JOIN events E ON E.CouponID = CI.CouponID
+                                    WHERE CI.FoodID = F.Id
+                                    AND CI.Status = 'Active'
+                                    AND E.Id = '$eventId'
+                                ) THEN TRUE
                                 ELSE FALSE
-                            END AS InCouponItems,
-                            CI.`Status` AS CouponItemStatus
+                            END AS InCouponItems
                         FROM
                             foods F
-                            LEFT JOIN couponitems CI ON CI.FoodID = F.Id
-                            INNER JOIN events E ON E.`CouponID` = CI.`CouponID`
                         WHERE
                             F.RestaurantID = '$resId'
                             AND F.Status != 'Banned'
-                            AND E.`Id` = '$eventId'
+                        GROUP BY F.Id, F.Name, F.TimeMade, F.Price, F.CreateAt
                         ORDER BY F.CreateAt Desc";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();

@@ -212,8 +212,8 @@ const JoinEvent = (props: Prop) => {
     const getAllFoodJoinEvent = async (eventID: string, resID: string) => {
         try {
             // console.log(resID);
-            setInfor({ type: "foodList", payload: [] });
-
+            // setInfor({ type: "foodList", payload: [] });
+console.log(resID,eventID);
             const response = await AxiosInstance().get(
                 'get-all-foods-off-restaurant-join-event.php',
                 { params: { eventId: eventID, resId: resID } }
@@ -256,7 +256,7 @@ const JoinEvent = (props: Prop) => {
     const updateFoodJoinEvent = async () => {
         try {
 
-            // console.log(resID);
+            console.log(infor.foodList);
             const response = await AxiosInstance().post(
                 'update-food-join-event.php',
                 { eventId: eventDetail?.CouponID, couponId: eventDetail?.CouponID, resId: resID, foodList: infor.foodList }

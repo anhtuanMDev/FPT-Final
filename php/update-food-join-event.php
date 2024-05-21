@@ -62,29 +62,32 @@ try {
 
     // Update couponItems
     foreach ($foodList as $key => $value) {
-
-        $query = "SELECT Id, FoodID, Status FROM couponitems WHERE CouponID = '$couponId' AND FoodID = '" . $value->Id . "'";
+        // Ensure $value is treated as an associative array
+        $value = (array) $value;
+    
+        $query = "SELECT Id, FoodID, Status FROM couponitems WHERE CouponID = '$couponId' AND FoodID = '" . $value['Id'] . "'";
         $stmt = $dbConn->prepare($query);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$result && $value->InCouponItems) {
-            $newCpiID = generateID("CPI");  
-            $query = "INSERT INTO couponitems (Id, CouponID, FoodID, Value) VALUES ('$newCpiID', '$eventId', '" . $value->Id . "', 0)";
+    
+        if (!$result && $value['InCouponItems']) {
+            $newCpiID = generateID("CPI");
+            $query = "INSERT INTO couponitems (Id, CouponID, FoodID, Value) VALUES ('$newCpiID', '$eventId', '" . $value['Id'] . "', 0)";
             $stmt = $dbConn->prepare($query);
             $stmt->execute();
-        } else {
-            if ($result['Status'] == "Deleted" && $value->InCouponItems) {
-                $query = "UPDATE couponitems SET Status = 'Active' WHERE Id = '" . $result["Id"] . "'";
+        } else if ($result) {
+            if ($result['Status'] == "Deleted" && $value['InCouponItems']) {
+                $query = "UPDATE couponitems SET Status = 'Active' WHERE Id = '" . $result['Id'] . "'";
                 $stmt = $dbConn->prepare($query);
                 $stmt->execute();
-            } else if ($result['Status'] == "Active" && !$value->InCouponItems) {
-                $query = "UPDATE couponitems SET Status = 'Deleted' WHERE Id = '" . $result["Id"] . "'";
+            } else if ($result['Status'] == "Active" && !$value['InCouponItems']) {
+                $query = "UPDATE couponitems SET Status = 'Deleted' WHERE Id = '" . $result['Id'] . "'";
                 $stmt = $dbConn->prepare($query);
                 $stmt->execute();
             }
         }
     }
+    
     // Commit the transaction
     $dbConn->commit();
 

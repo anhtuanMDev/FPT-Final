@@ -30,7 +30,6 @@ try {
         }, $foodsId);
         
         $placeholders = implode(',', $quotedFoodsId);
-        // $placeholders = implode(',', array_fill(0, count($foodsId), '?'));
 
         $query = "SELECT DISTINCT events.Id, events.Title
               FROM events 
@@ -38,8 +37,8 @@ try {
               WHERE events.End < NOW() AND couponitems.FoodID IN ($placeholders)";
 
         // Log query for debugging
-        error_log("Query: $query");
-        error_log("Foods ID: " . implode(", ", $foodsId));
+        // error_log("Query: $query");
+        // error_log("Foods ID: " . implode(", ", $foodsId));
 
         $stmt = $dbConn->prepare($query);
         $stmt->execute();

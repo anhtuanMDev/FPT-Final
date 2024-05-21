@@ -182,11 +182,11 @@ const JoinEvent = (props: Prop) => {
     };
 
     useEffect(() => {
-        if (reloadEvents) {
+        // if (reloadEvents) {
             getEvents();
             setReloadEvents(false); // Sau khi gọi lại getEvents, đặt lại trạng thái của reloadEvents
-        }
-    }, [reloadEvents, resID]);
+        // }
+    }, [foucsed]);
 
     const getEventDetail = async (eventID: string) => {
         try {
@@ -212,18 +212,21 @@ const JoinEvent = (props: Prop) => {
     const getAllFoodJoinEvent = async (eventID: string, resID: string) => {
         try {
             // console.log(resID);
+            setInfor({ type: "foodList", payload: [] });
+
             const response = await AxiosInstance().get(
                 'get-all-foods-off-restaurant-join-event.php',
                 { params: { eventId: eventID, resId: resID } }
             );
+            console.log("infor.foodList", infor.foodList);
 
-            console.log("res events", response);
+            console.log("res events a", response);
             // console.log("res events", response.data);
             const resData: Food[] = response.data;
             if (resData) {
                 setInfor({ type: "foodList", payload: resData });
                 console.log("resData", resData);
-            }
+            } 
 
 
         } catch (error) {

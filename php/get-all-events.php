@@ -9,7 +9,9 @@ include_once 'connection.php';
 
 try {
     $query = "SELECT E.Id AS Id, E.Title AS Title, E.Content AS Content, E.Start AS Start, E.End AS End, C.Discount AS Discount
-    FROM events E INNER JOIN coupons C ON E.CouponID = C.Id";
+    FROM events E INNER JOIN coupons C ON E.CouponID = C.Id  
+    WHERE E.CreateAt < NOW()
+    ORDER BY E.CreateAt DESC";
     $stmt = $dbConn->prepare($query);
     $stmt->execute();
     $res = $stmt -> fetchAll(PDO::FETCH_ASSOC);

@@ -426,9 +426,6 @@ const Discounts = (prop) => {
                 if (!start) {
                     let errorMsg = "Ngày bắt đầu không được để trống";
                     toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorMsg, true);
-                } else if (!checkValidDate(start)) {
-                    let errorMsg = "Ngày bắt đầu phải từ hôm nay trở đi";
-                    toggleErrorFeedback("eventStart-edit", "eventStart-edit-invalid-feedback", errorMsg, true);
                 } else {
                     if (start && end && checkValidDate(start) && checkValidDate(end)) {
                         if (!checkValidDateRange(start, end, 5)) {

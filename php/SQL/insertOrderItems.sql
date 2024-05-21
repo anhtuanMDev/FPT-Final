@@ -997,7 +997,9 @@ INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, Arri
 ('ORIvj2KCgbtNIUhVFRDH', 'ORD9pyPHh0a9f6tLwYF3', 'FODVcozFCD1si4VxtEwm', 2, 1, 'Done', 24, '2024-04-30 17:55:19'),
 ('ORI4howDMh2DBevKZFuu', 'ORD9pyPHh0a9f6tLwYF3', 'FODPSX1KTvBhDcyYoSMH', 1, 1, 'Done', 28, '2024-04-30 17:55:19'),
 ('ORI6xiTvynmhM6XNkOeX', 'ORD9pyPHh0a9f6tLwYF3', 'FODr8eutGv17hKWGDEBK', 2, 1, 'Done', 36, '2024-04-30 17:55:19'),
-('ORIXrhkddEVeAWvcyxNL', 'ORD9qPTUpkpctvLcGS6H', 'FODFZXcsuJLZukbanwPB', 2, 1, 'Done', 4, '2023-09-15 22:02:16'),
+('ORIXrhkddEVeAWvcyxNL', 'ORD9qPTUpkpctvLcGS6H', 'FODFZXcsuJLZukbanwPB', 2, 1, 'Done', 4, '2023-09-15 22:02:16');
+
+INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, ArriveAt) VALUES
 ('ORIVXwmXfklLaMiZRQDH', 'ORD9qPTUpkpctvLcGS6H', 'FODXkV7dvBeZiC1ResvQ', 1, 1, 'Done', 22, '2023-09-15 22:02:16'),
 ('ORIO9Sm8SRuxJXr3vZGe', 'ORD9qPTUpkpctvLcGS6H', 'FODQn1gYKOy7eVITDXSX', 2, 1, 'Done', 58, '2023-09-15 22:02:16'),
 ('ORIIWGRTHPBkiL4a1UzH', 'ORD9Qwgcb5PZXGWRZI27', 'FODwnLx6A5psSJzZnDBD', 1, 1, 'Cancled', 4, NULL),
@@ -1995,7 +1997,9 @@ INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, Arri
 ('ORI0odXflAo7BemKpXpL', 'ORDETc9c3Dy5afUMSMzQ', 'FODO5k4xNyVdRkhCA6lv', 2, 1, 'Denied', 16, NULL),
 ('ORIT0wvXvRZIvVkzyksv', 'ORDETc9c3Dy5afUMSMzQ', 'FODnjjEZ1PJbpz2c8j6Z', 1, 1, 'Denied', 18, NULL),
 ('ORINqFKcae55kJ004zMU', 'ORDeTl4stfRWMlaNmeVF', 'FODQYb4kos805OTTtA8Y', 2, 1, 'Denied', 28, NULL),
-('ORI6hcKSzBiz2kN2Wvkh', 'ORDeTl4stfRWMlaNmeVF', 'FODTng37nJ8BUJaZtF9i', 1, 1, 'Denied', 23, NULL),
+('ORI6hcKSzBiz2kN2Wvkh', 'ORDeTl4stfRWMlaNmeVF', 'FODTng37nJ8BUJaZtF9i', 1, 1, 'Denied', 23, NULL);
+
+INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, ArriveAt) VALUES
 ('ORIKl2QzDrkFJ6xTlG1q', 'ORDETQ1uPcg71BpmfYuh', 'FODU3w4OlvZ0kVInaYos', 1, 1, 'Done', 9, '2024-05-14 09:56:10'),
 ('ORIF4fnAeArKpLfvWQN6', 'ORDETQ1uPcg71BpmfYuh', 'FODt95y9Ir8LX6hhkogC', 2, 1, 'Done', 52, '2024-05-14 09:56:10'),
 ('ORIR4UsPK9Jz9T4Dcot9', 'ORDETQ1uPcg71BpmfYuh', 'FODTng37nJ8BUJaZtF9i', 1, 1, 'Done', 23, '2024-05-14 09:56:10'),
@@ -2993,7 +2997,9 @@ INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, Arri
 ('ORIQTP6wqhEAO8ZxGPID', 'ORDjPpwZVkASqEcLlwVe', 'FODuaybKcCcVOZeuucQZ', 2, 1, 'Cancled', 18, NULL),
 ('ORISebxojnNcZCeS3VBW', 'ORDjPpwZVkASqEcLlwVe', 'FODRSgJMOmNQwJxXON0T', 1, 1, 'Cancled', 16, NULL),
 ('ORIGVQpHsil4bNhGqUWh', 'ORDjqIu0mTuPNGN9rbUz', 'FODJCt45rBicxcW9XUDV', 1, 1, 'Denied', 8, NULL),
-('ORIbfAkDAQbpDHoHac1W', 'ORDJqMQ4PLoZb85uaAXh', 'FODozGqypa61x4owv6jc', 2, 1, 'Done', 26, '2023-12-10 22:13:13'),
+('ORIbfAkDAQbpDHoHac1W', 'ORDJqMQ4PLoZb85uaAXh', 'FODozGqypa61x4owv6jc', 2, 1, 'Done', 26, '2023-12-10 22:13:13');
+
+INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, ArriveAt) VALUES
 ('ORIEQNQ7Hd6ua3ydHcHE', 'ORDJqMQ4PLoZb85uaAXh', 'FODe167nCjgBKwQc2o9Q', 1, 1, 'Done', 20, '2023-12-10 22:13:13'),
 ('ORInXtxjikU1jGCgyi8k', 'ORDJqMQ4PLoZb85uaAXh', 'FODVbW10dmlRIYtnMupF', 1, 1, 'Done', 14, '2023-12-10 22:13:13'),
 ('ORIZ6aSoCcix270I8QtV', 'ORDJQxRvIMrGHjOkD6q9', 'FODYbXtOKtTq4SahW9Ul', 1, 1, 'Cancled', 27, NULL),
@@ -3991,7 +3997,9 @@ INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, Arri
 ('ORIwboQ2TQkj9d7lbhXr', 'ORDONEYm8w03wZzMUG6U', 'FODRsFCHpaMVnh87Pfc7', 2, 1, 'Denied', 24, NULL),
 ('ORIBtpSTjH9IkID0vmyq', 'ORDONPoJGcqTB0xSiCKN', 'FODEzRfjQfdZ8IEzLPux', 2, 1, 'Denied', 12, NULL),
 ('ORIxMfWcINrH7pIraGKU', 'ORDONPoJGcqTB0xSiCKN', 'FOD270u5ja4ZgHrsHg63', 2, 1, 'Denied', 38, NULL),
-('ORIHFcnkwQERI1cFFarK', 'ORDONPoJGcqTB0xSiCKN', 'FODhqljnHqZatGFnzIDa', 2, 1, 'Denied', 44, NULL),
+('ORIHFcnkwQERI1cFFarK', 'ORDONPoJGcqTB0xSiCKN', 'FODhqljnHqZatGFnzIDa', 2, 1, 'Denied', 44, NULL);
+
+INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, ArriveAt) VALUES
 ('ORIoMCfEA2snDygIpO0j', 'ORDOOs61ERYzBjHNYxZE', 'FODBArXCVP2BIsuiD2qj', 1, 1, 'Done', 9, '2023-09-19 14:16:55'),
 ('ORIe9JNlxnejdVLpifsg', 'ORDOouoeYJOnfM2W4AWc', 'FODBArXCVP2BIsuiD2qj', 1, 1, 'Denied', 9, NULL),
 ('ORIc1Mkev0l5ESD99DFl', 'ORDopl5k4B511Fg9OleC', 'FOD9dZT9NFN43MU6cueD', 2, 1, 'Denied', 6, NULL),
@@ -4989,7 +4997,9 @@ INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, Arri
 ('ORIJlAwAB1lqcenbfTZu', 'ORDtcSwafQNZVcg1f8xz', 'FOD1eoobwpi5hCvvpgLv', 2, 1, 'Denied', 26, NULL),
 ('ORI5mHXdphLjk3PmkPyb', 'ORDTcTeuKTYQz8nfAOFa', 'FODNxdkTYM2496XWJaaR', 1, 1, 'Cancled', 3, NULL),
 ('ORIJBZoK7WLTPkWooq0l', 'ORDtd04TrrnDoxNClVjC', 'FODr11jKWVwiZ7jnjpYY', 2, 1, 'Done', 38, '2024-04-05 11:43:04'),
-('ORIChwjV39g6U7bCid9H', 'ORDtd04TrrnDoxNClVjC', 'FODnb0Wk2M7ALdwjmjb3', 2, 1, 'Done', 38, '2024-04-05 11:43:04'),
+('ORIChwjV39g6U7bCid9H', 'ORDtd04TrrnDoxNClVjC', 'FODnb0Wk2M7ALdwjmjb3', 2, 1, 'Done', 38, '2024-04-05 11:43:04');
+
+INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, ArriveAt) VALUES
 ('ORIuNGMKUS6u0SnJILT7', 'ORDtddfOKAs48IjjyBW9', 'FODezAhAKs0tPMKVgzVT', 2, 1, 'Denied', 32, NULL),
 ('ORIdE7HFwQZOQIvIgNG4', 'ORDTdP4jO36OM4Em1cPG', 'FODtPcAVIngGrkHQktJY', 1, 1, 'Cancled', 21, NULL),
 ('ORIZVk4rPNybrTczl42X', 'ORDTdP4jO36OM4Em1cPG', 'FODbtu6o9D72mn9B1qGv', 1, 1, 'Cancled', 11, NULL),
@@ -5987,7 +5997,9 @@ INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, Arri
 ('ORINUWYWNv5rEnL9kE6S', 'ORDY54qvVralUv7sqsie', 'FODLlyWAGeRpnAAhy9Y0', 1, 1, 'Done', 2, '2024-04-22 12:33:08'),
 ('ORIzFVZGW9sbLh2SQAO7', 'ORDY54qvVralUv7sqsie', 'FODKEArt9FIrHEdsISkz', 2, 1, 'Done', 2, '2024-04-22 12:33:08'),
 ('ORI7h1kO8WLWdyzuFkQH', 'ORDy5HARL6FmZ0TEtlYf', 'FOD74m2EZ6LMIQxEfVMH', 2, 1, 'Denied', 26, NULL),
-('ORII6PPMjkVIXU0XRwPR', 'ORDy5HARL6FmZ0TEtlYf', 'FODNARrEGwAsh2JzeYTi', 2, 1, 'Denied', 42, NULL),
+('ORII6PPMjkVIXU0XRwPR', 'ORDy5HARL6FmZ0TEtlYf', 'FODNARrEGwAsh2JzeYTi', 2, 1, 'Denied', 42, NULL);
+
+INSERT INTO orderitems (Id, OrderID, FoodID, Quantity, Pick, Status, Value, ArriveAt) VALUES
 ('ORIPxz0YUBnaQWcHwffo', 'ORDY6lHUdFaOxt1n6sbs', 'FODD6vuim45IUr1IXk7n', 1, 1, 'Cancled', 17, NULL),
 ('ORIJQL4sptZo4ayYHp8U', 'ORDY6lHUdFaOxt1n6sbs', 'FODKHddJNh35MDs56hPB', 2, 1, 'Cancled', 18, NULL),
 ('ORIrbkkIYd1kwdQXSpl2', 'ORDY6lHUdFaOxt1n6sbs', 'FODE92exeIuooJpxThRd', 1, 1, 'Cancled', 23, NULL),

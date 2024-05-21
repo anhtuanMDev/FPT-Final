@@ -1096,7 +1096,9 @@ INSERT INTO reviews (Id, Point, UserID, TargetID, Comment, Status, CreateAt, Upd
 ('REV7MabTCRcW28q00953', '1', 'USRhhekQvwVd8fyYG1oE', 'FODlSbsQyJu1sgiZBcjm', 'Ăn ngán quá chả muốn mua lại đâu', 'Active', '2023-08-13 05:40:48', '2023-11-27 17:30:25'),
 ('REVF9yHqDD7Q1b2NLaWD', '4', 'USRuPpmypRSq7FRkbdbQ', 'FODlSbsQyJu1sgiZBcjm', 'Ăn sướng miệng thật, món này shop làm là nhất', 'Removed', '2024-04-19 20:53:12', '2024-05-03 04:08:45'),
 ('REVVf3ovtwfkSbOmU3Vu', '1', 'USRBrBmwTLDQP94a7RfA', 'FODlSbsQyJu1sgiZBcjm', 'Món ăn chả có gì giống hình cả', 'Removed', '2023-11-21 23:54:38', '2024-01-02 00:34:00'),
-('REVG4XDWb9PlT9fBEZfH', '4', 'USRKZCN4lyiXdrpxebrP', 'FODlsEYtVRbaRDwDyDBl', 'Ngồi chơi ăn này làm mồi nhắm cũng vui', 'Active', '2024-05-01 06:32:25', '2024-05-02 09:39:49'),
+('REVG4XDWb9PlT9fBEZfH', '4', 'USRKZCN4lyiXdrpxebrP', 'FODlsEYtVRbaRDwDyDBl', 'Ngồi chơi ăn này làm mồi nhắm cũng vui', 'Active', '2024-05-01 06:32:25', '2024-05-02 09:39:49');
+
+INSERT INTO reviews (Id, Point, UserID, TargetID, Comment, Status, CreateAt, UpdateAt) VALUES
 ('REV1D41fkQL7WGHmlA80', '1', 'USRLngnCFmpfFnNBiADB', 'FODlsEYtVRbaRDwDyDBl', 'Món ăn cũng tạm ổn à', 'Removed', '2024-05-02 09:37:28', '2024-05-04 04:38:49'),
 ('REVPEmDMQzFOkCyg8qdq', '3', 'USRtKqydvfFmYTpxzsPQ', 'FODlsEYtVRbaRDwDyDBl', 'Ngồi chơi ăn này làm mồi nhắm cũng vui', 'Removed', '2024-05-04 02:26:25', '2024-05-04 14:09:51'),
 ('REVfuKquoOyrmdmwvsEg', '3', 'USRzVByq7ul1zQOzZ4Qa', 'FODlsEYtVRbaRDwDyDBl', 'Ăn sướng miệng thật, món này shop làm là nhất', 'Active', '2024-05-02 20:28:38', '2024-05-04 18:10:35'),
@@ -1995,7 +1997,9 @@ INSERT INTO reviews (Id, Point, UserID, TargetID, Comment, Status, CreateAt, Upd
 ('REV9VL6tc4UcyziFOYJr', '2', 'USRBrBmwTLDQP94a7RfA', 'RES2J6GvojOQOg2MHTNF', 'Món ăn ở đây tệ lắm, mọi người đừng mua', 'Removed', '2024-04-01 09:18:29', '2024-04-22 06:47:53'),
 ('REVbJQ6NlbNs6B5OtGsV', '4', 'USRWLgKQZNGafwFz5bWJ', 'RES2J6GvojOQOg2MHTNF', 'Shop làm ăn uy tín phết, luôn làm tròn nhiệm vụ, yêu shop!!', 'Active', '2023-10-23 11:40:42', '2023-11-12 16:10:43'),
 ('REVIWd4wGbW6cpIL2OUh', '2', 'USR1JMCQCNYRX1Q9WKcz', 'RES2J6GvojOQOg2MHTNF', 'Món ăn ở đây tệ lắm, mọi người đừng mua', 'Active', '2024-03-08 21:37:27', '2024-04-30 06:02:05'),
-('REVNkDJc66F8XXv2upkW', '4', 'USRWLgKQZNGafwFz5bWJ', 'RES3PU54I5eVAVLjt7YL', 'Đặt hàng online ăn cũng ngon mà ăn tại quán cũng ngon', 'Active', '2024-03-17 18:10:43', '2024-04-10 03:46:10'),
+('REVNkDJc66F8XXv2upkW', '4', 'USRWLgKQZNGafwFz5bWJ', 'RES3PU54I5eVAVLjt7YL', 'Đặt hàng online ăn cũng ngon mà ăn tại quán cũng ngon', 'Active', '2024-03-17 18:10:43', '2024-04-10 03:46:10');
+
+INSERT INTO reviews (Id, Point, UserID, TargetID, Comment, Status, CreateAt, UpdateAt) VALUES
 ('REVsy7xnA0BSYJt6Mlg0', '1', 'USRAj1QNO4rkZV4KQrwf', 'RES4JXHQ6R9tN9m5jj7g', 'Lừa đảo hay sao mà đặt hàng mãi vẫn chưa thấy giao', 'Active', '2024-01-08 03:01:11', '2024-04-06 17:34:12'),
 ('REVwKG8q0cs68n0xHX3C', '2', 'USR8rHBhRT1rmasVfXmU', 'RES4JXHQ6R9tN9m5jj7g', 'Lừa đảo hay sao mà đặt hàng mãi vẫn chưa thấy giao', 'Active', '2024-05-02 07:50:05', '2024-05-03 05:39:05'),
 ('REVc2gr2pb9tx1UdMGMT', '4', 'USRhydKe65dCVl4sQ30X', 'RES4JXHQ6R9tN9m5jj7g', 'Shop làm ăn uy tín phết, luôn làm tròn nhiệm vụ, yêu shop!!', 'Active', '2024-03-04 10:33:52', '2024-05-03 21:17:44'),

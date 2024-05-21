@@ -1496,7 +1496,9 @@ INSERT INTO couponitems (Id, CouponID, FoodID) VALUES
 ('CPI1OI5a4caAMCaTSY2l', 'CPNMilvmEyeXzl2gb0F9', 'FODfv2WkyDJUO6Ip8pT4'),
 ('CPIFGvQ1g01H8D4YWU7L', 'CPNMilvmEyeXzl2gb0F9', 'FODfwmT28TZVky6Ne0sz'),
 ('CPIzIwer9wLcGZQyKvrG', 'CPNMilvmEyeXzl2gb0F9', 'FODFZXcsuJLZukbanwPB'),
-('CPIssyiJTN1c938i1WXe', 'CPNMilvmEyeXzl2gb0F9', 'FODGE5RIwO13sdrJIgYU'),
+('CPIssyiJTN1c938i1WXe', 'CPNMilvmEyeXzl2gb0F9', 'FODGE5RIwO13sdrJIgYU');
+
+INSERT INTO couponitems (Id, CouponID, FoodID) VALUES 
 ('CPIhYfGM7oJm0Uy2uXt5', 'CPNMilvmEyeXzl2gb0F9', 'FODGT01IxFFpsozDxyoZ'),
 ('CPIgWH87fpFHutOiGdjm', 'CPNMilvmEyeXzl2gb0F9', 'FODGVIu3PqNhH29kMBlL'),
 ('CPIoVhY3OtfV3FJqeV9n', 'CPNMilvmEyeXzl2gb0F9', 'FODh4bww4eXTV4uzVgzF'),
@@ -2995,7 +2997,9 @@ INSERT INTO couponitems (Id, CouponID, FoodID) VALUES
 ('CPIo5cqYLMEccdsRKnS2', 'CPNN28hK4q9QbhwhwCD0', 'FOD32ep9GzgryXFO3Zh7'),
 ('CPIpnNeV9KX4H010uNbz', 'CPNN28hK4q9QbhwhwCD0', 'FOD3aosZKHJ23y1wp7JE'),
 ('CPIVeuxbqSXSjtlTWgtT', 'CPNN28hK4q9QbhwhwCD0', 'FOD3ChSd6qP4lpW2XUoY'),
-('CPIGCQ8tixkW0HZNvrby', 'CPNN28hK4q9QbhwhwCD0', 'FOD3EiGTTIuXAqhXVqa6'),
+('CPIGCQ8tixkW0HZNvrby', 'CPNN28hK4q9QbhwhwCD0', 'FOD3EiGTTIuXAqhXVqa6');
+
+INSERT INTO couponitems (Id, CouponID, FoodID) VALUES 
 ('CPIJSApvCzpTLlNNcamW', 'CPNN28hK4q9QbhwhwCD0', 'FOD3rVVm0mtvIiELsDyz'),
 ('CPI23WeGckbVCN2zc0rW', 'CPNN28hK4q9QbhwhwCD0', 'FOD3tO9gAr9ztTed3u8g'),
 ('CPI8oseUS6mjDZN0Bfcy', 'CPNN28hK4q9QbhwhwCD0', 'FOD3X9wHdzERTcYrGX7S'),
@@ -4493,7 +4497,9 @@ INSERT INTO couponitems (Id, CouponID, FoodID) VALUES
 ('CPI6MCFKCV1LwQjBYyhm', 'CPNFsZPYAj9datxMyDPR', 'FODS7SrakT7jI4jPk37O'),
 ('CPIm9BzT1sCwz0UUXpcL', 'CPNFsZPYAj9datxMyDPR', 'FODsikdlnXQDLnYCLceE'),
 ('CPIdKb5zqLOqCmP6rjRK', 'CPNFsZPYAj9datxMyDPR', 'FODsJT4CoYkZcff7HgdV'),
-('CPIbgzFdSCu1usgNdOBP', 'CPNFsZPYAj9datxMyDPR', 'FODSTJ30KjfvD6CKsyHx'),
+('CPIbgzFdSCu1usgNdOBP', 'CPNFsZPYAj9datxMyDPR', 'FODSTJ30KjfvD6CKsyHx');
+
+INSERT INTO couponitems (Id, CouponID, FoodID) VALUES 
 ('CPIttnmMXNKs8ZVisq38', 'CPNFsZPYAj9datxMyDPR', 'FODStnwWStmQLWXe8QOy'),
 ('CPI3fdIVtfFPuJ4MtcAz', 'CPNFsZPYAj9datxMyDPR', 'FODSV4fsJJe3xYQ0SPcm'),
 ('CPI40fa3aezbT0Me9h0J', 'CPNFsZPYAj9datxMyDPR', 'FODsY1NXVi6S2W0bgGI3'),
@@ -7490,7 +7496,9 @@ INSERT INTO couponuser (Id, CouponID, Status, UserID) VALUES
 ('CPUx1NlI19hPOpD2AsyE', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRsICxpzgrcekRxk7Qn'),
 ('CPUa7ZsJqJrPN77M8ZMY', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRsKj4K9K1vIxgujTFV'),
 ('CPUOrie5j0DtFQ2qDnw4', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRSVze1o5dTOASbPuWe'),
-('CPU3zL31YEA7d9f6bjon', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRsY90qX8sftG1xeOdu'),
+('CPU3zL31YEA7d9f6bjon', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRsY90qX8sftG1xeOdu');
+
+INSERT INTO couponuser (Id, CouponID, Status, UserID) VALUES 
 ('CPUYYn12i340DoH316bq', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRT4KzPbjn5hDXXUzen'),
 ('CPUucaeOAVH6m7jlnOyn', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRTKOmxzvnSJpFcml7I'),
 ('CPULi1He53YOUIhmmYl0', 'CPNG68Z5WuDytp0sB4o6', '0', 'USRtKqydvfFmYTpxzsPQ'),

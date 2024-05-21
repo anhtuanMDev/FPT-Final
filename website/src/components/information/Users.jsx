@@ -1503,12 +1503,6 @@ const Users = (prop) => {
                                                     }} >Bảng xếp hạng</button>
                                                 </li>
 
-                                                <li className="nav-item">
-                                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#user-comments" onMouseDown={(e) => {
-                                                        if (e.target.classList.contains('active')) {
-                                                        }
-                                                    }} >Bình luận</button>
-                                                </li>
 
                                                 <li className="nav-item">
                                                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#banned-users" onMouseDown={(e) => {

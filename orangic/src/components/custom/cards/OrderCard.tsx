@@ -64,6 +64,8 @@ const convertStatus = (status: string) => {
       return 'Đã xác nhận';
     case 'Denied':
       return 'Bị từ chối';
+      case 'Made':
+      return 'Đã làm xong';
     case 'In Delivery':
       return 'Đang giao hàng';
     case 'Done':

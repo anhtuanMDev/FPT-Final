@@ -156,10 +156,11 @@ const Search = () => {
         renderItem={({item}) => (
           <SmallCart
             name={item.Name}
-            price={item.Price}
             onPress={() => navigation.navigate('US_FoodDetail', {id: item.Id})}
             time={converTime(item.TimeMade)}
             style={{marginRight: 15}}
+            rate={item.Rate}
+            rateCount={Number(item.TotalReview)}
             favorite={item.IsFav == 1}
             image={item.Image ? `${host}/uploads/${item.Image}.jpg` : undefined}
           />
